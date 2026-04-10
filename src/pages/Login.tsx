@@ -33,7 +33,7 @@ export default function Login() {
     <div className="min-h-screen flex bg-background">
       {/* ── Left panel — wallpaper ── */}
       <div
-        className="hidden lg:flex flex-col justify-between w-[44%] relative overflow-hidden"
+        className="hidden lg:flex flex-col w-[44%] relative overflow-hidden"
         style={{
           backgroundImage: "url(/wallpaper-login.png)",
           backgroundSize: "cover",
@@ -41,21 +41,21 @@ export default function Login() {
           backgroundRepeat: "no-repeat",
         }}
       >
-        {/* dark overlay for readability */}
+        {/* Top fade — strong dark at top for text readability */}
         <div
           className="absolute inset-0 pointer-events-none"
           style={{
-            background: "linear-gradient(to bottom, rgba(0,0,0,0.72) 0%, rgba(0,0,0,0.35) 50%, rgba(0,0,0,0.15) 100%)",
+            background: "linear-gradient(to bottom, rgba(0,0,0,0.88) 0%, rgba(0,0,0,0.75) 30%, rgba(0,0,0,0.40) 55%, rgba(0,0,0,0.08) 100%)",
           }}
         />
 
-        {/* Logo */}
+        {/* Logo — top left */}
         <div className="relative z-10 flex items-center gap-3 p-10">
           <div
             className="h-9 w-9 rounded-xl flex items-center justify-center shrink-0"
             style={{ background: "rgba(255,255,255,0.12)", backdropFilter: "blur(8px)", border: "1px solid rgba(255,255,255,0.18)" }}
           >
-            <img src="/logo.png" alt="AINA" className="h-5 w-5 object-contain" style={{ filter: "brightness(0) invert(1)" }} />
+            <img src="/logo.png" alt="AINA" className="h-5 w-5 object-contain" />
           </div>
           <div>
             <p className="font-semibold text-white text-sm tracking-tight">AINA Centre</p>
@@ -63,11 +63,11 @@ export default function Login() {
           </div>
         </div>
 
-        {/* Center — Medium-style editorial text */}
-        <div className="relative z-10 px-10 pb-14">
+        {/* Main text — upper section, well above the dense wallpaper bottom */}
+        <div className="relative z-10 px-10" style={{ marginTop: "10%" }}>
           <p
             className="text-[11px] font-semibold tracking-[0.28em] uppercase mb-5"
-            style={{ color: "rgba(167,139,250,0.9)" }}
+            style={{ color: "rgba(167,139,250,0.95)" }}
           >
             Portal Internal
           </p>
@@ -83,14 +83,14 @@ export default function Login() {
 
           <p
             className="text-[15px] leading-[1.75] max-w-xs"
-            style={{ color: "rgba(255,255,255,0.55)", fontWeight: 400 }}
+            style={{ color: "rgba(255,255,255,0.60)", fontWeight: 400 }}
           >
             Kelola keuangan, notulensi, agenda, dan anggota AINA Centre dalam satu platform yang terpadu dan aman.
           </p>
 
           <div className="mt-8 flex items-center gap-3">
-            <div className="h-px flex-1 max-w-[48px]" style={{ background: "rgba(255,255,255,0.2)" }} />
-            <p className="text-[11px] text-white/30 font-medium">AINA Centre Management</p>
+            <div className="h-px max-w-[48px] w-12" style={{ background: "rgba(255,255,255,0.25)" }} />
+            <p className="text-[11px] text-white/35 font-medium">AINA Centre Management</p>
           </div>
         </div>
       </div>
