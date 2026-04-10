@@ -2,7 +2,8 @@ import {
   FileText, CalendarDays, Users, TrendingUp,
   CheckCircle2, AlertCircle, Sparkles, Clock,
   ArrowRight, MoreHorizontal, Wallet, Download,
-  Package, Mail, Handshake,
+  Package, Mail, Handshake, Zap, PauseCircle,
+  ListTodo, PlayCircle, Target,
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useQuery } from "@tanstack/react-query";
@@ -762,6 +763,227 @@ export default function Dashboard() {
           )}
         </div>
       </div>
+
+      {/* ── Laporan Fitur Terbaru AINA ────────────────────────────── */}
+      <FiturReviewSection
+        fiturList={data?.latestFitur ?? []}
+        totalFitur={totalFitur}
+        completedFitur={completedFitur}
+        inProgressFitur={data?.insights?.inProgressFitur ?? 0}
+        isLoading={isLoading}
+      />
+    </div>
+  );
+}
+
+// ─── Fitur Review Section ──────────────────────────────────────────────────────
+
+type FiturStatus = "planned" | "in_progress" | "completed" | "on_hold";
+type FiturImpact = "low" | "medium" | "high";
+
+const STATUS_CONFIG: Record<FiturStatus, { label: string; color: string; bg: string; icon: any }> = {
+  planned:     { label: "Direncanakan", color: "#6B7280", bg: "#F3F4F6", icon: ListTodo },
+  in_progress: { label: "Berjalan",     color: "#2563EB", bg: "#EFF6FF", icon: PlayCircle },
+  completed:   { label: "Selesai",      color: "#16A34A", bg: "#F0FDF4", icon: CheckCircle2 },
+  on_hold:     { label: "Ditunda",      color: "#D97706", bg: "#FFFBEB", icon: PauseCircle },
+};
+
+const IMPACT_CONFIG: Record<FiturImpact, { label: string; color: string; bg: string }> = {
+  low:    { label: "Rendah",  color: "#6B7280", bg: "#F3F4F6" },
+  medium: { label: "Sedang",  color: "#D97706", bg: "#FEF3C7" },
+  high:   { label: "Tinggi",  color: "#DC2626", bg: "#FEF2F2" },
+};
+
+function FiturCard({ f }: { f: any }) {
+  const status = STATUS_CONFIG[f.status as FiturStatus] ?? STATUS_CONFIG.planned;
+  const impact = IMPACT_CONFIG[f.impact as FiturImpact] ?? IMPACT_CONFIG.medium;
+  const StatusIcon = status.icon;
+
+  return (
+    <Link to="/fitur" className="shrink-0" style={{ width: 260 }}>
+      <div
+        className="h-full rounded-2xl p-4 flex flex-col gap-3 transition-all duration-150 hover:-translate-y-1 hover:shadow-lg cursor-pointer border"
+        style={{
+          background: "#ffffff",
+          borderColor: "rgba(0,0,0,0.07)",
+        }}
+      >
+        {/* Top row: category + impact */}
+        <div className="flex items-center justify-between gap-2">
+          <span
+            className="text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider truncate max-w-[120px]"
+            style={{ background: "#5B21B615", color: "#5B21B6" }}
+          >
+            {f.category}
+          </span>
+          <span
+            className="text-[10px] font-bold px-2 py-0.5 rounded-full shrink-0 flex items-center gap-1"
+            style={{ background: impact.bg, color: impact.color }}
+          >
+            <Target className="h-2.5 w-2.5" />
+            {impact.label}
+          </span>
+        </div>
+
+        {/* Name */}
+        <p className="text-[14px] font-bold text-[#1A1A1A] leading-snug line-clamp-2">
+          {f.name}
+        </p>
+
+        {/* Description */}
+        <p className="text-[12px] text-[#888] leading-relaxed line-clamp-3 flex-1">
+          {f.description}
+        </p>
+
+        {/* Status + date */}
+        <div className="flex items-center justify-between pt-1 border-t border-black/[0.05]">
+          <span
+            className="text-[11px] font-semibold flex items-center gap-1 px-2 py-0.5 rounded-full"
+            style={{ background: status.bg, color: status.color }}
+          >
+            <StatusIcon className="h-3 w-3" />
+            {status.label}
+          </span>
+          <span className="text-[10px] text-[#bbb]">
+            {formatDate(f.createdAt)}
+          </span>
+        </div>
+      </div>
+    </Link>
+  );
+}
+
+function FiturReviewSection({
+  fiturList, totalFitur, completedFitur, inProgressFitur, isLoading,
+}: {
+  fiturList: any[]; totalFitur: number; completedFitur: number;
+  inProgressFitur: number; isLoading: boolean;
+}) {
+  const planned = Math.max(0, totalFitur - completedFitur - inProgressFitur);
+  const overallPct = totalFitur > 0 ? Math.round((completedFitur / totalFitur) * 100) : 0;
+
+  return (
+    <div
+      className="mt-5 rounded-3xl p-5 border border-black/[0.06]"
+      style={{ background: "#ffffff", boxShadow: "0 2px 12px rgba(0,0,0,0.06)" }}
+    >
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-5">
+        <div>
+          <div className="flex items-center gap-2 mb-1">
+            <div
+              className="h-7 w-7 rounded-xl flex items-center justify-center"
+              style={{ background: "#5B21B6" }}
+            >
+              <Sparkles className="h-3.5 w-3.5 text-white" />
+            </div>
+            <h3 className="text-[16px] font-bold text-[#1A1A1A]">Laporan Fitur Terbaru AINA</h3>
+          </div>
+          <p className="text-[12px] text-[#999] ml-9">
+            Review program & fitur organisasi yang sedang berjalan
+          </p>
+        </div>
+
+        <div className="flex items-center gap-3 shrink-0">
+          {/* Overall progress */}
+          <div className="flex items-center gap-2 px-3 py-2 rounded-xl" style={{ background: "#F5F3FF" }}>
+            <div className="relative">
+              <ProgressRing pct={overallPct} size={36} stroke={4} color="#5B21B6" />
+              <span
+                className="absolute inset-0 flex items-center justify-center text-[9px] font-bold"
+                style={{ color: "#5B21B6" }}
+              >
+                {overallPct}%
+              </span>
+            </div>
+            <div>
+              <p className="text-[11px] font-bold text-[#5B21B6]">Progress</p>
+              <p className="text-[10px] text-[#A78BFA]">{completedFitur}/{totalFitur} selesai</p>
+            </div>
+          </div>
+
+          <Link
+            to="/fitur"
+            className="flex items-center gap-1.5 px-3 h-8 rounded-xl text-[12px] font-semibold transition-all hover:opacity-80"
+            style={{ background: "#1A1A1A", color: "#ffffff" }}
+          >
+            Semua Fitur <ArrowRight className="h-3.5 w-3.5" />
+          </Link>
+        </div>
+      </div>
+
+      {/* Status summary pills */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-5">
+        {[
+          { label: "Total Fitur",    value: totalFitur,      color: "#5B21B6", bg: "#F5F3FF", icon: Zap },
+          { label: "Selesai",        value: completedFitur,  color: "#16A34A", bg: "#F0FDF4", icon: CheckCircle2 },
+          { label: "Sedang Berjalan",value: inProgressFitur, color: "#2563EB", bg: "#EFF6FF", icon: PlayCircle },
+          { label: "Direncanakan",   value: planned,         color: "#6B7280", bg: "#F3F4F6", icon: ListTodo },
+        ].map(({ label, value, color, bg, icon: Icon }) => (
+          <div
+            key={label}
+            className="flex items-center gap-3 p-3 rounded-2xl"
+            style={{ background: bg }}
+          >
+            <div
+              className="h-9 w-9 rounded-xl flex items-center justify-center shrink-0"
+              style={{ background: `${color}20` }}
+            >
+              <Icon className="h-4 w-4" style={{ color }} />
+            </div>
+            <div>
+              <p className="text-xl font-black" style={{ color }}>
+                {isLoading ? "—" : value}
+              </p>
+              <p className="text-[10px] font-semibold text-[#888] leading-tight">{label}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Fitur cards horizontal scroll */}
+      {isLoading ? (
+        <div className="flex gap-4 pb-2">
+          {[1, 2, 3, 4].map(i => (
+            <div key={i} className="h-52 w-64 rounded-2xl bg-black/[0.04] animate-pulse shrink-0" />
+          ))}
+        </div>
+      ) : fiturList.length === 0 ? (
+        <div className="py-12 text-center">
+          <Sparkles className="h-8 w-8 text-[#ddd] mx-auto mb-2" />
+          <p className="text-[13px] text-[#bbb]">Belum ada fitur yang ditambahkan</p>
+          <Link to="/fitur" className="mt-3 inline-block text-[12px] font-semibold text-[#5B21B6] hover:opacity-80">
+            Tambah Fitur Pertama →
+          </Link>
+        </div>
+      ) : (
+        <div
+          className="flex gap-4 overflow-x-auto pb-2"
+          style={{ scrollbarWidth: "thin", scrollbarColor: "rgba(0,0,0,0.1) transparent" }}
+        >
+          {fiturList.map((f) => (
+            <FiturCard key={f.id} f={f} />
+          ))}
+
+          {/* "Lihat semua" card */}
+          <Link to="/fitur" className="shrink-0 flex items-center" style={{ width: 180 }}>
+            <div
+              className="w-full h-full min-h-[200px] rounded-2xl flex flex-col items-center justify-center gap-3 border-2 border-dashed transition-all hover:bg-black/[0.02] cursor-pointer"
+              style={{ borderColor: "rgba(91,33,182,0.25)" }}
+            >
+              <div
+                className="h-10 w-10 rounded-xl flex items-center justify-center"
+                style={{ background: "#F5F3FF" }}
+              >
+                <ArrowRight className="h-5 w-5 text-[#5B21B6]" />
+              </div>
+              <p className="text-[12px] font-semibold text-[#5B21B6] text-center px-4">
+                Lihat Semua Fitur
+              </p>
+            </div>
+          </Link>
+        </div>
+      )}
     </div>
   );
 }
