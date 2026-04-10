@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Wallet, TrendingUp, TrendingDown, Plus, Edit, Trash2 } from "lucide-react";
+import { RecordMeta } from "@/components/RecordMeta";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -122,6 +123,7 @@ export default function KeuanganPage() {
                   <p className="text-sm font-medium truncate">{item.description}</p>
                   <p className="text-xs text-muted-foreground">{item.category} · {item.date}</p>
                   {item.counterpart && <p className="text-xs text-muted-foreground">{item.counterpart}</p>}
+                  <RecordMeta createdBy={item.createdBy} updatedBy={item.updatedBy} createdAt={item.createdAt} className="mt-0.5" />
                 </div>
                 <div className="flex items-center gap-2 shrink-0 ml-2">
                   <p className={`text-sm font-semibold ${type === "income" ? "text-success" : "text-destructive"}`}>

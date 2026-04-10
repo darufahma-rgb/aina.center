@@ -1,31 +1,13 @@
 import {
-  LayoutDashboard,
-  FileText,
-  Sparkles,
-  Wallet,
-  CalendarDays,
-  Users,
-  Handshake,
-  Mail,
-  Package,
-  Presentation,
-  Bot,
-  LogOut,
+  LayoutDashboard, FileText, Sparkles, Wallet, CalendarDays, Users,
+  Handshake, Mail, Package, Presentation, Bot, LogOut, UserCog,
 } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useAuth } from "@/contexts/AuthContext";
 import {
-  Sidebar,
-  SidebarContent,
-  SidebarGroup,
-  SidebarGroupContent,
-  SidebarGroupLabel,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-  SidebarHeader,
-  SidebarFooter,
-  useSidebar,
+  Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent,
+  SidebarGroupLabel, SidebarMenu, SidebarMenuButton, SidebarMenuItem,
+  SidebarHeader, SidebarFooter, useSidebar,
 } from "@/components/ui/sidebar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -34,9 +16,7 @@ import { useToast } from "@/hooks/use-toast";
 const navSections = [
   {
     label: "Overview",
-    items: [
-      { title: "Dashboard", url: "/", icon: LayoutDashboard },
-    ],
+    items: [{ title: "Dashboard", url: "/", icon: LayoutDashboard }],
   },
   {
     label: "Operations",
@@ -63,11 +43,14 @@ const navSections = [
   },
   {
     label: "Presentation",
-    items: [
-      { title: "Investor Mode", url: "/investor", icon: Presentation },
-    ],
+    items: [{ title: "Investor Mode", url: "/investor", icon: Presentation }],
   },
 ];
+
+const adminNavSection = {
+  label: "Administration",
+  items: [{ title: "Kelola Pengguna", url: "/admin/users", icon: UserCog }],
+};
 
 export function AppSidebar() {
   const { state } = useSidebar();
@@ -84,6 +67,33 @@ export function AppSidebar() {
   };
 
   const initials = user?.username?.slice(0, 2).toUpperCase() ?? "??";
+
+  const renderSection = (section: typeof navSections[0], key: string) => (
+    <SidebarGroup key={key}>
+      <SidebarGroupLabel className="text-sidebar-muted text-[10px] uppercase tracking-wider font-semibold px-3">
+        {!collapsed && section.label}
+      </SidebarGroupLabel>
+      <SidebarGroupContent>
+        <SidebarMenu>
+          {section.items.map((item) => (
+            <SidebarMenuItem key={item.title}>
+              <SidebarMenuButton asChild className="h-9">
+                <NavLink
+                  to={item.url}
+                  end={item.url === "/"}
+                  className="text-sidebar-foreground/70 hover:text-sidebar-primary-foreground hover:bg-sidebar-accent rounded-lg transition-colors"
+                  activeClassName="bg-sidebar-accent text-sidebar-primary-foreground font-medium"
+                >
+                  <item.icon className="h-4 w-4 shrink-0" />
+                  {!collapsed && <span className="ml-2">{item.title}</span>}
+                </NavLink>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          ))}
+        </SidebarMenu>
+      </SidebarGroupContent>
+    </SidebarGroup>
+  );
 
   return (
     <Sidebar collapsible="icon" className="border-r-0">
@@ -102,32 +112,15 @@ export function AppSidebar() {
       </SidebarHeader>
 
       <SidebarContent className="px-2">
-        {navSections.map((section) => (
-          <SidebarGroup key={section.label}>
-            <SidebarGroupLabel className="text-sidebar-muted text-[10px] uppercase tracking-wider font-semibold px-3">
-              {!collapsed && section.label}
-            </SidebarGroupLabel>
-            <SidebarGroupContent>
-              <SidebarMenu>
-                {section.items.map((item) => (
-                  <SidebarMenuItem key={item.title}>
-                    <SidebarMenuButton asChild className="h-9">
-                      <NavLink
-                        to={item.url}
-                        end={item.url === "/"}
-                        className="text-sidebar-foreground/70 hover:text-sidebar-primary-foreground hover:bg-sidebar-accent rounded-lg transition-colors"
-                        activeClassName="bg-sidebar-accent text-sidebar-primary-foreground font-medium"
-                      >
-                        <item.icon className="h-4 w-4 shrink-0" />
-                        {!collapsed && <span className="ml-2">{item.title}</span>}
-                      </NavLink>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                ))}
-              </SidebarMenu>
-            </SidebarGroupContent>
-          </SidebarGroup>
-        ))}
+        {navSections.map((section) => renderSection(section, section.label))}
+
+        {/* Admin-only section */}
+        {isAdmin && (
+          <>
+            <div className={`mx-3 my-1 border-t border-sidebar-border ${collapsed ? "mx-1" : ""}`} />
+            {renderSection(adminNavSection, "admin")}
+          </>
+        )}
 
         {!collapsed && (
           <SidebarGroup>

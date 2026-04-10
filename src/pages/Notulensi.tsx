@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { FileText, Plus, Edit, Trash2, Users2, CheckCircle } from "lucide-react";
+import { RecordMeta } from "@/components/RecordMeta";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -174,6 +175,7 @@ export default function Notulensi() {
                         </div>
                       )}
                     </div>
+                    <RecordMeta createdBy={note.createdBy} updatedBy={note.updatedBy} createdAt={note.createdAt} updatedAt={note.updatedAt} className="pt-1" />
                   </div>
                   {isAdmin && (
                     <div className="flex items-center gap-1 shrink-0">

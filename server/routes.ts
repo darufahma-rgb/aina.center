@@ -68,11 +68,43 @@ export function registerRoutes(app: Router) {
     }
   });
 
-  app.patch("/api/users/:id/deactivate", requireAdmin, async (req, res) => {
+  app.patch("/api/users/:id", requireAdmin, async (req, res) => {
     const id = parseInt(req.params.id);
-    const user = await storage.updateUser(id, { isActive: false });
+    const { role, isActive, username, email } = req.body;
+    // Prevent admin from demoting or deactivating themselves
+    if (id === req.session.userId) {
+      if (role !== undefined && role !== req.session.userRole) {
+        return res.status(403).json({ message: "Cannot change your own role" });
+      }
+      if (isActive === false) {
+        return res.status(403).json({ message: "Cannot deactivate your own account" });
+      }
+    }
+    const updates: Record<string, any> = {};
+    if (role !== undefined) updates.role = role;
+    if (isActive !== undefined) updates.isActive = isActive;
+    if (username !== undefined) updates.username = username;
+    if (email !== undefined) updates.email = email;
+    const user = await storage.updateUser(id, updates);
     if (!user) return res.status(404).json({ message: "User not found" });
     res.json(user);
+  });
+
+  app.delete("/api/users/:id", requireAdmin, async (req, res) => {
+    const id = parseInt(req.params.id);
+    if (id === req.session.userId) {
+      return res.status(403).json({ message: "Cannot delete your own account" });
+    }
+    const user = await storage.updateUser(id, { isActive: false });
+    if (!user) return res.status(404).json({ message: "User not found" });
+    res.json({ message: "User deactivated" });
+  });
+
+  app.get("/api/users/map", requireAuth, async (req, res) => {
+    const users = await storage.listUsers();
+    const map: Record<number, string> = {};
+    users.forEach(u => { map[u.id] = u.username; });
+    res.json(map);
   });
 
   // ── Notulensi ───────────────────────────────────────────────────────────────

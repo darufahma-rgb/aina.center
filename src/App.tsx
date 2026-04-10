@@ -18,6 +18,7 @@ import Relasi from "./pages/Relasi";
 import Surat from "./pages/Surat";
 import Inventaris from "./pages/Inventaris";
 import InvestorMode from "./pages/InvestorMode";
+import ManageUsers from "./pages/ManageUsers";
 import NotFound from "./pages/NotFound";
 
 const App = () => (
@@ -39,6 +40,7 @@ const App = () => (
             <Route path="/surat" element={<ProtectedRoute><PortalLayout><Surat /></PortalLayout></ProtectedRoute>} />
             <Route path="/inventaris" element={<ProtectedRoute><PortalLayout><Inventaris /></PortalLayout></ProtectedRoute>} />
             <Route path="/investor" element={<ProtectedRoute><PortalLayout><InvestorMode /></PortalLayout></ProtectedRoute>} />
+            <Route path="/admin/users" element={<ProtectedRoute><PortalLayout><ManageUsers /></PortalLayout></ProtectedRoute>} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </AuthProvider>
