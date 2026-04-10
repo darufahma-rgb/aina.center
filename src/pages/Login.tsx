@@ -36,39 +36,40 @@ export default function Login() {
           MOBILE layout  (< lg)
       ════════════════════════════════════════ */}
       <div
-        className="lg:hidden min-h-screen flex flex-col items-center justify-center px-7"
+        className="lg:hidden flex flex-col items-center justify-center px-7 overflow-hidden"
         style={{
           background: "#EEEEE9",
-          paddingTop: "env(safe-area-inset-top, 0px)",
-          paddingBottom: "env(safe-area-inset-bottom, 0px)",
+          height: "100dvh",
+          paddingTop: "env(safe-area-inset-top, 16px)",
+          paddingBottom: "env(safe-area-inset-bottom, 16px)",
         }}
       >
         <div className="w-full max-w-[340px]">
 
           {/* Logo + brand */}
-          <div className="flex flex-col items-center mb-8">
+          <div className="flex flex-col items-center mb-6">
             <div
-              className="h-[72px] w-[72px] rounded-full flex items-center justify-center mb-4 shadow-sm"
+              className="h-16 w-16 rounded-full flex items-center justify-center mb-3 shadow-sm"
               style={{ background: "#fff", border: "1.5px solid #E4E4DC" }}
             >
-              <img src="/logo.png" alt="AINA" className="h-10 w-10 object-contain" />
+              <img src="/logo.png" alt="AINA" className="h-9 w-9 object-contain" />
             </div>
             <p className="text-[13px] font-medium" style={{ color: "#888" }}>AINA Centre</p>
           </div>
 
           {/* Title */}
           <h1
-            className="text-center text-[28px] font-bold text-[#1A1A1A] mb-7"
+            className="text-center text-[26px] font-bold text-[#1A1A1A] mb-6"
             style={{ letterSpacing: "-0.02em" }}
           >
             Login
           </h1>
 
           {/* Form */}
-          <form onSubmit={handleSubmit} className="space-y-3">
+          <form onSubmit={handleSubmit} className="space-y-2.5">
             {/* Username */}
             <div
-              className="flex items-center gap-3 h-[52px] px-4 rounded-2xl bg-white"
+              className="flex items-center gap-3 h-[50px] px-4 rounded-2xl bg-white"
               style={{ border: "1.5px solid #E4E4DC" }}
             >
               <User className="h-4 w-4 shrink-0" style={{ color: "#C0C0B8" }} />
@@ -86,7 +87,7 @@ export default function Login() {
 
             {/* Password */}
             <div
-              className="flex items-center gap-3 h-[52px] px-4 rounded-2xl bg-white"
+              className="flex items-center gap-3 h-[50px] px-4 rounded-2xl bg-white"
               style={{ border: "1.5px solid #E4E4DC" }}
             >
               <Lock className="h-4 w-4 shrink-0" style={{ color: "#C0C0B8" }} />
@@ -121,11 +122,11 @@ export default function Login() {
               disabled={submitting || !username || !password}
               className="w-full font-bold text-white transition-all active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed"
               style={{
-                height: 52,
+                height: 50,
                 borderRadius: 100,
                 background: "#1A1A1A",
                 fontSize: 15,
-                marginTop: 8,
+                marginTop: 6,
                 letterSpacing: "-0.01em",
               }}
             >
