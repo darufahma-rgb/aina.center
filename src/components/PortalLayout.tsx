@@ -349,17 +349,12 @@ export function PortalLayout({ children }: PortalLayoutProps) {
 
       {/* ── Main content — white card ────────────────────────────────── */}
       <div
-        className="flex-1 flex flex-col min-h-screen transition-none lg:ml-[224px]"
-        style={{
-          marginRight: SIDEBAR_MARGIN,
-          marginTop: SIDEBAR_MARGIN,
-          marginBottom: SIDEBAR_MARGIN,
-        }}
+        className="flex-1 flex flex-col min-h-screen transition-none lg:ml-[224px] lg:mr-3 lg:mt-3 lg:mb-3"
       >
         {/* White card wrapper */}
         <div
-          className="flex-1 flex flex-col bg-white min-h-[calc(100vh-24px)]"
-          style={{ borderRadius: 24, overflow: "hidden", border: "1px solid rgba(0,0,0,0.10)" }}
+          className="flex-1 flex flex-col bg-white lg:rounded-3xl"
+          style={{ overflow: "hidden", border: "1px solid rgba(0,0,0,0.10)" }}
         >
           {/* ── Top bar ──────────────────────────────────────────── */}
           <header className="flex items-center justify-between px-5 py-3.5 border-b shrink-0" style={{ borderColor: "rgba(0,0,0,0.09)" }}>

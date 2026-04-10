@@ -634,7 +634,7 @@ export default function Dashboard() {
         <div className="flex-1 min-w-0 space-y-5">
 
           {/* ── Progress cards row ─────────────────────────────────── */}
-          <div className="flex gap-3">
+          <div className="grid grid-cols-3 gap-2 sm:gap-3">
             <ProgressCard
               sublabel="Notulensi"
               label="Penyelesaian"
