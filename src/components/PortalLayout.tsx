@@ -175,13 +175,18 @@ function Sidebar({
         aria-hidden="true"
       />
 
-      {/* ── Icon rail — always visible ────────────────────────────── */}
+      {/* ── Icon rail — floating pill, always visible ─────────────── */}
       <div
         className="fixed left-0 top-0 bottom-0 z-50 flex flex-col items-center py-4 gap-1"
         style={{
+          left: 12,
+          top: 12,
+          bottom: 12,
           width: RAIL_WIDTH,
+          height: "calc(100vh - 24px)",
+          borderRadius: 24,
           background: "#ffffff",
-          borderRight: "1px solid hsl(var(--border))",
+          boxShadow: "0 8px 32px rgba(0,0,0,0.10), 0 2px 8px rgba(0,0,0,0.07)",
         }}
       >
         {/* Logo button — toggles full panel */}
@@ -360,15 +365,14 @@ export function PortalLayout({ children }: PortalLayoutProps) {
         onLogout={handleLogout}
       />
 
-      {/* Content — always offset by icon rail width */}
-      <div
-        className="flex flex-col min-h-screen transition-none"
-        style={{ marginLeft: RAIL_WIDTH }}
-      >
-        {/* Top header */}
+      {/* Content — full width, sidebar floats over it */}
+      <div className="flex flex-col min-h-screen">
+        {/* Top header — padded left to clear the floating icon rail */}
         <header
-          className="h-14 flex items-center justify-between px-5 shrink-0 sticky top-0 z-30"
+          className="h-14 flex items-center justify-between shrink-0 sticky top-0 z-30"
           style={{
+            paddingLeft: RAIL_WIDTH + 24,
+            paddingRight: 20,
             background: "rgba(250,247,243,0.90)",
             backdropFilter: "blur(14px)",
             borderBottom: "1px solid hsl(var(--border))",
@@ -394,8 +398,11 @@ export function PortalLayout({ children }: PortalLayoutProps) {
           </div>
         </header>
 
-        {/* Page content */}
-        <main className="flex-1 p-5 pb-10">
+        {/* Page content — left padding clears the floating icon rail */}
+        <main
+          className="flex-1 pb-10 pt-5 pr-5"
+          style={{ paddingLeft: RAIL_WIDTH + 24 }}
+        >
           {children}
         </main>
       </div>
