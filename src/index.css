@@ -6,47 +6,47 @@
 
 @layer base {
   :root {
-    /* ── Neosoft Cloud Palette ───────────────────────────────────── */
-    --background:    215 35% 95%;
-    --foreground:    222 45% 12%;
+    /* ── Cloud Dock Purple Palette ───────────────────────────────── */
+    --background:    250 28% 97%;
+    --foreground:    250 45% 10%;
 
     --card:          0 0% 100%;
-    --card-foreground: 222 45% 12%;
+    --card-foreground: 250 45% 10%;
 
     --popover:       0 0% 100%;
-    --popover-foreground: 222 45% 12%;
+    --popover-foreground: 250 45% 10%;
 
-    --primary:       221 80% 57%;
+    --primary:       265 83% 57%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary:     215 25% 91%;
-    --secondary-foreground: 222 45% 15%;
+    --secondary:     265 18% 92%;
+    --secondary-foreground: 250 40% 18%;
 
-    --muted:         215 28% 97%;
-    --muted-foreground: 215 14% 50%;
+    --muted:         260 22% 96%;
+    --muted-foreground: 250 14% 50%;
 
-    --accent:        199 89% 46%;
+    --accent:        285 75% 55%;
     --accent-foreground: 0 0% 100%;
 
     --destructive:   0 72% 51%;
     --destructive-foreground: 0 0% 100%;
 
-    --border:        215 22% 89%;
-    --input:         215 22% 89%;
-    --ring:          221 80% 57%;
+    --border:        260 18% 88%;
+    --input:         260 18% 88%;
+    --ring:          265 83% 57%;
 
     --radius: 0.875rem;
 
-    /* ── Sidebar (deep navy) ────────────────────────────────────── */
-    --sidebar-background:  222 47% 10%;
-    --sidebar-foreground:  213 31% 91%;
-    --sidebar-primary:     221 80% 57%;
+    /* ── Sidebar (deep purple-navy, Cloud Dock style) ────────────── */
+    --sidebar-background:  250 53% 7%;
+    --sidebar-foreground:  250 30% 90%;
+    --sidebar-primary:     265 83% 60%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent:      217 35% 17%;
-    --sidebar-accent-foreground: 210 40% 98%;
-    --sidebar-border:      217 35% 16%;
-    --sidebar-ring:        221 80% 57%;
-    --sidebar-muted:       220 9% 46%;
+    --sidebar-accent:      265 50% 18%;
+    --sidebar-accent-foreground: 0 0% 100%;
+    --sidebar-border:      265 40% 13%;
+    --sidebar-ring:        265 83% 57%;
+    --sidebar-muted:       250 15% 48%;
 
     /* ── Semantic ───────────────────────────────────────────────── */
     --success: 152 57% 43%;
@@ -57,63 +57,64 @@
     --info-foreground: 0 0% 100%;
 
     /* ── Charts ─────────────────────────────────────────────────── */
-    --chart-1: 221 80% 57%;
-    --chart-2: 173 58% 39%;
+    --chart-1: 265 83% 57%;
+    --chart-2: 285 75% 55%;
     --chart-3: 38 92% 50%;
-    --chart-4: 262 52% 55%;
+    --chart-4: 199 89% 46%;
     --chart-5: 0 72% 51%;
 
     /* ── Gradients ──────────────────────────────────────────────── */
-    --gradient-primary:  linear-gradient(135deg, hsl(221, 80%, 57%), hsl(199, 89%, 46%));
-    --gradient-accent:   linear-gradient(135deg, hsl(173, 58%, 39%), hsl(152, 57%, 46%));
-    --gradient-investor: linear-gradient(135deg, hsl(222, 47%, 11%), hsl(217, 71%, 35%));
+    --gradient-primary:  linear-gradient(135deg, hsl(265, 83%, 57%), hsl(285, 75%, 50%));
+    --gradient-accent:   linear-gradient(135deg, hsl(285, 75%, 55%), hsl(310, 70%, 50%));
+    --gradient-investor: linear-gradient(135deg, hsl(250, 53%, 8%), hsl(265, 60%, 25%));
+    --gradient-sidebar-active: linear-gradient(135deg, hsl(265, 83%, 55%), hsl(285, 70%, 50%));
 
     /* ── Neosoft Shadows ────────────────────────────────────────── */
-    --shadow-neo-xs:   0 1px 2px rgba(15,23,42,0.04), 0 2px 6px rgba(15,23,42,0.03);
-    --shadow-neo-sm:   0 1px 3px rgba(15,23,42,0.04), 0 4px 14px rgba(15,23,42,0.05), 0 0 0 1px rgba(15,23,42,0.03);
-    --shadow-neo:      0 2px 6px rgba(15,23,42,0.04), 0 10px 28px rgba(15,23,42,0.07), 0 0 0 1px rgba(15,23,42,0.03);
-    --shadow-neo-md:   0 4px 12px rgba(15,23,42,0.05), 0 16px 40px rgba(15,23,42,0.08), 0 0 0 1px rgba(15,23,42,0.04);
-    --shadow-neo-lg:   0 8px 24px rgba(15,23,42,0.06), 0 28px 60px rgba(15,23,42,0.10), 0 0 0 1px rgba(15,23,42,0.04);
-    --shadow-neo-inset: inset 0 1px 3px rgba(15,23,42,0.07), inset 0 1px 1px rgba(15,23,42,0.05);
-    --shadow-neo-primary: 0 4px 14px rgba(59,130,246,0.30), 0 2px 6px rgba(59,130,246,0.20);
+    --shadow-neo-xs:   0 1px 2px rgba(30,20,60,0.05), 0 2px 6px rgba(30,20,60,0.04);
+    --shadow-neo-sm:   0 1px 3px rgba(30,20,60,0.05), 0 4px 14px rgba(30,20,60,0.06), 0 0 0 1px rgba(30,20,60,0.03);
+    --shadow-neo:      0 2px 6px rgba(30,20,60,0.05), 0 10px 28px rgba(30,20,60,0.08), 0 0 0 1px rgba(30,20,60,0.03);
+    --shadow-neo-md:   0 4px 12px rgba(30,20,60,0.06), 0 16px 40px rgba(30,20,60,0.09), 0 0 0 1px rgba(30,20,60,0.04);
+    --shadow-neo-lg:   0 8px 24px rgba(30,20,60,0.07), 0 28px 60px rgba(30,20,60,0.11), 0 0 0 1px rgba(30,20,60,0.04);
+    --shadow-neo-inset: inset 0 1px 3px rgba(30,20,60,0.08), inset 0 1px 1px rgba(30,20,60,0.05);
+    --shadow-neo-primary: 0 4px 16px rgba(124,58,237,0.35), 0 2px 6px rgba(124,58,237,0.20);
   }
 
   .dark {
-    --background:      222 47% 7%;
-    --foreground:      210 40% 98%;
-    --card:            222 47% 10%;
-    --card-foreground: 210 40% 98%;
-    --popover:         222 47% 10%;
-    --popover-foreground: 210 40% 98%;
-    --primary:         221 80% 57%;
+    --background:      250 50% 6%;
+    --foreground:      250 30% 96%;
+    --card:            250 45% 9%;
+    --card-foreground: 250 30% 96%;
+    --popover:         250 45% 9%;
+    --popover-foreground: 250 30% 96%;
+    --primary:         265 83% 62%;
     --primary-foreground: 0 0% 100%;
-    --secondary:       217 33% 16%;
-    --secondary-foreground: 210 40% 98%;
-    --muted:           217 33% 16%;
-    --muted-foreground: 215 20% 60%;
-    --accent:          199 89% 46%;
+    --secondary:       265 35% 16%;
+    --secondary-foreground: 250 30% 96%;
+    --muted:           265 35% 16%;
+    --muted-foreground: 250 20% 60%;
+    --accent:          285 75% 60%;
     --accent-foreground: 0 0% 100%;
     --destructive:     0 62% 30%;
-    --destructive-foreground: 210 40% 98%;
-    --border:          217 33% 16%;
-    --input:           217 33% 16%;
-    --ring:            221 80% 57%;
-    --sidebar-background: 222 47% 6%;
-    --sidebar-foreground: 210 40% 98%;
-    --sidebar-primary: 221 80% 57%;
+    --destructive-foreground: 250 30% 96%;
+    --border:          265 35% 15%;
+    --input:           265 35% 15%;
+    --ring:            265 83% 62%;
+    --sidebar-background: 250 55% 5%;
+    --sidebar-foreground: 250 30% 90%;
+    --sidebar-primary: 265 83% 62%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent:  217 33% 17%;
-    --sidebar-accent-foreground: 210 40% 98%;
-    --sidebar-border:  217 33% 17%;
-    --sidebar-ring:    221 80% 57%;
+    --sidebar-accent:  265 50% 18%;
+    --sidebar-accent-foreground: 0 0% 100%;
+    --sidebar-border:  265 40% 12%;
+    --sidebar-ring:    265 83% 62%;
 
-    --shadow-neo-xs:   0 1px 2px rgba(0,0,0,0.20), 0 2px 6px rgba(0,0,0,0.12);
-    --shadow-neo-sm:   0 1px 3px rgba(0,0,0,0.24), 0 4px 14px rgba(0,0,0,0.16);
-    --shadow-neo:      0 2px 6px rgba(0,0,0,0.24), 0 10px 28px rgba(0,0,0,0.20);
-    --shadow-neo-md:   0 4px 12px rgba(0,0,0,0.28), 0 16px 40px rgba(0,0,0,0.22);
-    --shadow-neo-lg:   0 8px 24px rgba(0,0,0,0.32), 0 28px 60px rgba(0,0,0,0.26);
-    --shadow-neo-inset: inset 0 1px 3px rgba(0,0,0,0.30), inset 0 1px 1px rgba(0,0,0,0.20);
-    --shadow-neo-primary: 0 4px 14px rgba(59,130,246,0.40), 0 2px 6px rgba(59,130,246,0.25);
+    --shadow-neo-xs:   0 1px 2px rgba(0,0,0,0.25), 0 2px 6px rgba(0,0,0,0.15);
+    --shadow-neo-sm:   0 1px 3px rgba(0,0,0,0.28), 0 4px 14px rgba(0,0,0,0.18);
+    --shadow-neo:      0 2px 6px rgba(0,0,0,0.28), 0 10px 28px rgba(0,0,0,0.22);
+    --shadow-neo-md:   0 4px 12px rgba(0,0,0,0.30), 0 16px 40px rgba(0,0,0,0.25);
+    --shadow-neo-lg:   0 8px 24px rgba(0,0,0,0.35), 0 28px 60px rgba(0,0,0,0.28);
+    --shadow-neo-inset: inset 0 1px 3px rgba(0,0,0,0.35), inset 0 1px 1px rgba(0,0,0,0.22);
+    --shadow-neo-primary: 0 4px 16px rgba(139,92,246,0.45), 0 2px 6px rgba(139,92,246,0.28);
   }
 }
 
@@ -151,14 +152,14 @@
     border: 1px solid rgba(255,255,255,0.7);
   }
   .glass-header {
-    background: rgba(255,255,255,0.82);
-    backdrop-filter: blur(16px) saturate(180%);
-    -webkit-backdrop-filter: blur(16px) saturate(180%);
-    border-bottom: 1px solid rgba(15,23,42,0.06);
-    box-shadow: 0 1px 4px rgba(15,23,42,0.04), 0 4px 16px rgba(15,23,42,0.03);
+    background: rgba(255,255,255,0.88);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border-bottom: 1px solid rgba(124,58,237,0.08);
+    box-shadow: 0 1px 4px rgba(30,20,60,0.04), 0 4px 16px rgba(30,20,60,0.03);
   }
 
-  /* ── Neosoft card (borderless, shadow-lifted) ─────────────────── */
+  /* ── Cards ────────────────────────────────────────────────────── */
   .neo-card {
     @apply bg-card rounded-xl;
     box-shadow: var(--shadow-neo-sm);
@@ -168,7 +169,13 @@
     box-shadow: var(--shadow-neo-md);
   }
 
-  /* ── Icon orb (gradient sphere) ──────────────────────────────── */
+  /* ── Purple active pill (Cloud Dock style) ────────────────────── */
+  .nav-active-pill {
+    background: var(--gradient-sidebar-active);
+    box-shadow: 0 4px 14px rgba(124,58,237,0.40);
+  }
+
+  /* ── Icon orbs ────────────────────────────────────────────────── */
   .icon-orb {
     @apply flex items-center justify-center rounded-xl shrink-0;
     background: var(--gradient-primary);
@@ -176,10 +183,11 @@
   }
   .icon-orb-soft {
     @apply flex items-center justify-center rounded-xl shrink-0 bg-primary/10;
-    box-shadow: 0 2px 8px rgba(59,130,246,0.12);
+    box-shadow: 0 2px 8px rgba(124,58,237,0.14);
   }
 
   /* ── Animate ─────────────────────────────────────────────────── */
   .animate-fade-in  { animation: fade-in 0.35s ease-out both; }
   .animate-slide-in { animation: slide-in 0.3s ease-out both; }
+  .animate-scale-in { animation: scale-in 0.3s ease-out both; }
 }

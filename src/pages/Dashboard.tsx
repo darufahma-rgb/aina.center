@@ -352,7 +352,7 @@ export default function Dashboard() {
         <StatCard icon={Users}        title="Total Anggota"    value={isLoading ? "—" : data?.totalAnggota ?? 0}              subtitle="Anggota aktif"                               gradient />
         <StatCard icon={Wallet}       title="Saldo Tersedia"   value={isLoading ? "—" : formatRp(data?.saldoTersedia ?? 0)}   subtitle="Keuangan bersih"    color="green" />
         <StatCard icon={CalendarDays} title="Agenda Mendatang" value={isLoading ? "—" : data?.upcomingAgenda ?? 0}            subtitle="Agenda upcoming"    color="violet" />
-        <StatCard icon={FileText}     title="Notulensi"        value={isLoading ? "—" : data?.totalNotulensi ?? 0}            subtitle={`${data?.draftNotulensi ?? 0} draft pending`} color="amber" />
+        <StatCard icon={FileText}     title="Notulensi"        value={isLoading ? "—" : data?.totalNotulensi ?? 0}            subtitle={`${data?.draftNotulensi ?? 0} draft pending`} color="purple" />
       </div>
 
       {/* ── Notulensi + Agenda ── */}
