@@ -97,13 +97,13 @@ export function BottomNav({ sidebarOpen = false, onSidebarClose }: BottomNavProp
               />
             )}
             <img
-              src="/aina-icon.png"
+              src="/aigypt-icon.png"
               alt="AI Asisten"
               className="h-[22px] w-[22px] shrink-0 mt-1 object-contain"
               style={{
                 filter: aiOpen
-                  ? "brightness(0) saturate(1) invert(15%) sepia(90%) saturate(3000%) hue-rotate(248deg) brightness(75%)"
-                  : "opacity(0.35)",
+                  ? "brightness(0) invert(27%) sepia(91%) saturate(3200%) hue-rotate(248deg) brightness(90%)"
+                  : "brightness(0) opacity(0.28)",
               }}
             />
             <span className={cn("text-[9px] font-bold tracking-wide", aiOpen ? "text-[#3E0FA3]" : "text-[#bbb]")}>
