@@ -1,5 +1,6 @@
 import type { Express } from "express";
 import type { Server } from "http";
+import express from "express";
 import path from "path";
 import fs from "fs";
 
@@ -21,7 +22,6 @@ export function serveStatic(app: Express) {
     console.warn("dist/ not found, run npm run build first");
     return;
   }
-  const { default: express } = require("express");
   app.use(express.static(distPath));
   app.get("*", (_req, res) => {
     res.sendFile(path.resolve(distPath, "index.html"));
