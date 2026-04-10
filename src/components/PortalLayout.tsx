@@ -133,12 +133,12 @@ function DesktopSidebar({
         style={{ background: "hsl(250,53%,7%)" }}
       >
         {/* Logo */}
-        <div
-          className="h-9 w-9 rounded-xl overflow-hidden mb-5 shrink-0"
-          style={{ boxShadow: "0 4px 16px rgba(124,58,237,0.45)" }}
-        >
-          <img src="/logo.png" alt="AINA" className="h-full w-full object-cover" />
-        </div>
+        <img
+          src="/logo.png"
+          alt="AINA"
+          className="h-10 w-10 object-contain mb-5 shrink-0"
+          style={{ filter: "drop-shadow(0 0 10px rgba(180,140,255,0.75))" }}
+        />
 
         {/* Nav icons */}
         <div className="flex flex-col items-center gap-1 flex-1 w-full px-2">
@@ -361,12 +361,12 @@ function MobileNavSheet({
           {/* Header */}
           <div className="px-5 pt-6 pb-4 flex items-center justify-between shrink-0">
             <div className="flex items-center gap-3">
-              <div
-                className="h-9 w-9 rounded-xl overflow-hidden shrink-0"
-                style={{ boxShadow: "0 4px 16px rgba(124,58,237,0.45)" }}
-              >
-                <img src="/logo.png" alt="AINA" className="h-full w-full object-cover" />
-              </div>
+              <img
+                src="/logo.png"
+                alt="AINA"
+                className="h-10 w-10 object-contain shrink-0"
+                style={{ filter: "drop-shadow(0 0 10px rgba(180,140,255,0.75))" }}
+              />
               <div>
                 <h1 className="font-bold text-[14px] text-white leading-tight">AINA Centre</h1>
                 <p className="text-[9px] font-semibold tracking-widest uppercase mt-0.5" style={{ color: "rgba(180,160,220,0.45)" }}>
@@ -494,7 +494,7 @@ export function PortalLayout({ children }: PortalLayoutProps) {
                   <Menu className="h-5 w-5" />
                 </button>
                 <div className="flex items-center gap-2">
-                  <img src="/logo.png" alt="AINA" className="h-7 w-7 rounded-lg" style={{ boxShadow: "0 2px 8px rgba(124,58,237,0.35)" }} />
+                  <img src="/logo.png" alt="AINA" className="h-8 w-8 object-contain" style={{ filter: "drop-shadow(0 0 8px rgba(180,140,255,0.70))" }} />
                   <span className="font-bold text-sm text-foreground">AINA Centre</span>
                 </div>
               </div>

@@ -57,12 +57,12 @@ export default function Login() {
       <div className="relative w-full max-w-sm animate-scale-in z-10">
         {/* Logo + brand */}
         <div className="flex flex-col items-center mb-8">
-          <div
-            className="h-20 w-20 rounded-2xl overflow-hidden mb-4"
-            style={{ boxShadow: "0 8px 32px rgba(124,58,237,0.60), 0 2px 8px rgba(124,58,237,0.30)" }}
-          >
-            <img src="/logo.png" alt="AINA Centre Management" className="h-full w-full object-cover" />
-          </div>
+          <img
+            src="/logo.png"
+            alt="AINA Centre Management"
+            className="h-24 w-24 object-contain mb-4"
+            style={{ filter: "drop-shadow(0 0 20px rgba(180,140,255,0.85)) drop-shadow(0 0 8px rgba(124,58,237,0.60))" }}
+          />
           <h1 className="font-bold text-2xl text-white tracking-tight">AINA Centre</h1>
           <p className="text-sm mt-1 font-medium tracking-widest uppercase" style={{ color: "rgba(200,180,255,0.55)" }}>
             Management Portal
