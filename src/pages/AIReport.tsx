@@ -2,7 +2,7 @@ import { useState, useCallback } from "react";
 import {
   Wand2, Copy, Check, Save, Trash2, FileText, TrendingUp,
   Presentation, AlignLeft, AlertTriangle, ChevronDown, ChevronRight,
-  Clock, RotateCcw, Sparkles,
+  Clock, RotateCcw, Sparkles, Lock,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import type { Report } from "../../shared/schema";
+import { useAuth } from "@/contexts/AuthContext";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -133,6 +134,7 @@ function EditableSection({
 // ─── Main Page ────────────────────────────────────────────────────────────────
 
 export default function AIReportPage() {
+  const { isAdmin } = useAuth();
   const { toast } = useToast();
 
   const [rawText, setRawText] = useState("");
@@ -310,15 +312,35 @@ export default function AIReportPage() {
   const ModeIcon = modeConfig.icon;
   const isNotulensiMode = selectedMode === "notulensi";
 
+  // Non-admin: access denied
+  if (!isAdmin) {
+    return (
+      <div className="space-y-5 animate-fade-in">
+        <PageHeader title="AI Report Assistant" description="Ubah catatan mentah menjadi laporan terstruktur" />
+        <div className="flex flex-col items-center justify-center py-20 space-y-4 text-center">
+          <div className="h-14 w-14 rounded-2xl bg-muted flex items-center justify-center">
+            <Lock className="h-6 w-6 text-muted-foreground" />
+          </div>
+          <div className="space-y-1.5">
+            <p className="text-base font-semibold">Fitur Khusus Admin</p>
+            <p className="text-sm text-muted-foreground max-w-xs">
+              AI Report Assistant hanya tersedia untuk admin. Hubungi admin untuk akses lebih lanjut.
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-5 animate-fade-in">
       <PageHeader
         title="AI Report Assistant"
-        description="Ubah catatan mentah menjadi laporan terstruktur"
+        description="Ubah catatan mentah menjadi laporan terstruktur menggunakan AI"
       >
         <div className="flex items-center gap-2">
           <Badge variant="outline" className="text-xs border-primary/30 text-primary gap-1">
-            <Sparkles className="h-3 w-3" /> Template Engine
+            <Sparkles className="h-3 w-3" /> GPT-4o mini
           </Badge>
           {generated && (
             <Button
@@ -338,9 +360,7 @@ export default function AIReportPage() {
       <div className="flex items-start gap-2.5 rounded-lg border border-amber-500/30 bg-amber-500/5 p-3.5">
         <AlertTriangle className="h-4 w-4 text-amber-600 shrink-0 mt-0.5" />
         <p className="text-xs text-amber-700 dark:text-amber-400 leading-relaxed">
-          <strong>Penting:</strong> Hasil yang dibuat oleh asisten ini berdasarkan ekstraksi teks, bukan AI generatif.
-          Selalu periksa dan edit output sebelum menyimpan — jangan simpan tanpa verifikasi.
-          Fitur ini membantu menyusun, bukan menciptakan data baru.
+          <strong>Periksa hasil AI sebelum menyimpan.</strong> AI menyusun ulang berdasarkan teks input — tidak mengarang data, nama, tanggal, atau keputusan yang tidak ada. Selalu verifikasi output sebelum disimpan.
         </p>
       </div>
 

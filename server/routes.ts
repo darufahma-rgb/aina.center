@@ -235,7 +235,7 @@ export function registerRoutes(app: Router) {
 
   // ── AI Report ────────────────────────────────────────────────────────────────
 
-  app.post("/api/ai-report/generate", requireAuth, async (req, res) => {
+  app.post("/api/ai-report/generate", requireAuth, requireAdmin, async (req, res) => {
     const { rawText, mode } = req.body as { rawText: string; mode: ReportMode };
     if (!rawText || typeof rawText !== "string") {
       return res.status(400).json({ message: "rawText diperlukan." });
