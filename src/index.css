@@ -6,108 +6,101 @@
 
 @layer base {
   :root {
-    /* ── Figma Purple + White System ─────────────────────────────── */
-    --background:    250 15% 97%;
-    --foreground:    250 45% 8%;
+    /* ── macOS Dark Purple — Base ──────────────────────────────────── */
+    --background:    252 50% 4%;
+    --foreground:    248 25% 93%;
 
-    --card:          0 0% 100%;
-    --card-foreground: 250 45% 8%;
+    --card:          254 48% 7%;
+    --card-foreground: 248 25% 93%;
 
-    --popover:       0 0% 100%;
-    --popover-foreground: 250 45% 8%;
+    --popover:       254 48% 7%;
+    --popover-foreground: 248 25% 93%;
 
-    --primary:       265 83% 57%;
+    --primary:       265 83% 62%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary:     265 30% 93%;
-    --secondary-foreground: 265 50% 25%;
+    --secondary:     265 35% 14%;
+    --secondary-foreground: 248 25% 88%;
 
-    --muted:         260 20% 94%;
-    --muted-foreground: 260 18% 48%;
+    --muted:         264 38% 12%;
+    --muted-foreground: 252 22% 58%;
 
-    --accent:        265 40% 90%;
-    --accent-foreground: 265 60% 30%;
+    --accent:        265 50% 20%;
+    --accent-foreground: 248 25% 95%;
 
-    --destructive:   265 70% 38%;
+    --destructive:   265 60% 40%;
     --destructive-foreground: 0 0% 100%;
 
-    --border:        260 20% 88%;
-    --input:         260 20% 88%;
-    --ring:          265 83% 57%;
+    --border:        265 35% 13%;
+    --input:         265 38% 11%;
+    --ring:          265 83% 62%;
 
-    --radius: 0.5rem;
+    --radius: 0.625rem;
 
-    /* ── Sidebar (deep purple-navy) ──────────────────────────────── */
-    --sidebar-background:  250 53% 7%;
-    --sidebar-foreground:  250 30% 90%;
-    --sidebar-primary:     265 83% 60%;
+    /* ── Sidebar (slightly lighter than background) ───────────────── */
+    --sidebar-background:  252 52% 5%;
+    --sidebar-foreground:  250 25% 88%;
+    --sidebar-primary:     265 83% 62%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent:      265 50% 18%;
+    --sidebar-accent:      265 50% 16%;
     --sidebar-accent-foreground: 0 0% 100%;
-    --sidebar-border:      265 40% 13%;
-    --sidebar-ring:        265 83% 57%;
-    --sidebar-muted:       250 15% 48%;
+    --sidebar-border:      265 38% 11%;
+    --sidebar-ring:        265 83% 62%;
+    --sidebar-muted:       252 18% 45%;
 
-    /* ── Semantic (all purple) ───────────────────────────────────── */
-    --success:          265 83% 57%;
+    /* ── Semantic ──────────────────────────────────────────────────── */
+    --success:          265 83% 62%;
     --success-foreground: 0 0% 100%;
-    --warning:          270 65% 50%;
+    --warning:          270 65% 55%;
     --warning-foreground: 0 0% 100%;
-    --info:             260 70% 55%;
+    --info:             260 70% 60%;
     --info-foreground:  0 0% 100%;
 
-    /* ── Charts (purple spectrum) ────────────────────────────────── */
-    --chart-1: 265 83% 57%;
-    --chart-2: 275 70% 48%;
-    --chart-3: 255 75% 65%;
-    --chart-4: 285 65% 52%;
-    --chart-5: 245 80% 42%;
+    /* ── Charts ───────────────────────────────────────────────────── */
+    --chart-1: 265 83% 62%;
+    --chart-2: 275 72% 52%;
+    --chart-3: 255 78% 68%;
+    --chart-4: 285 68% 55%;
+    --chart-5: 245 82% 46%;
 
-    /* ── Gradients ──────────────────────────────────────────────── */
-    --gradient-primary:  linear-gradient(135deg, hsl(265, 83%, 57%), hsl(285, 75%, 50%));
-    --gradient-accent:   linear-gradient(135deg, hsl(255, 80%, 62%), hsl(275, 70%, 50%));
-    --gradient-investor: linear-gradient(135deg, hsl(250, 53%, 8%), hsl(265, 60%, 25%));
-    --gradient-sidebar-active: linear-gradient(135deg, hsl(265, 83%, 55%), hsl(285, 70%, 50%));
+    /* ── Gradients ────────────────────────────────────────────────── */
+    --gradient-primary:  linear-gradient(135deg, hsl(265,83%,60%), hsl(285,75%,52%));
+    --gradient-accent:   linear-gradient(135deg, hsl(255,80%,65%), hsl(275,70%,52%));
+    --gradient-investor: linear-gradient(135deg, hsl(252,52%,6%), hsl(265,60%,18%));
+    --gradient-sidebar-active: linear-gradient(135deg, hsl(265,83%,58%), hsl(285,70%,52%));
 
-    /* ── Shadows ─────────────────────────────────────────────────── */
-    --shadow-neo-xs:   0 1px 2px rgba(100,80,180,0.06);
-    --shadow-neo-sm:   0 1px 4px rgba(100,80,180,0.07), 0 2px 8px rgba(100,80,180,0.05);
-    --shadow-neo:      0 2px 8px rgba(100,80,180,0.08), 0 8px 20px rgba(100,80,180,0.06);
-    --shadow-neo-md:   0 4px 12px rgba(100,80,180,0.09), 0 12px 28px rgba(100,80,180,0.07);
-    --shadow-neo-lg:   0 6px 20px rgba(100,80,180,0.10), 0 20px 48px rgba(100,80,180,0.08);
-    --shadow-neo-inset: inset 0 1px 3px rgba(100,80,180,0.08);
-    --shadow-neo-primary: 0 4px 16px rgba(124,58,237,0.35), 0 2px 6px rgba(124,58,237,0.20);
+    /* ── Shadows ──────────────────────────────────────────────────── */
+    --shadow-neo-xs:   0 1px 3px rgba(0,0,0,0.35), 0 2px 8px rgba(0,0,0,0.20);
+    --shadow-neo-sm:   0 2px 6px rgba(0,0,0,0.40), 0 6px 20px rgba(0,0,0,0.28);
+    --shadow-neo:      0 4px 12px rgba(0,0,0,0.42), 0 12px 32px rgba(0,0,0,0.32);
+    --shadow-neo-md:   0 6px 18px rgba(0,0,0,0.45), 0 20px 50px rgba(0,0,0,0.35);
+    --shadow-neo-lg:   0 10px 30px rgba(0,0,0,0.50), 0 32px 72px rgba(0,0,0,0.40);
+    --shadow-neo-inset: inset 0 1px 0 rgba(255,255,255,0.06);
+    --shadow-neo-primary: 0 4px 18px rgba(139,92,246,0.50), 0 2px 8px rgba(139,92,246,0.30);
   }
 
+  /* Keep dark class identical so explicit dark-mode toggles also work */
   .dark {
-    --background:      250 50% 6%;
-    --foreground:      250 30% 96%;
-    --card:            250 45% 9%;
-    --card-foreground: 250 30% 96%;
-    --popover:         250 45% 9%;
-    --popover-foreground: 250 30% 96%;
-    --primary:         265 83% 62%;
+    --background:    252 50% 4%;
+    --foreground:    248 25% 93%;
+    --card:          254 48% 7%;
+    --card-foreground: 248 25% 93%;
+    --popover:       254 48% 7%;
+    --popover-foreground: 248 25% 93%;
+    --primary:       265 83% 62%;
     --primary-foreground: 0 0% 100%;
-    --secondary:       265 35% 16%;
-    --secondary-foreground: 250 30% 96%;
-    --muted:           265 35% 16%;
-    --muted-foreground: 250 20% 60%;
-    --accent:          285 75% 60%;
-    --accent-foreground: 0 0% 100%;
-    --destructive:     265 60% 35%;
-    --destructive-foreground: 250 30% 96%;
-    --border:          265 35% 15%;
-    --input:           265 35% 15%;
-    --ring:            265 83% 62%;
-    --sidebar-background: 250 55% 5%;
-    --sidebar-foreground: 250 30% 90%;
-
-    --shadow-neo-xs:   0 1px 2px rgba(0,0,0,0.25), 0 2px 6px rgba(0,0,0,0.15);
-    --shadow-neo-sm:   0 1px 3px rgba(0,0,0,0.28), 0 4px 14px rgba(0,0,0,0.18);
-    --shadow-neo:      0 2px 6px rgba(0,0,0,0.28), 0 10px 28px rgba(0,0,0,0.22);
-    --shadow-neo-md:   0 4px 12px rgba(0,0,0,0.30), 0 16px 40px rgba(0,0,0,0.25);
-    --shadow-neo-lg:   0 8px 24px rgba(0,0,0,0.35), 0 28px 60px rgba(0,0,0,0.28);
-    --shadow-neo-primary: 0 4px 16px rgba(139,92,246,0.45), 0 2px 6px rgba(139,92,246,0.28);
+    --secondary:     265 35% 14%;
+    --secondary-foreground: 248 25% 88%;
+    --muted:         264 38% 12%;
+    --muted-foreground: 252 22% 58%;
+    --accent:        265 50% 20%;
+    --accent-foreground: 248 25% 95%;
+    --destructive:   265 60% 40%;
+    --destructive-foreground: 0 0% 100%;
+    --border:        265 35% 13%;
+    --input:         265 38% 11%;
+    --ring:          265 83% 62%;
+    --shadow-neo-primary: 0 4px 18px rgba(139,92,246,0.50), 0 2px 8px rgba(139,92,246,0.30);
   }
 }
 
@@ -116,20 +109,66 @@
     @apply border-border;
   }
 
+  html, body {
+    background: hsl(252, 50%, 4%);
+  }
+
   body {
     @apply bg-background text-foreground antialiased;
-    font-family: 'Inter', system-ui, sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Display', system-ui, sans-serif;
     -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
+
+  /* Scrollbar macOS style */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb {
+    background: rgba(139,92,246,0.25);
+    border-radius: 3px;
+  }
+  ::-webkit-scrollbar-thumb:hover { background: rgba(139,92,246,0.45); }
+}
+
+/* ── Floating aurora orb animations ──────────────────────────────────── */
+@keyframes orb-drift-1 {
+  0%   { transform: translate(0, 0)      scale(1);    opacity: 0.55; }
+  25%  { transform: translate(40px,-60px) scale(1.08); opacity: 0.65; }
+  50%  { transform: translate(80px, 20px) scale(1.04); opacity: 0.50; }
+  75%  { transform: translate(20px, 60px) scale(0.96); opacity: 0.60; }
+  100% { transform: translate(0, 0)       scale(1);    opacity: 0.55; }
+}
+@keyframes orb-drift-2 {
+  0%   { transform: translate(0, 0)        scale(1);    opacity: 0.40; }
+  33%  { transform: translate(-50px, 40px)  scale(1.06); opacity: 0.50; }
+  66%  { transform: translate(30px,-50px)   scale(0.94); opacity: 0.38; }
+  100% { transform: translate(0, 0)         scale(1);    opacity: 0.40; }
+}
+@keyframes orb-drift-3 {
+  0%   { transform: translate(0, 0)        scale(1);    opacity: 0.30; }
+  40%  { transform: translate(60px, 40px)  scale(1.10); opacity: 0.42; }
+  80%  { transform: translate(-30px,-40px) scale(0.92); opacity: 0.28; }
+  100% { transform: translate(0, 0)        scale(1);    opacity: 0.30; }
+}
+@keyframes orb-drift-4 {
+  0%   { transform: translate(0, 0)         scale(1);    opacity: 0.20; }
+  50%  { transform: translate(-40px,-60px)  scale(1.12); opacity: 0.30; }
+  100% { transform: translate(0, 0)         scale(1);    opacity: 0.20; }
 }
 
 @layer utilities {
-  /* ── Gradient helpers ─────────────────────────────────────────── */
+  /* ── Aurora orb utilities ─────────────────────────────────────────── */
+  .orb-float-1 { animation: orb-drift-1 18s ease-in-out infinite; }
+  .orb-float-2 { animation: orb-drift-2 24s ease-in-out infinite; }
+  .orb-float-3 { animation: orb-drift-3 20s ease-in-out infinite; }
+  .orb-float-4 { animation: orb-drift-4 28s ease-in-out infinite; }
+
+  /* ── Gradient helpers ─────────────────────────────────────────────── */
   .gradient-primary  { background: var(--gradient-primary); }
   .gradient-accent   { background: var(--gradient-accent); }
   .gradient-investor { background: var(--gradient-investor); }
 
-  /* ── Shadow utilities ─────────────────────────────────────────── */
+  /* ── Shadow utilities ─────────────────────────────────────────────── */
   .shadow-neo-xs     { box-shadow: var(--shadow-neo-xs); }
   .shadow-neo-sm     { box-shadow: var(--shadow-neo-sm); }
   .shadow-neo        { box-shadow: var(--shadow-neo); }
@@ -138,96 +177,105 @@
   .shadow-neo-inset  { box-shadow: var(--shadow-neo-inset); }
   .shadow-neo-primary { box-shadow: var(--shadow-neo-primary); }
 
-  /* ── Glass / frosted header ───────────────────────────────────── */
+  /* ── macOS Glass card ─────────────────────────────────────────────── */
   .glass-card {
-    @apply bg-white/90 backdrop-blur-md;
-    box-shadow: var(--shadow-neo);
-    border: 1px solid rgba(124,58,237,0.10);
-  }
-  .glass-header {
-    background: rgba(255,255,255,0.94);
-    backdrop-filter: blur(20px) saturate(180%);
-    -webkit-backdrop-filter: blur(20px) saturate(180%);
-    border-bottom: 1px solid rgba(124,58,237,0.08);
-    box-shadow: 0 1px 0 rgba(124,58,237,0.06);
+    background: rgba(255,255,255,0.035);
+    backdrop-filter: blur(24px) saturate(160%);
+    -webkit-backdrop-filter: blur(24px) saturate(160%);
+    border: 1px solid rgba(255,255,255,0.07);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.06);
   }
 
-  /* ── Figma-style card ─────────────────────────────────────────── */
+  /* ── macOS Frosted header ─────────────────────────────────────────── */
+  .glass-header {
+    background: rgba(14,8,35,0.75);
+    backdrop-filter: blur(28px) saturate(200%);
+    -webkit-backdrop-filter: blur(28px) saturate(200%);
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    box-shadow: 0 1px 0 rgba(139,92,246,0.08), 0 4px 24px rgba(0,0,0,0.25);
+  }
+
+  /* ── Standard card (inherits CSS vars) ───────────────────────────── */
   .neo-card {
-    @apply bg-white rounded-lg border border-border;
+    @apply bg-card rounded-xl border border-border;
     box-shadow: var(--shadow-neo-xs);
-    transition: box-shadow 0.15s ease;
+    transition: box-shadow 0.2s ease, border-color 0.2s ease;
   }
   .neo-card:hover {
     box-shadow: var(--shadow-neo-sm);
+    border-color: rgba(139,92,246,0.25);
   }
 
-  /* ── Purple active pill (sidebar) ─────────────────────────────── */
+  /* ── Purple active pill (sidebar) ─────────────────────────────────── */
   .nav-active-pill {
     background: var(--gradient-sidebar-active);
-    box-shadow: 0 4px 14px rgba(124,58,237,0.40);
+    box-shadow: 0 4px 16px rgba(124,58,237,0.45), inset 0 1px 0 rgba(255,255,255,0.15);
   }
 
-  /* ── Icon orbs ────────────────────────────────────────────────── */
+  /* ── Icon orbs ────────────────────────────────────────────────────── */
   .icon-orb {
-    @apply flex items-center justify-center rounded-lg shrink-0;
+    @apply flex items-center justify-center rounded-xl shrink-0;
     background: var(--gradient-primary);
     box-shadow: var(--shadow-neo-primary);
   }
   .icon-orb-soft {
-    @apply flex items-center justify-center rounded-lg shrink-0 bg-primary/10;
-    box-shadow: 0 2px 8px rgba(124,58,237,0.12);
+    @apply flex items-center justify-center rounded-xl shrink-0;
+    background: rgba(139,92,246,0.15);
+    border: 1px solid rgba(139,92,246,0.20);
   }
 
-  /* ── Figma-style purple status chips ──────────────────────────── */
+  /* ── Status chips (purple spectrum) ──────────────────────────────── */
   .chip-purple-bright {
     @apply inline-flex items-center text-[10px] font-semibold px-2 py-0.5 rounded-full;
-    background: hsl(265 83% 57% / 0.12);
-    color: hsl(265 83% 42%);
-    border: 1px solid hsl(265 83% 57% / 0.22);
+    background: rgba(139,92,246,0.18);
+    color: hsl(265 90% 72%);
+    border: 1px solid rgba(139,92,246,0.30);
   }
   .chip-purple-mid {
     @apply inline-flex items-center text-[10px] font-semibold px-2 py-0.5 rounded-full;
-    background: hsl(265 50% 55% / 0.12);
-    color: hsl(265 60% 38%);
-    border: 1px solid hsl(265 50% 55% / 0.20);
+    background: rgba(124,58,237,0.14);
+    color: hsl(265 75% 68%);
+    border: 1px solid rgba(124,58,237,0.22);
   }
   .chip-purple-muted {
-    @apply inline-flex items-center text-[10px] font-semibold px-2 py-0.5 rounded-full bg-muted text-muted-foreground border border-border;
+    @apply inline-flex items-center text-[10px] font-semibold px-2 py-0.5 rounded-full;
+    background: rgba(255,255,255,0.05);
+    color: hsl(252 22% 58%);
+    border: 1px solid rgba(255,255,255,0.08);
   }
   .chip-purple-dark {
     @apply inline-flex items-center text-[10px] font-semibold px-2 py-0.5 rounded-full;
-    background: hsl(265 60% 22% / 0.10);
-    color: hsl(265 60% 28%);
-    border: 1px solid hsl(265 60% 28% / 0.18);
+    background: rgba(255,255,255,0.04);
+    color: hsl(265 60% 65%);
+    border: 1px solid rgba(139,92,246,0.18);
   }
 
-  /* ── Animate ─────────────────────────────────────────────────── */
-  .animate-fade-in  { animation: fade-in 0.25s ease-out both; }
-  .animate-slide-in { animation: slide-in 0.22s ease-out both; }
-  .animate-scale-in { animation: scale-in 0.25s ease-out both; }
+  /* ── Animate ──────────────────────────────────────────────────────── */
+  .animate-fade-in  { animation: fade-in 0.28s ease-out both; }
+  .animate-slide-in { animation: slide-in 0.24s ease-out both; }
+  .animate-scale-in { animation: scale-in 0.28s ease-out both; }
 
   @keyframes fade-in {
-    from { opacity: 0; transform: translateY(6px); }
+    from { opacity: 0; transform: translateY(8px); }
     to   { opacity: 1; transform: translateY(0); }
   }
   @keyframes slide-in {
-    from { opacity: 0; transform: translateX(-8px); }
+    from { opacity: 0; transform: translateX(-10px); }
     to   { opacity: 1; transform: translateX(0); }
   }
   @keyframes scale-in {
-    from { opacity: 0; transform: scale(0.96); }
+    from { opacity: 0; transform: scale(0.95); }
     to   { opacity: 1; transform: scale(1); }
   }
 
-  /* ── Touch target ─────────────────────────────────────────────── */
+  /* ── Touch target ─────────────────────────────────────────────────── */
   .touch-target {
     min-height: 44px;
     min-width: 44px;
   }
 }
 
-/* ── Global mobile tweaks ───────────────────────────────────────── */
+/* ── Global mobile tweaks ────────────────────────────────────────────── */
 @media (max-width: 767px) {
   * { -webkit-overflow-scrolling: touch; }
   button, a, [role="button"] { touch-action: manipulation; }

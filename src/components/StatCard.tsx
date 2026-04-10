@@ -14,16 +14,16 @@ interface StatCardProps {
 }
 
 const colorMap: Record<string, { orb: string; text: string; glow: string }> = {
-  primary: { orb: "bg-primary/10", text: "text-primary",        glow: "rgba(124,58,237,0.16)" },
-  bright:  { orb: "bg-violet-100", text: "text-violet-600",     glow: "rgba(139,92,246,0.16)" },
-  mid:     { orb: "bg-purple-100", text: "text-purple-600",     glow: "rgba(109,40,217,0.16)" },
-  deep:    { orb: "bg-purple-100", text: "text-purple-800",     glow: "rgba(88,28,135,0.16)"  },
-  purple:  { orb: "bg-primary/10", text: "text-primary",        glow: "rgba(124,58,237,0.16)" },
-  violet:  { orb: "bg-violet-100", text: "text-violet-600",     glow: "rgba(139,92,246,0.16)" },
-  blue:    { orb: "bg-primary/10", text: "text-primary",        glow: "rgba(124,58,237,0.16)" },
-  green:   { orb: "bg-violet-100", text: "text-violet-600",     glow: "rgba(139,92,246,0.16)" },
-  amber:   { orb: "bg-purple-100", text: "text-purple-600",     glow: "rgba(109,40,217,0.16)" },
-  rose:    { orb: "bg-purple-100", text: "text-purple-800",     glow: "rgba(88,28,135,0.16)"  },
+  primary: { orb: "bg-primary/15",        text: "text-primary",        glow: "rgba(139,92,246,0.22)" },
+  bright:  { orb: "bg-violet-500/15",      text: "text-violet-400",     glow: "rgba(139,92,246,0.22)" },
+  mid:     { orb: "bg-purple-500/15",      text: "text-purple-400",     glow: "rgba(124,58,237,0.22)" },
+  deep:    { orb: "bg-purple-800/25",      text: "text-purple-300",     glow: "rgba(88,28,135,0.22)"  },
+  purple:  { orb: "bg-primary/15",         text: "text-primary",        glow: "rgba(139,92,246,0.22)" },
+  violet:  { orb: "bg-violet-500/15",      text: "text-violet-400",     glow: "rgba(139,92,246,0.22)" },
+  blue:    { orb: "bg-primary/15",         text: "text-primary",        glow: "rgba(139,92,246,0.22)" },
+  green:   { orb: "bg-violet-500/15",      text: "text-violet-400",     glow: "rgba(139,92,246,0.22)" },
+  amber:   { orb: "bg-purple-500/15",      text: "text-purple-400",     glow: "rgba(124,58,237,0.22)" },
+  rose:    { orb: "bg-purple-800/25",      text: "text-purple-300",     glow: "rgba(88,28,135,0.22)"  },
 };
 
 export function StatCard({
@@ -37,7 +37,7 @@ export function StatCard({
         className={cn("rounded-xl p-5 text-white overflow-hidden relative transition-all duration-200", className)}
         style={{
           background: "linear-gradient(135deg, hsl(265,83%,57%), hsl(285,75%,50%))",
-          boxShadow: "0 6px 20px rgba(124,58,237,0.38), 0 2px 6px rgba(124,58,237,0.22)",
+          boxShadow: "0 6px 24px rgba(124,58,237,0.45), 0 2px 6px rgba(124,58,237,0.25), inset 0 1px 0 rgba(255,255,255,0.12)",
         }}
       >
         <div
@@ -61,10 +61,21 @@ export function StatCard({
 
   return (
     <div
-      className={cn("bg-white rounded-xl p-5 border border-border transition-all duration-200", className)}
-      style={{ boxShadow: "var(--shadow-neo-xs)" }}
-      onMouseEnter={(e) => { (e.currentTarget as HTMLDivElement).style.boxShadow = "var(--shadow-neo-sm)"; }}
-      onMouseLeave={(e) => { (e.currentTarget as HTMLDivElement).style.boxShadow = "var(--shadow-neo-xs)"; }}
+      className={cn("rounded-xl p-5 border border-border transition-all duration-200", className)}
+      style={{
+        background: "rgba(255,255,255,0.04)",
+        backdropFilter: "blur(16px)",
+        WebkitBackdropFilter: "blur(16px)",
+        boxShadow: "var(--shadow-neo-xs)",
+      }}
+      onMouseEnter={(e) => {
+        (e.currentTarget as HTMLDivElement).style.boxShadow = "var(--shadow-neo-sm)";
+        (e.currentTarget as HTMLDivElement).style.borderColor = "rgba(139,92,246,0.25)";
+      }}
+      onMouseLeave={(e) => {
+        (e.currentTarget as HTMLDivElement).style.boxShadow = "var(--shadow-neo-xs)";
+        (e.currentTarget as HTMLDivElement).style.borderColor = "";
+      }}
     >
       <div className="flex items-start justify-between">
         <div className="space-y-1.5 flex-1 min-w-0 mr-3">
@@ -76,8 +87,8 @@ export function StatCard({
               className={cn(
                 "inline-flex items-center gap-1 text-xs font-semibold px-2 py-0.5 rounded-full",
                 trendUp
-                  ? "bg-primary/10 text-primary"
-                  : "bg-purple-100 text-purple-700",
+                  ? "bg-primary/15 text-primary"
+                  : "bg-purple-500/15 text-purple-400",
               )}
             >
               {trendUp ? "↑" : "↓"} {trend}
@@ -86,7 +97,7 @@ export function StatCard({
         </div>
         <div
           className={cn("h-11 w-11 rounded-xl flex items-center justify-center shrink-0", c.orb)}
-          style={{ boxShadow: `0 4px 12px ${c.glow}` }}
+          style={{ boxShadow: `0 4px 14px ${c.glow}` }}
         >
           <Icon className={cn("h-5 w-5", c.text)} />
         </div>

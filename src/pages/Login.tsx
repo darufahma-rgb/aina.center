@@ -1,8 +1,6 @@
 import { useState } from "react";
 import { Navigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { Lock, User } from "lucide-react";
@@ -34,67 +32,104 @@ export default function Login() {
   return (
     <div
       className="min-h-screen flex items-center justify-center px-4 relative overflow-hidden"
-      style={{ background: "linear-gradient(145deg, hsl(250,55%,7%) 0%, hsl(265,60%,12%) 50%, hsl(285,55%,10%) 100%)" }}
+      style={{ background: "hsl(252,50%,4%)" }}
     >
-      {/* Background glow orbs */}
+      {/* Aurora floating orbs */}
       <div
-        className="absolute top-[-10%] right-[-5%] w-[600px] h-[600px] rounded-full pointer-events-none opacity-25"
-        style={{ background: "radial-gradient(circle, hsl(265,83%,57%) 0%, transparent 65%)" }}
-      />
-      <div
-        className="absolute bottom-[-15%] left-[-10%] w-[500px] h-[500px] rounded-full pointer-events-none opacity-15"
-        style={{ background: "radial-gradient(circle, hsl(285,75%,55%) 0%, transparent 65%)" }}
-      />
-      {/* Subtle grid lines */}
-      <div
-        className="absolute inset-0 pointer-events-none opacity-[0.04]"
+        className="orb-float-1 absolute rounded-full pointer-events-none"
         style={{
-          backgroundImage: "linear-gradient(hsl(265,83%,70%) 1px, transparent 1px), linear-gradient(90deg, hsl(265,83%,70%) 1px, transparent 1px)",
-          backgroundSize: "40px 40px",
+          width: 650,
+          height: 650,
+          top: "-20%",
+          right: "-15%",
+          background: "radial-gradient(circle at 40% 40%, hsl(265,83%,55%) 0%, hsl(285,75%,45%) 35%, transparent 68%)",
+          filter: "blur(85px)",
+          opacity: 0.22,
+        }}
+      />
+      <div
+        className="orb-float-2 absolute rounded-full pointer-events-none"
+        style={{
+          width: 550,
+          height: 550,
+          bottom: "-18%",
+          left: "-12%",
+          background: "radial-gradient(circle at 60% 60%, hsl(255,80%,60%) 0%, hsl(245,70%,45%) 40%, transparent 68%)",
+          filter: "blur(80px)",
+          opacity: 0.18,
+        }}
+      />
+      <div
+        className="orb-float-3 absolute rounded-full pointer-events-none"
+        style={{
+          width: 380,
+          height: 380,
+          top: "50%",
+          left: "50%",
+          transform: "translate(-50%, -50%)",
+          background: "radial-gradient(circle at 50% 50%, hsl(280,90%,65%) 0%, transparent 70%)",
+          filter: "blur(100px)",
+          opacity: 0.10,
         }}
       />
 
+      {/* Subtle dot grid */}
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          backgroundImage: "radial-gradient(circle, rgba(139,92,246,0.18) 1px, transparent 1px)",
+          backgroundSize: "32px 32px",
+          opacity: 0.4,
+          maskImage: "radial-gradient(ellipse 80% 80% at 50% 50%, black 30%, transparent 100%)",
+          WebkitMaskImage: "radial-gradient(ellipse 80% 80% at 50% 50%, black 30%, transparent 100%)",
+        }}
+      />
+
+      {/* Form container */}
       <div className="relative w-full max-w-sm animate-scale-in z-10">
         {/* Logo + brand */}
         <div className="flex flex-col items-center mb-8">
           <img
             src="/logo.png"
             alt="AINA Centre Management"
-            className="h-24 w-24 object-contain mb-4"
-            style={{ filter: "drop-shadow(0 0 20px rgba(180,140,255,0.85)) drop-shadow(0 0 8px rgba(124,58,237,0.60))" }}
+            className="h-24 w-24 object-contain mb-5"
+            style={{
+              filter: "drop-shadow(0 0 22px rgba(180,140,255,0.90)) drop-shadow(0 0 8px rgba(124,58,237,0.65))",
+            }}
           />
-          <h1 className="font-bold text-2xl text-white tracking-tight">AINA Centre</h1>
-          <p className="text-sm mt-1 font-medium tracking-widest uppercase" style={{ color: "rgba(200,180,255,0.55)" }}>
+          <h1 className="font-bold text-[26px] text-white tracking-tight">AINA Centre</h1>
+          <p className="text-sm mt-1.5 font-medium tracking-[0.22em] uppercase" style={{ color: "rgba(200,180,255,0.45)" }}>
             Management Portal
           </p>
         </div>
 
-        {/* Form card */}
+        {/* Glass card */}
         <div
           className="rounded-2xl p-7"
           style={{
             background: "rgba(255,255,255,0.04)",
-            border: "1px solid rgba(124,58,237,0.20)",
-            backdropFilter: "blur(24px)",
-            boxShadow: "0 24px 60px rgba(10,5,30,0.50), inset 0 1px 0 rgba(255,255,255,0.08)",
+            border: "1px solid rgba(255,255,255,0.08)",
+            backdropFilter: "blur(28px) saturate(160%)",
+            WebkitBackdropFilter: "blur(28px) saturate(160%)",
+            boxShadow: "0 28px 70px rgba(0,0,0,0.55), 0 0 0 1px rgba(139,92,246,0.10), inset 0 1px 0 rgba(255,255,255,0.07)",
           }}
         >
           <div className="mb-6">
-            <h2 className="text-lg font-bold text-white">Masuk ke Portal</h2>
-            <p className="text-sm mt-1" style={{ color: "rgba(200,180,255,0.55)" }}>
+            <h2 className="text-[17px] font-bold text-white tracking-tight">Masuk ke Portal</h2>
+            <p className="text-sm mt-1" style={{ color: "rgba(200,180,255,0.50)" }}>
               Masukkan kredensial akun Anda
             </p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-1.5">
-              <Label htmlFor="username" className="text-sm font-medium" style={{ color: "rgba(220,200,255,0.80)" }}>
+              <Label htmlFor="username" className="text-[13px] font-medium" style={{ color: "rgba(220,200,255,0.75)" }}>
                 Username
               </Label>
               <div className="relative">
                 <User
                   className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 pointer-events-none"
-                  style={{ color: "rgba(200,180,255,0.50)" }}
+                  style={{ color: "rgba(200,180,255,0.40)" }}
                 />
                 <input
                   id="username"
@@ -104,22 +139,23 @@ export default function Login() {
                   onChange={(e) => setUsername(e.target.value)}
                   autoComplete="username"
                   disabled={submitting}
-                  className="flex h-11 w-full rounded-xl pl-9 pr-3 py-2 text-sm text-white placeholder:text-purple-300/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-500 disabled:opacity-50 transition-all"
+                  className="flex h-11 w-full rounded-xl pl-9 pr-3 py-2 text-sm text-white placeholder:text-purple-300/25 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-500/60 disabled:opacity-50 transition-all duration-200"
                   style={{
-                    background: "rgba(255,255,255,0.06)",
-                    border: "1px solid rgba(124,58,237,0.25)",
+                    background: "rgba(255,255,255,0.05)",
+                    border: "1px solid rgba(139,92,246,0.20)",
                   }}
                 />
               </div>
             </div>
+
             <div className="space-y-1.5">
-              <Label htmlFor="password" className="text-sm font-medium" style={{ color: "rgba(220,200,255,0.80)" }}>
+              <Label htmlFor="password" className="text-[13px] font-medium" style={{ color: "rgba(220,200,255,0.75)" }}>
                 Password
               </Label>
               <div className="relative">
                 <Lock
                   className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 pointer-events-none"
-                  style={{ color: "rgba(200,180,255,0.50)" }}
+                  style={{ color: "rgba(200,180,255,0.40)" }}
                 />
                 <input
                   id="password"
@@ -130,26 +166,27 @@ export default function Login() {
                   onChange={(e) => setPassword(e.target.value)}
                   autoComplete="current-password"
                   disabled={submitting}
-                  className="flex h-11 w-full rounded-xl pl-9 pr-3 py-2 text-sm text-white placeholder:text-purple-300/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-500 disabled:opacity-50 transition-all"
+                  className="flex h-11 w-full rounded-xl pl-9 pr-3 py-2 text-sm text-white placeholder:text-purple-300/25 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-500/60 disabled:opacity-50 transition-all duration-200"
                   style={{
-                    background: "rgba(255,255,255,0.06)",
-                    border: "1px solid rgba(124,58,237,0.25)",
+                    background: "rgba(255,255,255,0.05)",
+                    border: "1px solid rgba(139,92,246,0.20)",
                   }}
                 />
               </div>
             </div>
+
             <button
               type="submit"
               data-testid="button-login"
               disabled={submitting || !username || !password}
-              className="w-full h-11 rounded-xl font-semibold text-sm text-white transition-all duration-150 mt-2 disabled:opacity-50 disabled:cursor-not-allowed active:scale-[0.98]"
+              className="w-full h-11 rounded-xl font-semibold text-sm text-white transition-all duration-200 mt-2 disabled:opacity-45 disabled:cursor-not-allowed active:scale-[0.98] hover:brightness-110"
               style={{
                 background: submitting || !username || !password
-                  ? "rgba(124,58,237,0.4)"
-                  : "linear-gradient(135deg, hsl(265,83%,57%), hsl(285,75%,50%))",
+                  ? "rgba(124,58,237,0.35)"
+                  : "linear-gradient(135deg, hsl(265,83%,57%) 0%, hsl(285,75%,50%) 100%)",
                 boxShadow: submitting || !username || !password
                   ? "none"
-                  : "0 4px 16px rgba(124,58,237,0.40), 0 2px 6px rgba(124,58,237,0.25)",
+                  : "0 4px 20px rgba(124,58,237,0.45), 0 1px 0 rgba(255,255,255,0.12) inset",
               }}
             >
               {submitting ? "Masuk..." : "Masuk"}
@@ -157,7 +194,7 @@ export default function Login() {
           </form>
         </div>
 
-        <p className="text-center text-xs mt-5" style={{ color: "rgba(180,160,220,0.40)" }}>
+        <p className="text-center text-xs mt-5" style={{ color: "rgba(180,160,220,0.35)" }}>
           AINA Centre Management — Sistem Portal Internal
         </p>
       </div>
