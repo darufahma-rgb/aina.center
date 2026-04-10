@@ -177,17 +177,16 @@ function Sidebar({
 
       {/* ── Icon rail — floating pill, always visible ─────────────── */}
       <div
-        className="sidebar-orbit fixed z-50"
+        className="fixed z-50 flex flex-col items-center py-4 gap-1"
         style={{
           left: 12,
           top: 12,
           width: RAIL_WIDTH,
           height: "calc(100vh - 24px)",
-          borderRadius: 25.5,
+          borderRadius: 24,
+          background: "#ffffff",
+          boxShadow: "0 8px 32px rgba(0,0,0,0.10), 0 2px 8px rgba(0,0,0,0.06)",
         }}
-      >
-      <div
-        className="sidebar-orbit-inner flex flex-col items-center py-4 gap-1"
       >
         {/* Logo button — toggles full panel */}
         <button
@@ -231,13 +230,12 @@ function Sidebar({
         >
           {initials}
         </button>
-      </div>{/* /sidebar-orbit-inner */}
-      </div>{/* /sidebar-orbit */}
+      </div>
 
       {/* ── Full floating panel — slides over icon rail ───────────── */}
       <div
         className={cn(
-          "sidebar-orbit fixed z-50 transition-all duration-300 ease-[cubic-bezier(0.32,0.72,0,1)]",
+          "fixed z-50 flex flex-col transition-all duration-300 ease-[cubic-bezier(0.32,0.72,0,1)]",
           open ? "translate-x-0 opacity-100" : "-translate-x-full opacity-0 pointer-events-none",
         )}
         style={{
@@ -246,10 +244,11 @@ function Sidebar({
           width: 268,
           margin: "10px",
           height: "calc(100vh - 20px)",
-          borderRadius: 25.5,
+          borderRadius: 24,
+          background: "#ffffff",
+          boxShadow: "0 24px 60px rgba(0,0,0,0.14), 0 8px 20px rgba(0,0,0,0.08)",
         }}
       >
-      <div className="sidebar-orbit-inner flex-col overflow-hidden">
         {/* Header */}
         <div className="flex items-center justify-between px-5 py-4 shrink-0">
           <div className="flex items-center gap-2.5">
@@ -332,8 +331,7 @@ function Sidebar({
             </button>
           </div>
         </div>
-      </div>{/* /sidebar-orbit-inner */}
-      </div>{/* /sidebar-orbit */}
+      </div>
     </>
   );
 }
