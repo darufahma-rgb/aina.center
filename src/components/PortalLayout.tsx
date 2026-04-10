@@ -168,8 +168,8 @@ function Sidebar({
         )}
         style={isMobile ? {
           left: 12,
-          top: "18%",
-          bottom: "4%",
+          top: "10%",
+          bottom: "10%",
           width: SIDEBAR_W,
           borderRadius: 24,
           background: ACCENT,
