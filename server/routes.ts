@@ -1,5 +1,8 @@
 import { Router } from "express";
 import bcrypt from "bcryptjs";
+import multer from "multer";
+import path from "path";
+import fs from "fs";
 import { requireAuth, requireAdmin } from "./auth";
 import { storage } from "./storage";
 import {
@@ -17,6 +20,24 @@ import {
 } from "../shared/schema";
 import { generateReport, type ReportMode } from "./aiReport";
 import { z } from "zod";
+
+const uploadsDir = path.join(process.cwd(), "public/uploads");
+if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir, { recursive: true });
+
+const avatarUpload = multer({
+  storage: multer.diskStorage({
+    destination: (_req, _file, cb) => cb(null, uploadsDir),
+    filename: (req, file, cb) => {
+      const ext = path.extname(file.originalname).toLowerCase() || ".jpg";
+      cb(null, `avatar-${(req as any).session?.userId ?? "u"}-${Date.now()}${ext}`);
+    },
+  }),
+  limits: { fileSize: 5 * 1024 * 1024 },
+  fileFilter: (_req, file, cb) => {
+    const allowed = ["image/jpeg", "image/png", "image/gif", "image/webp"];
+    cb(null, allowed.includes(file.mimetype));
+  },
+});
 
 export function registerRoutes(app: Router) {
 
@@ -64,6 +85,16 @@ export function registerRoutes(app: Router) {
     const updated = await storage.updateUser(userId, parsed.data);
     if (!updated) return res.status(404).json({ message: "User not found" });
     res.json(updated);
+  });
+
+  app.post("/api/auth/profile/avatar", requireAuth, (req, res) => {
+    avatarUpload.single("avatar")(req, res, async (err) => {
+      if (err) return res.status(400).json({ message: err.message });
+      if (!req.file) return res.status(400).json({ message: "No file uploaded" });
+      const avatarUrl = `/uploads/${req.file.filename}`;
+      const updated = await storage.updateUser(req.session.userId!, { avatarUrl });
+      res.json(updated);
+    });
   });
 
   // ── Users (admin only) ──────────────────────────────────────────────────────

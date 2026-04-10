@@ -1,7 +1,8 @@
 import { useState, useRef } from "react";
-import { X, Camera, User } from "lucide-react";
+import { X, Upload, Camera } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
+import { queryClient } from "@/lib/queryClient";
 
 interface ProfileModalProps {
   open: boolean;
@@ -15,22 +16,60 @@ export function ProfileModal({ open, onClose }: ProfileModalProps) {
   const { toast } = useToast();
 
   const [displayName, setDisplayName] = useState(user?.displayName ?? user?.username ?? "");
-  const [avatarUrl, setAvatarUrl] = useState(user?.avatarUrl ?? "");
+  const [avatarPreview, setAvatarPreview] = useState<string>(user?.avatarUrl ?? "");
+  const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
+  const [dragOver, setDragOver] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const initials = (user?.displayName ?? user?.username ?? "??").slice(0, 2).toUpperCase();
+
+  const handleFileSelect = (file: File) => {
+    if (!file.type.startsWith("image/")) {
+      toast({ title: "File harus berupa gambar", variant: "destructive" });
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      toast({ title: "Ukuran file maksimal 5MB", variant: "destructive" });
+      return;
+    }
+    setAvatarFile(file);
+    const reader = new FileReader();
+    reader.onload = (e) => setAvatarPreview(e.target?.result as string);
+    reader.readAsDataURL(file);
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    setDragOver(false);
+    const file = e.dataTransfer.files[0];
+    if (file) handleFileSelect(file);
+  };
 
   const handleSave = async () => {
     setLoading(true);
     try {
-      await updateProfile({
-        displayName: displayName.trim() || undefined,
-        avatarUrl: avatarUrl.trim() || undefined,
-      });
+      if (avatarFile) {
+        const form = new FormData();
+        form.append("avatar", avatarFile);
+        const res = await fetch("/api/auth/profile/avatar", {
+          method: "POST",
+          body: form,
+          credentials: "include",
+        });
+        if (!res.ok) throw new Error("Upload foto gagal");
+        const updated = await res.json();
+        queryClient.setQueryData(["/api/auth/me"], updated);
+      }
+
+      if (displayName.trim()) {
+        await updateProfile({ displayName: displayName.trim() });
+      }
+
       toast({ title: "Profil berhasil diperbarui" });
       onClose();
-    } catch {
-      toast({ title: "Gagal memperbarui profil", variant: "destructive" });
+    } catch (err: any) {
+      toast({ title: err.message ?? "Gagal memperbarui profil", variant: "destructive" });
     } finally {
       setLoading(false);
     }
@@ -41,12 +80,12 @@ export function ProfileModal({ open, onClose }: ProfileModalProps) {
   return (
     <div
       className="fixed inset-0 z-[100] flex items-center justify-center"
-      style={{ background: "rgba(0,0,0,0.45)" }}
+      style={{ background: "rgba(0,0,0,0.50)" }}
       onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
     >
       <div
         className="bg-white rounded-3xl shadow-xl w-full max-w-sm mx-4 overflow-hidden"
-        style={{ boxShadow: "0 20px 60px rgba(0,0,0,0.20)" }}
+        style={{ boxShadow: "0 20px 60px rgba(0,0,0,0.22)" }}
       >
         {/* Header */}
         <div className="flex items-center justify-between px-6 pt-6 pb-4">
@@ -59,31 +98,68 @@ export function ProfileModal({ open, onClose }: ProfileModalProps) {
           </button>
         </div>
 
-        {/* Avatar preview */}
-        <div className="flex flex-col items-center px-6 pb-5">
-          <div
-            className="h-[88px] w-[88px] rounded-full flex items-center justify-center overflow-hidden mb-3 shrink-0 relative"
-            style={{ background: ACCENT }}
-          >
-            {avatarUrl ? (
-              <img
-                src={avatarUrl}
-                alt="avatar"
-                className="h-full w-full object-cover"
-                onError={() => setAvatarUrl("")}
-              />
-            ) : (
-              <span className="text-2xl font-bold text-white">{initials}</span>
-            )}
-          </div>
-          <p className="text-[12px] text-[#999]">
-            {user?.role === "admin" ? "Administrator" : "Anggota"}
-          </p>
-        </div>
+        <div className="px-6 pb-6 space-y-5">
+          {/* ── Avatar upload area ─────────────────────────────── */}
+          <div className="flex flex-col items-center gap-3">
+            {/* Avatar preview circle */}
+            <div
+              className="h-[96px] w-[96px] rounded-full flex items-center justify-center overflow-hidden shrink-0 relative cursor-pointer group"
+              style={{ background: ACCENT }}
+              onClick={() => fileInputRef.current?.click()}
+              title="Klik untuk ubah foto"
+            >
+              {avatarPreview ? (
+                <img
+                  src={avatarPreview}
+                  alt="avatar"
+                  className="h-full w-full object-cover"
+                />
+              ) : (
+                <span className="text-2xl font-bold text-white group-hover:opacity-0 transition-opacity">
+                  {initials}
+                </span>
+              )}
+              {/* Hover overlay */}
+              <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity rounded-full">
+                <Camera className="h-6 w-6 text-white" />
+              </div>
+            </div>
 
-        {/* Form */}
-        <div className="px-6 pb-6 space-y-4">
-          {/* Display Name */}
+            {/* Drop zone / upload button */}
+            <div
+              onDrop={handleDrop}
+              onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
+              onDragLeave={() => setDragOver(false)}
+              onClick={() => fileInputRef.current?.click()}
+              className="w-full border-2 border-dashed rounded-2xl px-4 py-3.5 text-center cursor-pointer transition-all"
+              style={{
+                borderColor: dragOver ? ACCENT : "rgba(0,0,0,0.10)",
+                background: dragOver ? "rgba(91,33,182,0.04)" : "transparent",
+              }}
+            >
+              <Upload className="h-4 w-4 mx-auto mb-1.5" style={{ color: dragOver ? ACCENT : "#bbb" }} />
+              <p className="text-[12px] font-medium text-[#555]">
+                {avatarFile ? (
+                  <span style={{ color: ACCENT }}>{avatarFile.name}</span>
+                ) : (
+                  <>Klik atau seret foto ke sini</>
+                )}
+              </p>
+              <p className="text-[11px] text-[#bbb] mt-0.5">JPG, PNG, WEBP · Maks 5MB</p>
+            </div>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/jpeg,image/png,image/webp,image/gif"
+              className="hidden"
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (file) handleFileSelect(file);
+              }}
+            />
+          </div>
+
+          {/* ── Display Name ───────────────────────────────────── */}
           <div>
             <label className="block text-[12px] font-semibold text-[#555] mb-1.5">
               Nama Tampilan
@@ -94,31 +170,14 @@ export function ProfileModal({ open, onClose }: ProfileModalProps) {
               onChange={(e) => setDisplayName(e.target.value)}
               placeholder={user?.username ?? "Nama kamu"}
               className="w-full h-10 px-3 rounded-xl text-[13px] bg-[#f5f5f5] border-0 text-[#1A1A1A] placeholder:text-[#bbb] focus:outline-none focus:ring-2 transition-all"
-              style={{ "--tw-ring-color": ACCENT } as any}
+              style={{ outline: "none" }}
+              onFocus={(e) => (e.target.style.boxShadow = `0 0 0 2px ${ACCENT}33`)}
+              onBlur={(e) => (e.target.style.boxShadow = "")}
             />
           </div>
 
-          {/* Avatar URL */}
-          <div>
-            <label className="block text-[12px] font-semibold text-[#555] mb-1.5">
-              URL Foto Profil
-            </label>
-            <div className="relative flex items-center">
-              <Camera className="absolute left-3 h-3.5 w-3.5 text-[#bbb] pointer-events-none" />
-              <input
-                type="url"
-                value={avatarUrl}
-                onChange={(e) => setAvatarUrl(e.target.value)}
-                placeholder="https://..."
-                className="w-full h-10 pl-8 pr-3 rounded-xl text-[13px] bg-[#f5f5f5] border-0 text-[#1A1A1A] placeholder:text-[#bbb] focus:outline-none focus:ring-2 transition-all"
-                style={{ "--tw-ring-color": ACCENT } as any}
-              />
-            </div>
-            <p className="text-[11px] text-[#bbb] mt-1">Masukkan link URL foto kamu</p>
-          </div>
-
-          {/* Readonly info */}
-          <div className="bg-[#f5f5f5] rounded-xl p-3 space-y-2">
+          {/* ── Readonly account info ──────────────────────────── */}
+          <div className="bg-[#f8f8f8] rounded-xl p-3 space-y-2">
             <div className="flex items-center justify-between">
               <span className="text-[12px] text-[#999]">Username</span>
               <span className="text-[12px] font-semibold text-[#1A1A1A]">{user?.username}</span>
@@ -129,7 +188,7 @@ export function ProfileModal({ open, onClose }: ProfileModalProps) {
             </div>
           </div>
 
-          {/* Actions */}
+          {/* ── Actions ────────────────────────────────────────── */}
           <div className="flex gap-2 pt-1">
             <button
               onClick={onClose}

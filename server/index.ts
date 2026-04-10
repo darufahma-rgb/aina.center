@@ -1,6 +1,7 @@
 import express from "express";
 import session from "express-session";
 import { createServer } from "http";
+import path from "path";
 import MemoryStore from "memorystore";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic } from "./vite";
@@ -17,6 +18,8 @@ const server = createServer(app);
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+
+app.use("/uploads", express.static(path.join(process.cwd(), "public/uploads")));
 
 const MStore = MemoryStore(session);
 app.use(session({

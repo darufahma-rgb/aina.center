@@ -13,21 +13,24 @@ import { ProfileModal } from "@/components/ProfileModal";
 
 // ─── Nav config ───────────────────────────────────────────────────────────────
 
-const PRIMARY_NAV = [
-  { title: "Dashboard",     url: "/",           icon: LayoutDashboard, exact: true  },
-  { title: "Notulensi",     url: "/notulensi",  icon: FileText,        exact: false },
-  { title: "Agenda",        url: "/agenda",     icon: CalendarDays,    exact: false },
-  { title: "Keuangan",      url: "/keuangan",   icon: Wallet,          exact: false },
-  { title: "AI Report",     url: "/ai-report",  icon: Wand2,           exact: false },
+const PANTAU_NAV = [
+  { title: "Dashboard",  url: "/",          icon: LayoutDashboard, exact: true  },
+  { title: "Agenda",     url: "/agenda",    icon: CalendarDays,    exact: false },
+  { title: "Keuangan",   url: "/keuangan",  icon: Wallet,          exact: false },
+  { title: "Notulensi",  url: "/notulensi", icon: FileText,        exact: false },
 ];
 
-const MODUL_NAV = [
-  { title: "Surat",         url: "/surat",      icon: Mail,            exact: false },
-  { title: "Inventaris",    url: "/inventaris", icon: Package,         exact: false },
-  { title: "Anggota",       url: "/anggota",    icon: Users,           exact: false },
-  { title: "Relasi",        url: "/relasi",     icon: Handshake,       exact: false },
-  { title: "Investor Mode", url: "/investor",   icon: Presentation,    exact: false },
-  { title: "Fitur Terbaru", url: "/fitur",      icon: Sparkles,        exact: false },
+const ORGANISASI_NAV = [
+  { title: "Anggota",    url: "/anggota",    icon: Users,      exact: false },
+  { title: "Relasi",     url: "/relasi",     icon: Handshake,  exact: false },
+  { title: "Surat",      url: "/surat",      icon: Mail,       exact: false },
+  { title: "Inventaris", url: "/inventaris", icon: Package,    exact: false },
+];
+
+const TOOLS_NAV = [
+  { title: "AI Report",     url: "/ai-report", icon: Wand2,         exact: false },
+  { title: "Investor Mode", url: "/investor",  icon: Presentation,  exact: false },
+  { title: "Fitur Terbaru", url: "/fitur",     icon: Sparkles,      exact: false },
 ];
 
 const ADMIN_NAV = [
@@ -205,25 +208,42 @@ function Sidebar({
         <div className="mx-4 border-t border-black/[0.06] mb-2 shrink-0" />
 
         {/* ── Nav ──────────────────────────────────────────────────── */}
-        <div className="flex-1 overflow-y-auto px-3 py-1 space-y-0.5" style={{ scrollbarWidth: "none" }}>
-          {PRIMARY_NAV.map((item) => (
-            <NavItem key={item.url} item={item} onClick={onMobileClose} />
-          ))}
+        <div className="flex-1 overflow-y-auto px-3 py-1" style={{ scrollbarWidth: "none" }}>
 
-          <div className="pt-4 pb-1">
-            <p className="text-[10px] font-bold uppercase tracking-widest text-[#bbb] px-3 mb-2">Modul</p>
-            {MODUL_NAV.map((item) => (
+          {/* Pantau */}
+          <p className="text-[10px] font-bold uppercase tracking-widest text-[#bbb] px-3 mb-1.5 mt-1">Pantau</p>
+          <div className="space-y-0.5">
+            {PANTAU_NAV.map((item) => (
               <NavItem key={item.url} item={item} onClick={onMobileClose} />
             ))}
           </div>
 
+          {/* Organisasi */}
+          <p className="text-[10px] font-bold uppercase tracking-widest text-[#bbb] px-3 mb-1.5 mt-4">Organisasi</p>
+          <div className="space-y-0.5">
+            {ORGANISASI_NAV.map((item) => (
+              <NavItem key={item.url} item={item} onClick={onMobileClose} />
+            ))}
+          </div>
+
+          {/* Tools */}
+          <p className="text-[10px] font-bold uppercase tracking-widest text-[#bbb] px-3 mb-1.5 mt-4">Tools</p>
+          <div className="space-y-0.5">
+            {TOOLS_NAV.map((item) => (
+              <NavItem key={item.url} item={item} onClick={onMobileClose} />
+            ))}
+          </div>
+
+          {/* Admin */}
           {isAdmin && (
-            <div className="pt-2 pb-1">
-              <p className="text-[10px] font-bold uppercase tracking-widest text-[#bbb] px-3 mb-2">Admin</p>
-              {ADMIN_NAV.map((item) => (
-                <NavItem key={item.url} item={item} onClick={onMobileClose} />
-              ))}
-            </div>
+            <>
+              <p className="text-[10px] font-bold uppercase tracking-widest text-[#bbb] px-3 mb-1.5 mt-4">Admin</p>
+              <div className="space-y-0.5 pb-2">
+                {ADMIN_NAV.map((item) => (
+                  <NavItem key={item.url} item={item} onClick={onMobileClose} />
+                ))}
+              </div>
+            </>
           )}
         </div>
 
