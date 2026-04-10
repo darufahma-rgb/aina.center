@@ -7,7 +7,7 @@
 @layer base {
   :root {
     /* ── DoDo-style Design System ──────────────────────────────────── */
-    --background:    60 8% 88%;        /* warm gray  #E2E1DB */
+    --background:    0 0% 100%;        /* pure white */
     --foreground:    240 10% 8%;       /* near black */
 
     --card:          0 0% 100%;
@@ -22,7 +22,7 @@
     --secondary:     263 40% 94%;
     --secondary-foreground: 263 50% 30%;
 
-    --muted:         60 5% 93%;
+    --muted:         0 0% 96%;
     --muted-foreground: 240 5% 50%;
 
     --accent:        263 72% 42%;
@@ -31,8 +31,8 @@
     --destructive:   0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
-    --border:        60 5% 88%;
-    --input:         60 5% 92%;
+    --border:        0 0% 85%;
+    --input:         0 0% 93%;
     --ring:          263 72% 42%;
 
     --radius: 0.75rem;

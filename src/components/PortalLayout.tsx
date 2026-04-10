@@ -160,7 +160,8 @@ function Sidebar({
           height: `calc(100vh - ${SIDEBAR_MARGIN * 2}px)`,
           borderRadius: 24,
           background: "#ffffff",
-          boxShadow: "0 8px 40px rgba(0,0,0,0.10), 0 2px 10px rgba(0,0,0,0.06)",
+          border: "1px solid rgba(0,0,0,0.10)",
+          boxShadow: "0 4px 24px rgba(0,0,0,0.07), 0 1px 4px rgba(0,0,0,0.05)",
         }}
       >
         {/* ── Logo ─────────────────────────────────────────────────── */}
@@ -359,10 +360,10 @@ export function PortalLayout({ children }: PortalLayoutProps) {
         {/* White card wrapper */}
         <div
           className="flex-1 flex flex-col bg-white min-h-[calc(100vh-24px)]"
-          style={{ borderRadius: 24, overflow: "hidden" }}
+          style={{ borderRadius: 24, overflow: "hidden", border: "1px solid rgba(0,0,0,0.10)" }}
         >
           {/* ── Top bar ──────────────────────────────────────────── */}
-          <header className="flex items-center justify-between px-5 py-3.5 border-b shrink-0" style={{ borderColor: "rgba(0,0,0,0.07)" }}>
+          <header className="flex items-center justify-between px-5 py-3.5 border-b shrink-0" style={{ borderColor: "rgba(0,0,0,0.09)" }}>
 
             {/* Left: mobile menu + page tabs */}
             <div className="flex items-center gap-1">

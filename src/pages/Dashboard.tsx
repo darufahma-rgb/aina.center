@@ -112,7 +112,7 @@ function ProgressCard({
   const inner = (
     <div
       className="flex-1 rounded-2xl p-4 flex flex-col gap-3 transition-all duration-150 hover:-translate-y-0.5 cursor-pointer"
-      style={{ background: "rgba(0,0,0,0.03)", border: "1px solid rgba(0,0,0,0.06)" }}
+      style={{ background: "rgba(0,0,0,0.04)", border: "1px solid rgba(0,0,0,0.10)" }}
     >
       <div>
         <p className="text-[10px] font-bold uppercase tracking-widest text-[#999]">{sublabel}</p>
@@ -172,7 +172,7 @@ function NotulensiRow({ item, index }: { item: Notulensi; index: number }) {
     <Link to="/notulensi">
       <div className={cn(
         "flex items-center gap-4 py-3 px-2 rounded-2xl transition-all hover:bg-black/[0.03] cursor-pointer",
-        index > 0 && "border-t border-black/[0.05]",
+        index > 0 && "border-t border-black/[0.08]",
       )}>
         <div
           className="h-9 w-9 rounded-xl flex items-center justify-center text-[10px] font-bold shrink-0"
@@ -525,16 +525,16 @@ export default function Dashboard() {
 
         {/* Quick stats + PDF button */}
         <div className="flex flex-wrap items-center gap-2 shrink-0">
-          <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white border border-black/[0.08] text-[12px] font-medium text-[#555]">
+          <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white border border-black/[0.12] text-[12px] font-medium text-[#555]">
             <Users className="h-3.5 w-3.5 text-[#5B21B6]" />
             {isLoading ? "—" : totalAnggota} Anggota
           </div>
-          <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white border border-black/[0.08] text-[12px] font-medium text-[#555]">
+          <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white border border-black/[0.12] text-[12px] font-medium text-[#555]">
             <CalendarDays className="h-3.5 w-3.5 text-[#5B21B6]" />
             {isLoading ? "—" : data?.upcomingAgenda ?? 0} Agenda
           </div>
           {isAdmin && (
-            <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white border border-black/[0.08] text-[12px] font-medium text-[#555]">
+            <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white border border-black/[0.12] text-[12px] font-medium text-[#555]">
               <Wallet className="h-3.5 w-3.5 text-[#5B21B6]" />
               {isLoading ? "—" : formatRp(data?.saldoTersedia ?? 0)}
             </div>
@@ -564,7 +564,7 @@ export default function Dashboard() {
             { icon: Handshake,  label: "Relasi",     value: data?.totalRelasi ?? 0,     url: "/relasi" },
           ].map(({ icon: Icon, label, value, url }) => (
             <Link key={url} to={url}>
-              <div className="bg-white rounded-2xl p-3.5 border border-black/[0.06] hover:shadow-md hover:-translate-y-0.5 transition-all cursor-pointer text-center">
+              <div className="bg-white rounded-2xl p-3.5 border border-black/[0.11] hover:shadow-md hover:-translate-y-0.5 transition-all cursor-pointer text-center">
                 <Icon className="h-5 w-5 mx-auto mb-1.5 text-[#5B21B6]" />
                 <p className="text-xl font-black text-[#1A1A1A]">{value}</p>
                 <p className="text-[10px] text-[#999] font-semibold uppercase tracking-wide mt-0.5">{label}</p>
@@ -609,7 +609,7 @@ export default function Dashboard() {
           </div>
 
           {/* ── Agenda mendatang ─────────────────────────────────── */}
-          <div className="bg-white rounded-3xl p-5 border border-black/[0.06]" style={{ boxShadow: "0 2px 12px rgba(0,0,0,0.06)" }}>
+          <div className="bg-white rounded-3xl p-5 border border-black/[0.11]" style={{ boxShadow: "0 2px 12px rgba(0,0,0,0.08)" }}>
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-[15px] font-bold text-[#1A1A1A]">
                 Agenda Mendatang
@@ -641,7 +641,7 @@ export default function Dashboard() {
           </div>
 
           {/* ── Notulensi terbaru ─────────────────────────────────── */}
-          <div className="bg-white rounded-3xl p-5 border border-black/[0.06]" style={{ boxShadow: "0 2px 12px rgba(0,0,0,0.06)" }}>
+          <div className="bg-white rounded-3xl p-5 border border-black/[0.11]" style={{ boxShadow: "0 2px 12px rgba(0,0,0,0.08)" }}>
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-[15px] font-bold text-[#1A1A1A]">Notulensi Terbaru</h3>
               <div className="flex items-center gap-3">
@@ -683,7 +683,7 @@ export default function Dashboard() {
         <div className="xl:w-72 space-y-5 shrink-0">
 
           {/* ── Stats summary ──────────────────────────────────────── */}
-          <div className="bg-white rounded-3xl p-5 border border-black/[0.06]" style={{ boxShadow: "0 2px 12px rgba(0,0,0,0.06)" }}>
+          <div className="bg-white rounded-3xl p-5 border border-black/[0.11]" style={{ boxShadow: "0 2px 12px rgba(0,0,0,0.08)" }}>
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-[15px] font-bold text-[#1A1A1A]">Ringkasan</h3>
               <MoreHorizontal className="h-4 w-4 text-[#ccc]" />
@@ -698,7 +698,7 @@ export default function Dashboard() {
 
           {/* ── Jadwal Terdekat ────────────────────────────────────── */}
           {agendaList.length > 0 && (
-            <div className="bg-white rounded-3xl p-5 border border-black/[0.06]" style={{ boxShadow: "0 2px 12px rgba(0,0,0,0.06)" }}>
+            <div className="bg-white rounded-3xl p-5 border border-black/[0.11]" style={{ boxShadow: "0 2px 12px rgba(0,0,0,0.08)" }}>
               <h3 className="text-[15px] font-bold text-[#1A1A1A] mb-4">Jadwal Terdekat</h3>
               <div className="space-y-3">
                 {agendaList.slice(0, 3).map((a) => (
@@ -723,7 +723,7 @@ export default function Dashboard() {
 
           {/* ── Keuangan (admin only) ──────────────────────────────── */}
           {isAdmin && (
-            <div className="bg-white rounded-3xl p-5 border border-black/[0.06]" style={{ boxShadow: "0 2px 12px rgba(0,0,0,0.06)" }}>
+            <div className="bg-white rounded-3xl p-5 border border-black/[0.11]" style={{ boxShadow: "0 2px 12px rgba(0,0,0,0.08)" }}>
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-[15px] font-bold text-[#1A1A1A]">Keuangan</h3>
                 <Link to="/keuangan" className="text-[11px] font-semibold text-[#5B21B6] hover:opacity-80 transition-opacity">
@@ -805,7 +805,7 @@ function FiturCard({ f }: { f: any }) {
         className="h-full rounded-2xl p-4 flex flex-col gap-3 transition-all duration-150 hover:-translate-y-1 hover:shadow-lg cursor-pointer border"
         style={{
           background: "#ffffff",
-          borderColor: "rgba(0,0,0,0.07)",
+          borderColor: "rgba(0,0,0,0.11)",
         }}
       >
         {/* Top row: category + impact */}
@@ -836,7 +836,7 @@ function FiturCard({ f }: { f: any }) {
         </p>
 
         {/* Status + date */}
-        <div className="flex items-center justify-between pt-1 border-t border-black/[0.05]">
+        <div className="flex items-center justify-between pt-1 border-t border-black/[0.08]">
           <span
             className="text-[11px] font-semibold flex items-center gap-1 px-2 py-0.5 rounded-full"
             style={{ background: status.bg, color: status.color }}
@@ -864,8 +864,8 @@ function FiturReviewSection({
 
   return (
     <div
-      className="mt-5 rounded-3xl p-5 border border-black/[0.06]"
-      style={{ background: "#ffffff", boxShadow: "0 2px 12px rgba(0,0,0,0.06)" }}
+      className="mt-5 rounded-3xl p-5 border border-black/[0.11]"
+      style={{ background: "#ffffff", boxShadow: "0 2px 12px rgba(0,0,0,0.08)" }}
     >
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-5">
