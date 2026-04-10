@@ -4,7 +4,7 @@ import {
   LayoutDashboard, FileText, Wallet, CalendarDays,
   Sparkles, Mail, Package, Users, Handshake, Presentation,
   Wand2, UserCog, LogOut, Bell, Settings, Plus, HelpCircle,
-  ChevronDown, Search, X, Menu,
+  ChevronDown, Search, X,
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
@@ -342,11 +342,9 @@ export function PortalLayout({ children }: PortalLayoutProps) {
   const { user, isAdmin, logout } = useAuth();
   const { toast } = useToast();
   const { pathname } = useLocation();
-  const [mobileOpen, setMobileOpen] = useState(false);
   const [searchVal, setSearchVal] = useState("");
   const [profileOpen, setProfileOpen] = useState(false);
-
-  useEffect(() => { setMobileOpen(false); }, [pathname]);
+  const isMobile = useIsMobile();
 
   const handleLogout = async () => {
     try { await logout(); }
@@ -358,15 +356,17 @@ export function PortalLayout({ children }: PortalLayoutProps) {
   return (
     <div className="min-h-screen bg-background flex" style={{ overflowX: "clip", maxWidth: "100vw" }}>
 
-      {/* ── Sidebar ─────────────────────────────────────────────────── */}
-      <Sidebar
-        user={user}
-        isAdmin={isAdmin}
-        onLogout={handleLogout}
-        mobileOpen={mobileOpen}
-        onMobileClose={() => setMobileOpen(false)}
-        onProfileOpen={() => setProfileOpen(true)}
-      />
+      {/* ── Sidebar (desktop only) ──────────────────────────────────── */}
+      {!isMobile && (
+        <Sidebar
+          user={user}
+          isAdmin={isAdmin}
+          onLogout={handleLogout}
+          mobileOpen={false}
+          onMobileClose={() => {}}
+          onProfileOpen={() => setProfileOpen(true)}
+        />
+      )}
 
       {/* ── Main content — white card ────────────────────────────────── */}
       <div
@@ -380,14 +380,8 @@ export function PortalLayout({ children }: PortalLayoutProps) {
           {/* ── Top bar ──────────────────────────────────────────── */}
           <header className="flex items-center justify-between px-5 py-3.5 border-b shrink-0" style={{ borderColor: "rgba(0,0,0,0.09)" }}>
 
-            {/* Left: mobile menu + page tabs */}
+            {/* Left: page tabs */}
             <div className="flex items-center gap-1">
-              <button
-                className="lg:hidden h-8 w-8 rounded-xl flex items-center justify-center text-[#999] hover:bg-black/[0.05] mr-1"
-                onClick={() => setMobileOpen(true)}
-              >
-                <Menu className="h-4 w-4" />
-              </button>
 
               <nav className="hidden sm:flex items-center gap-0.5">
                 {PAGE_TABS.map((tab) => {
@@ -464,8 +458,13 @@ export function PortalLayout({ children }: PortalLayoutProps) {
       {/* ── AI Customer Service Chat Widget ──────────────────────────── */}
       <AIChatWidget />
 
-      {/* ── Mobile bottom nav ────────────────────────────────────────── */}
-      <BottomNav sidebarOpen={mobileOpen} onSidebarClose={() => setMobileOpen(false)} />
+      {/* ── Mobile bottom command center ─────────────────────────────── */}
+      <BottomNav
+        user={user}
+        isAdmin={isAdmin}
+        onLogout={handleLogout}
+        onProfileOpen={() => setProfileOpen(true)}
+      />
     </div>
   );
 }
