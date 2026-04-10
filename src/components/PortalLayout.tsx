@@ -14,23 +14,32 @@ export function PortalLayout({ children }: PortalLayoutProps) {
 
   return (
     <SidebarProvider>
-      <div className="min-h-screen flex w-full">
+      <div className="min-h-screen flex w-full bg-background">
         <AppSidebar />
         <div className="flex-1 flex flex-col min-w-0">
-          <header className="h-14 flex items-center justify-between border-b bg-card px-4 shrink-0">
+          {/* Glassmorphism header */}
+          <header className="h-14 flex items-center justify-between px-5 shrink-0 sticky top-0 z-20 glass-header">
             <div className="flex items-center gap-3">
-              <SidebarTrigger />
+              <SidebarTrigger className="text-muted-foreground hover:text-foreground" />
             </div>
             <div className="flex items-center gap-3">
-              <Badge variant={isAdmin ? "default" : "secondary"} className="text-xs">
+              <Badge
+                variant={isAdmin ? "default" : "secondary"}
+                className="text-xs px-2.5 py-0.5 rounded-full font-medium"
+              >
                 {isAdmin ? "Admin" : "User"}
               </Badge>
-              <div className="h-8 w-8 rounded-full gradient-primary flex items-center justify-center">
-                <span className="text-xs font-medium text-white">{initials}</span>
+              <div
+                className="h-8 w-8 rounded-full flex items-center justify-center shrink-0"
+                style={{ background: "var(--gradient-primary)", boxShadow: "0 2px 8px rgba(59,130,246,0.30)" }}
+              >
+                <span className="text-xs font-semibold text-white">{initials}</span>
               </div>
             </div>
           </header>
-          <main className="flex-1 overflow-auto p-6">
+
+          {/* Page content */}
+          <main className="flex-1 overflow-auto p-6 animate-fade-in">
             {children}
           </main>
         </div>

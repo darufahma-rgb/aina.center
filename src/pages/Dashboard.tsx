@@ -220,30 +220,34 @@ function buildInsights(data: DashboardData): Insight[] {
 
 // ─── Tone → style mapping ─────────────────────────────────────────────────────
 
-const TONE_STYLE: Record<InsightTone, { bg: string; border: string; icon: string; badge: string }> = {
+const TONE_STYLE: Record<InsightTone, { bg: string; orb: string; icon: string; badge: string; shadow: string }> = {
   positive: {
-    bg: "bg-emerald-500/5",
-    border: "border-emerald-500/20",
+    bg: "bg-emerald-50",
+    orb: "bg-emerald-100",
     icon: "text-emerald-600",
-    badge: "bg-emerald-500/10 text-emerald-700 dark:text-emerald-400",
+    badge: "bg-emerald-100 text-emerald-700",
+    shadow: "0 2px 8px rgba(16,185,129,0.12)",
   },
   negative: {
-    bg: "bg-destructive/5",
-    border: "border-destructive/20",
-    icon: "text-destructive",
-    badge: "bg-destructive/10 text-destructive",
+    bg: "bg-rose-50",
+    orb: "bg-rose-100",
+    icon: "text-rose-600",
+    badge: "bg-rose-100 text-rose-700",
+    shadow: "0 2px 8px rgba(244,63,94,0.12)",
   },
   warning: {
-    bg: "bg-amber-500/5",
-    border: "border-amber-500/20",
+    bg: "bg-amber-50",
+    orb: "bg-amber-100",
     icon: "text-amber-600",
-    badge: "bg-amber-500/10 text-amber-700 dark:text-amber-400",
+    badge: "bg-amber-100 text-amber-700",
+    shadow: "0 2px 8px rgba(245,158,11,0.12)",
   },
   neutral: {
-    bg: "bg-muted/40",
-    border: "border-border",
+    bg: "bg-white",
+    orb: "bg-secondary",
     icon: "text-muted-foreground",
-    badge: "bg-muted text-muted-foreground",
+    badge: "bg-secondary text-muted-foreground",
+    shadow: "var(--shadow-neo-xs)",
   },
 };
 
@@ -255,14 +259,15 @@ function InsightCard({ insight }: { insight: Insight }) {
 
   const content = (
     <div
-      className={`flex items-start gap-3 p-4 rounded-xl border ${style.bg} ${style.border} h-full transition-shadow hover:shadow-sm`}
+      className={`flex items-start gap-3 p-4 rounded-xl ${style.bg} h-full transition-all duration-150 hover:scale-[1.01]`}
+      style={{ boxShadow: style.shadow }}
       data-testid={`insight-card-${insight.id}`}
     >
-      <div className={`h-8 w-8 rounded-lg bg-background/70 flex items-center justify-center shrink-0 mt-0.5 border ${style.border}`}>
+      <div className={`h-8 w-8 rounded-lg ${style.orb} flex items-center justify-center shrink-0 mt-0.5`}>
         <Icon className={`h-3.5 w-3.5 ${style.icon}`} />
       </div>
-      <div className="flex-1 min-w-0 space-y-1">
-        <span className={`inline-block text-[10px] font-bold uppercase tracking-wide px-1.5 py-0.5 rounded ${style.badge}`}>
+      <div className="flex-1 min-w-0 space-y-1.5">
+        <span className={`inline-block text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-full ${style.badge}`}>
           {insight.label}
         </span>
         <p className="text-sm text-foreground/80 leading-relaxed">{insight.text}</p>
@@ -344,10 +349,10 @@ export default function Dashboard() {
 
       {/* ── Stat Cards ── */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard icon={Users}       title="Total Anggota"    value={isLoading ? "—" : data?.totalAnggota ?? 0}              subtitle="Anggota aktif"                          gradient />
-        <StatCard icon={Wallet}      title="Saldo Tersedia"   value={isLoading ? "—" : formatRp(data?.saldoTersedia ?? 0)}   subtitle="Keuangan bersih"                        trendUp />
-        <StatCard icon={CalendarDays} title="Agenda Mendatang" value={isLoading ? "—" : data?.upcomingAgenda ?? 0}           subtitle="Agenda upcoming" />
-        <StatCard icon={FileText}    title="Notulensi"        value={isLoading ? "—" : data?.totalNotulensi ?? 0}            subtitle={`${data?.draftNotulensi ?? 0} draft pending`} />
+        <StatCard icon={Users}        title="Total Anggota"    value={isLoading ? "—" : data?.totalAnggota ?? 0}              subtitle="Anggota aktif"                               gradient />
+        <StatCard icon={Wallet}       title="Saldo Tersedia"   value={isLoading ? "—" : formatRp(data?.saldoTersedia ?? 0)}   subtitle="Keuangan bersih"    color="green" />
+        <StatCard icon={CalendarDays} title="Agenda Mendatang" value={isLoading ? "—" : data?.upcomingAgenda ?? 0}            subtitle="Agenda upcoming"    color="violet" />
+        <StatCard icon={FileText}     title="Notulensi"        value={isLoading ? "—" : data?.totalNotulensi ?? 0}            subtitle={`${data?.draftNotulensi ?? 0} draft pending`} color="amber" />
       </div>
 
       {/* ── Notulensi + Agenda ── */}
@@ -448,35 +453,41 @@ export default function Dashboard() {
         </Card>
 
         {isAdmin ? (
-          <Link to="/ai-report" className="block">
-            <Card className="border-dashed border-2 border-primary/20 bg-primary/[0.02] hover:bg-primary/[0.04] hover:shadow-sm transition-all h-full cursor-pointer">
-              <CardContent className="p-5 flex flex-col items-center justify-center text-center h-full">
-                <div className="h-12 w-12 rounded-xl gradient-primary flex items-center justify-center mb-3 shadow-sm">
-                  <Bot className="h-6 w-6 text-primary-foreground" />
+          <Link to="/ai-report" className="block h-full">
+            <div
+              className="rounded-xl h-full cursor-pointer transition-all duration-150 hover:scale-[1.01]"
+              style={{ background: "var(--gradient-primary)", boxShadow: "var(--shadow-neo-primary)" }}
+            >
+              <div className="p-5 flex flex-col items-center justify-center text-center h-full">
+                <div className="h-13 w-13 rounded-2xl bg-white/15 backdrop-blur-sm flex items-center justify-center mb-4 p-3">
+                  <Bot className="h-7 w-7 text-white" />
                 </div>
-                <h3 className="text-sm font-semibold mb-1">AI Report Assistant</h3>
-                <p className="text-xs text-muted-foreground leading-relaxed mb-3">
+                <h3 className="text-sm font-bold text-white mb-1">AI Report Assistant</h3>
+                <p className="text-xs text-white/70 leading-relaxed mb-4">
                   Ubah catatan mentah menjadi notulensi, laporan progress, atau ringkasan investor dalam hitungan detik.
                 </p>
-                <Badge variant="outline" className="text-[10px] border-primary/30 text-primary gap-1">
+                <span className="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest px-3 py-1.5 rounded-full bg-white/20 text-white/90">
                   <Zap className="h-2.5 w-2.5" /> GPT-4o mini · Aktif
-                </Badge>
-              </CardContent>
-            </Card>
+                </span>
+              </div>
+            </div>
           </Link>
         ) : (
-          <Card className="border-dashed border-2 border-primary/20 bg-primary/[0.02]">
-            <CardContent className="p-5 flex flex-col items-center justify-center text-center h-full">
-              <div className="h-12 w-12 rounded-xl gradient-primary flex items-center justify-center mb-3">
-                <Bot className="h-6 w-6 text-primary-foreground" />
+          <div
+            className="rounded-xl h-full"
+            style={{ background: "linear-gradient(135deg, hsl(215,25%,94%), hsl(215,25%,90%))", boxShadow: "var(--shadow-neo-sm)" }}
+          >
+            <div className="p-5 flex flex-col items-center justify-center text-center h-full">
+              <div className="h-12 w-12 rounded-xl bg-primary/10 flex items-center justify-center mb-3">
+                <Bot className="h-6 w-6 text-primary/60" />
               </div>
-              <h3 className="text-sm font-semibold mb-1">AI Report Assistant</h3>
+              <h3 className="text-sm font-semibold mb-1 text-foreground">AI Report Assistant</h3>
               <p className="text-xs text-muted-foreground leading-relaxed mb-3">
                 Fitur AI tersedia untuk admin — otomatis susun laporan dari catatan mentah.
               </p>
-              <Badge variant="outline" className="text-[10px]">Admin Only</Badge>
-            </CardContent>
-          </Card>
+              <Badge variant="secondary" className="text-[10px]">Admin Only</Badge>
+            </div>
+          </div>
         )}
       </div>
 
