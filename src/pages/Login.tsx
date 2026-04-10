@@ -36,43 +36,68 @@ export default function Login() {
           MOBILE layout  (< lg)
       ════════════════════════════════════════ */}
       <div
-        className="lg:hidden flex flex-col items-center justify-center px-7 overflow-hidden"
-        style={{
-          background: "#EEEEE9",
-          height: "100dvh",
-          paddingTop: "env(safe-area-inset-top, 16px)",
-          paddingBottom: "env(safe-area-inset-bottom, 16px)",
-        }}
+        className="lg:hidden relative flex flex-col overflow-hidden"
+        style={{ height: "100dvh", background: "#0A0118" }}
       >
-        <div className="w-full max-w-[340px]">
+        {/* Wallpaper */}
+        <div
+          className="absolute inset-0"
+          style={{
+            backgroundImage: "url('/login-bg.png')",
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+          }}
+        />
 
-          {/* Logo + brand */}
-          <div className="flex flex-col items-center mb-6">
-            <div
-              className="h-16 w-16 rounded-full flex items-center justify-center mb-3 shadow-sm"
-              style={{ background: "#fff", border: "1.5px solid #E4E4DC" }}
-            >
-              <img src="/logo.png" alt="AINA" className="h-9 w-9 object-contain" />
-            </div>
-            <p className="text-[13px] font-medium" style={{ color: "#888" }}>AINA Centre</p>
+        {/* Bottom dark fade — makes form readable */}
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            background: "linear-gradient(to bottom, transparent 20%, rgba(8,1,24,0.65) 55%, rgba(8,1,24,0.94) 80%)",
+          }}
+        />
+
+        {/* ── AIGYPT Logo (floating + glowing) ── */}
+        <div className="relative z-10 flex-1 flex flex-col items-center justify-center" style={{ paddingTop: "env(safe-area-inset-top, 0px)" }}>
+          <div className="logo-float">
+            <img
+              src="/aigypt-icon.png"
+              alt="AIGYPT"
+              className="object-contain"
+              style={{ height: 110, width: 110 }}
+            />
           </div>
+          <p
+            className="mt-5 text-[11px] font-semibold tracking-[0.28em] uppercase"
+            style={{ color: "rgba(200,170,255,0.75)" }}
+          >
+            AINA Centre
+          </p>
+        </div>
 
-          {/* Title */}
+        {/* ── Form card at bottom ── */}
+        <div
+          className="relative z-10 px-6 w-full"
+          style={{ paddingBottom: "max(28px, env(safe-area-inset-bottom, 28px))" }}
+        >
           <h1
-            className="text-center text-[26px] font-bold text-[#1A1A1A] mb-6"
+            className="text-center text-[26px] font-bold text-white mb-5"
             style={{ letterSpacing: "-0.02em" }}
           >
-            Login
+            Masuk
           </h1>
 
-          {/* Form */}
-          <form onSubmit={handleSubmit} className="space-y-2.5">
+          <form onSubmit={handleSubmit} className="space-y-3">
             {/* Username */}
             <div
-              className="flex items-center gap-3 h-[50px] px-4 rounded-2xl bg-white"
-              style={{ border: "1.5px solid #E4E4DC" }}
+              className="flex items-center gap-3 h-[52px] px-4 rounded-2xl"
+              style={{
+                background: "rgba(255,255,255,0.10)",
+                border: "1px solid rgba(255,255,255,0.18)",
+                backdropFilter: "blur(12px)",
+              }}
             >
-              <User className="h-4 w-4 shrink-0" style={{ color: "#C0C0B8" }} />
+              <User className="h-4 w-4 shrink-0" style={{ color: "rgba(255,255,255,0.45)" }} />
               <input
                 id="username-m"
                 data-testid="input-username"
@@ -81,16 +106,20 @@ export default function Login() {
                 onChange={(e) => setUsername(e.target.value)}
                 autoComplete="username"
                 disabled={submitting}
-                className="flex-1 bg-transparent text-[14px] text-[#1A1A1A] placeholder:text-[#C0C0B8] focus:outline-none disabled:opacity-50"
+                className="flex-1 bg-transparent text-[14px] text-white placeholder:text-white/40 focus:outline-none disabled:opacity-50"
               />
             </div>
 
             {/* Password */}
             <div
-              className="flex items-center gap-3 h-[50px] px-4 rounded-2xl bg-white"
-              style={{ border: "1.5px solid #E4E4DC" }}
+              className="flex items-center gap-3 h-[52px] px-4 rounded-2xl"
+              style={{
+                background: "rgba(255,255,255,0.10)",
+                border: "1px solid rgba(255,255,255,0.18)",
+                backdropFilter: "blur(12px)",
+              }}
             >
-              <Lock className="h-4 w-4 shrink-0" style={{ color: "#C0C0B8" }} />
+              <Lock className="h-4 w-4 shrink-0" style={{ color: "rgba(255,255,255,0.45)" }} />
               <input
                 id="password-m"
                 data-testid="input-password"
@@ -100,7 +129,7 @@ export default function Login() {
                 onChange={(e) => setPassword(e.target.value)}
                 autoComplete="current-password"
                 disabled={submitting}
-                className="flex-1 bg-transparent text-[14px] text-[#1A1A1A] placeholder:text-[#C0C0B8] focus:outline-none disabled:opacity-50"
+                className="flex-1 bg-transparent text-[14px] text-white placeholder:text-white/40 focus:outline-none disabled:opacity-50"
               />
               <button
                 type="button"
@@ -109,8 +138,8 @@ export default function Login() {
                 tabIndex={-1}
               >
                 {showPassword
-                  ? <EyeOff className="h-4 w-4" style={{ color: "#B0B0A8" }} />
-                  : <Eye className="h-4 w-4" style={{ color: "#B0B0A8" }} />
+                  ? <EyeOff className="h-4 w-4" style={{ color: "rgba(255,255,255,0.45)" }} />
+                  : <Eye className="h-4 w-4" style={{ color: "rgba(255,255,255,0.45)" }} />
                 }
               </button>
             </div>
@@ -120,14 +149,15 @@ export default function Login() {
               type="submit"
               data-testid="button-login"
               disabled={submitting || !username || !password}
-              className="w-full font-bold text-white transition-all active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed"
+              className="w-full font-bold transition-all active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed"
               style={{
-                height: 50,
+                height: 52,
                 borderRadius: 100,
-                background: "#1A1A1A",
+                background: "linear-gradient(135deg, #6D28D9, #3E0FA3)",
+                color: "#fff",
                 fontSize: 15,
-                marginTop: 6,
                 letterSpacing: "-0.01em",
+                boxShadow: "0 4px 24px rgba(109,40,217,0.5)",
               }}
             >
               {submitting ? "Masuk..." : "Login"}
@@ -144,9 +174,9 @@ export default function Login() {
         <div
           className="flex flex-col w-[44%] relative overflow-hidden"
           style={{
-            backgroundImage: "url(/wallpaper-login.png)",
+            backgroundImage: "url(/login-bg.png)",
             backgroundSize: "cover",
-            backgroundPosition: "center bottom",
+            backgroundPosition: "center",
             backgroundRepeat: "no-repeat",
           }}
         >
