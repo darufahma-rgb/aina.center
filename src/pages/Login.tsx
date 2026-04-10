@@ -41,7 +41,7 @@ export default function Login() {
       >
         {/* Wallpaper */}
         <div
-          className="absolute inset-0"
+          className="absolute inset-0 wallpaper-animate"
           style={{
             backgroundImage: "url('/login-bg.png')",
             backgroundSize: "cover",
@@ -160,13 +160,17 @@ export default function Login() {
         {/* Left panel — wallpaper */}
         <div
           className="flex flex-col w-[44%] relative overflow-hidden"
-          style={{
-            backgroundImage: "url(/login-bg.png)",
-            backgroundSize: "cover",
-            backgroundPosition: "center",
-            backgroundRepeat: "no-repeat",
-          }}
+          style={{ overflow: "hidden" }}
         >
+          {/* Animated wallpaper */}
+          <div
+            className="absolute inset-0 wallpaper-animate"
+            style={{
+              backgroundImage: "url(/login-bg.png)",
+              backgroundSize: "cover",
+              backgroundPosition: "center",
+            }}
+          />
           <div
             className="absolute inset-0 pointer-events-none login-panel-overlay"
             style={{

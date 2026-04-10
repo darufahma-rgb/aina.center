@@ -206,6 +206,19 @@
     50%       { transform: translateY(-14px); }
   }
 
+  @keyframes wallpaper-drift {
+    0%   { transform: scale(1.08) translate(0%, 0%); }
+    25%  { transform: scale(1.12) translate(-1.5%, 1%); }
+    50%  { transform: scale(1.10) translate(1.5%, -1%); }
+    75%  { transform: scale(1.13) translate(-1%, 2%); }
+    100% { transform: scale(1.08) translate(0%, 0%); }
+  }
+
+  .wallpaper-animate {
+    animation: wallpaper-drift 18s ease-in-out infinite;
+    will-change: transform;
+  }
+
   @keyframes glow-pulse {
     0%, 100% { filter: drop-shadow(0 0 18px rgba(200,160,255,0.7)) drop-shadow(0 0 40px rgba(140,80,255,0.4)); }
     50%       { filter: drop-shadow(0 0 30px rgba(220,180,255,0.9)) drop-shadow(0 0 60px rgba(160,100,255,0.6)); }
