@@ -94,11 +94,11 @@ function NavItem({
         "flex items-center gap-3 px-3 h-10 rounded-2xl text-[13px] font-medium w-full transition-all duration-150 group",
         active
           ? "nav-active"
-          : "text-[#555] hover:bg-black/[0.05] hover:text-[#1A1A1A]",
+          : "text-white/75 hover:bg-white/[0.12] hover:text-white",
       )}
     >
       <item.icon
-        className={cn("h-[17px] w-[17px] shrink-0 transition-colors", active ? "text-white" : "text-[#999] group-hover:text-[#555]")}
+        className={cn("h-[17px] w-[17px] shrink-0 transition-colors", active ? "text-[#5B21B6]" : "text-white/50 group-hover:text-white")}
       />
       <span className="truncate">{item.title}</span>
     </Link>
@@ -159,8 +159,8 @@ function Sidebar({
           width: SIDEBAR_W,
           height: `calc(100vh - ${SIDEBAR_MARGIN * 2}px)`,
           borderRadius: 24,
-          background: "#ffffff",
-          border: "1px solid rgba(0,0,0,0.11)",
+          background: ACCENT,
+          border: "1px solid rgba(255,255,255,0.15)",
         }}
       >
         {/* ── Logo ─────────────────────────────────────────────────── */}
@@ -168,7 +168,7 @@ function Sidebar({
           <Link to="/" className="flex items-center gap-2.5">
             <div
               className="h-8 w-8 rounded-xl flex items-center justify-center shrink-0"
-              style={{ background: ACCENT }}
+              style={{ background: "rgba(255,255,255,0.18)" }}
             >
               <img
                 src="/logo.png"
@@ -177,7 +177,7 @@ function Sidebar({
                 style={{ filter: "brightness(0) invert(1)" }}
               />
             </div>
-            <span className="font-bold text-[15px] text-[#1A1A1A] leading-none">AINA Centre</span>
+            <span className="font-bold text-[15px] text-white leading-none">AINA Centre</span>
           </Link>
         </div>
 
@@ -199,20 +199,20 @@ function Sidebar({
             onClick={onProfileOpen}
             className="flex items-center gap-1 hover:opacity-70 transition-opacity"
           >
-            <p className="text-[14px] font-semibold text-[#1A1A1A]">{displayName}</p>
-            <ChevronDown className="h-3.5 w-3.5 text-[#999]" />
+            <p className="text-[14px] font-semibold text-white">{displayName}</p>
+            <ChevronDown className="h-3.5 w-3.5 text-white/50" />
           </button>
-          <p className="text-[12px] text-[#999] mt-0.5">{isAdmin ? "Administrator" : "Anggota"}</p>
+          <p className="text-[12px] text-white/60 mt-0.5">{isAdmin ? "Administrator" : "Anggota"}</p>
         </div>
 
         {/* ── Divider ──────────────────────────────────────────────── */}
-        <div className="mx-4 border-t border-black/[0.06] mb-2 shrink-0" />
+        <div className="mx-4 border-t border-white/[0.15] mb-2 shrink-0" />
 
         {/* ── Nav ──────────────────────────────────────────────────── */}
         <div className="flex-1 overflow-y-auto px-3 py-1" style={{ scrollbarWidth: "none" }}>
 
           {/* Pantau */}
-          <p className="text-[10px] font-bold uppercase tracking-widest text-[#bbb] px-3 mb-1.5 mt-1">Pantau</p>
+          <p className="text-[10px] font-bold uppercase tracking-widest text-white/40 px-3 mb-1.5 mt-1">Pantau</p>
           <div className="space-y-0.5">
             {PANTAU_NAV.map((item) => (
               <NavItem key={item.url} item={item} onClick={onMobileClose} />
@@ -220,7 +220,7 @@ function Sidebar({
           </div>
 
           {/* Organisasi */}
-          <p className="text-[10px] font-bold uppercase tracking-widest text-[#bbb] px-3 mb-1.5 mt-4">Organisasi</p>
+          <p className="text-[10px] font-bold uppercase tracking-widest text-white/40 px-3 mb-1.5 mt-4">Organisasi</p>
           <div className="space-y-0.5">
             {ORGANISASI_NAV.map((item) => (
               <NavItem key={item.url} item={item} onClick={onMobileClose} />
@@ -228,7 +228,7 @@ function Sidebar({
           </div>
 
           {/* Tools */}
-          <p className="text-[10px] font-bold uppercase tracking-widest text-[#bbb] px-3 mb-1.5 mt-4">Tools</p>
+          <p className="text-[10px] font-bold uppercase tracking-widest text-white/40 px-3 mb-1.5 mt-4">Tools</p>
           <div className="space-y-0.5">
             {TOOLS_NAV.map((item) => (
               <NavItem key={item.url} item={item} onClick={onMobileClose} />
@@ -238,7 +238,7 @@ function Sidebar({
           {/* Admin */}
           {isAdmin && (
             <>
-              <p className="text-[10px] font-bold uppercase tracking-widest text-[#bbb] px-3 mb-1.5 mt-4">Admin</p>
+              <p className="text-[10px] font-bold uppercase tracking-widest text-white/40 px-3 mb-1.5 mt-4">Admin</p>
               <div className="space-y-0.5 pb-2">
                 {ADMIN_NAV.map((item) => (
                   <NavItem key={item.url} item={item} onClick={onMobileClose} />
@@ -251,11 +251,11 @@ function Sidebar({
         {/* ── Help center dark card ─────────────────────────────────── */}
         {!helpDismissed && (
           <div className="p-3 pb-4 shrink-0">
-            <div className="dark-card p-4 relative">
+            <div className="p-4 relative rounded-2xl" style={{ background: "rgba(255,255,255,0.15)", border: "1px solid rgba(255,255,255,0.20)" }}>
               {/* Dismiss button */}
               <button
                 onClick={dismissHelp}
-                className="absolute top-2.5 right-2.5 h-5 w-5 rounded-full flex items-center justify-center text-white/40 hover:text-white/80 hover:bg-white/10 transition-all"
+                className="absolute top-2.5 right-2.5 h-5 w-5 rounded-full flex items-center justify-center text-white/40 hover:text-white hover:bg-white/20 transition-all"
                 title="Tutup"
               >
                 <X className="h-3 w-3" />
@@ -264,19 +264,19 @@ function Sidebar({
               {/* Question circle */}
               <div
                 className="h-8 w-8 rounded-full flex items-center justify-center mb-3 shrink-0"
-                style={{ background: ACCENT }}
+                style={{ background: "rgba(255,255,255,0.25)" }}
               >
                 <HelpCircle className="h-4 w-4 text-white" />
               </div>
 
               <p className="text-[13px] font-semibold text-white mb-1 leading-tight">Bantuan Portal</p>
-              <p className="text-[11px] text-white/50 mb-3 leading-relaxed">Ada pertanyaan? Hubungi admin atau lihat panduan.</p>
+              <p className="text-[11px] text-white/60 mb-3 leading-relaxed">Ada pertanyaan? Hubungi admin atau lihat panduan.</p>
 
               <button
                 onClick={onLogout}
                 data-testid="button-logout"
                 className="w-full h-8 rounded-xl text-[12px] font-semibold text-white flex items-center justify-center gap-1.5 transition-all hover:bg-white/20 active:scale-95"
-                style={{ background: "rgba(255,255,255,0.10)" }}
+                style={{ background: "rgba(255,255,255,0.18)" }}
               >
                 <LogOut className="h-3.5 w-3.5" />
                 Keluar
@@ -291,7 +291,7 @@ function Sidebar({
             <button
               onClick={onLogout}
               data-testid="button-logout"
-              className="w-full h-9 rounded-2xl text-[12px] font-semibold text-[#999] flex items-center justify-center gap-1.5 transition-all hover:bg-black/[0.05] hover:text-[#555] active:scale-95"
+              className="w-full h-9 rounded-2xl text-[12px] font-semibold text-white/60 flex items-center justify-center gap-1.5 transition-all hover:bg-white/[0.12] hover:text-white active:scale-95"
             >
               <LogOut className="h-3.5 w-3.5" />
               Keluar

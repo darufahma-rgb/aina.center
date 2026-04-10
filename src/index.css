@@ -85,9 +85,9 @@
 @layer utilities {
   /* ── Active nav pill ──────────────────────────────────────────────── */
   .nav-active {
-    background: #5B21B6;
-    color: #ffffff;
-    font-weight: 600;
+    background: #ffffff;
+    color: #5B21B6;
+    font-weight: 700;
   }
 
   /* ── Standard card ────────────────────────────────────────────────── */
