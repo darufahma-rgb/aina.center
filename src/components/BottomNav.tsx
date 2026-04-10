@@ -4,7 +4,7 @@ import {
   LayoutDashboard, CalendarDays, Wallet, FileText,
   Users, Handshake, Mail, Package,
   Wand2, Presentation, Sparkles, UserCog,
-  LogOut, ChevronUp, X,
+  LogOut, X, LayoutGrid,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -294,12 +294,7 @@ export function BottomNav({ user, isAdmin, onLogout, onProfileOpen }: BottomNavP
               </>
             ) : (
               <>
-                <img
-                  src="/aigypt-icon.png"
-                  alt="Menu"
-                  className="h-[22px] w-[22px] shrink-0 mt-1 object-contain"
-                  style={{ filter: "brightness(0)", opacity: 0.35 }}
-                />
+                <LayoutGrid className="h-[22px] w-[22px] shrink-0 mt-1" style={{ color: "#bbb" }} />
                 <span className="text-[9px] font-bold tracking-wide" style={{ color: "#bbb" }}>Menu</span>
               </>
             )}
