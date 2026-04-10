@@ -160,8 +160,7 @@ function Sidebar({
           height: `calc(100vh - ${SIDEBAR_MARGIN * 2}px)`,
           borderRadius: 24,
           background: "#ffffff",
-          border: "1px solid rgba(0,0,0,0.10)",
-          boxShadow: "0 4px 24px rgba(0,0,0,0.07), 0 1px 4px rgba(0,0,0,0.05)",
+          border: "1px solid rgba(0,0,0,0.11)",
         }}
       >
         {/* ── Logo ─────────────────────────────────────────────────── */}

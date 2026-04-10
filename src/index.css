@@ -92,12 +92,13 @@
 
   /* ── Standard card ────────────────────────────────────────────────── */
   .neo-card {
-    @apply bg-white rounded-2xl border;
-    border-color: rgba(0,0,0,0.06);
-    box-shadow: var(--shadow-card);
+    @apply rounded-2xl border;
+    background: #F8F9FB;
+    border-color: rgba(0,0,0,0.10);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
   }
   .neo-card:hover {
-    box-shadow: var(--shadow-md);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.09);
     transform: translateY(-1px);
     transition: all 0.15s ease;
   }
