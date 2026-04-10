@@ -53,6 +53,19 @@ export function registerRoutes(app: Router) {
     res.json(user);
   });
 
+  app.patch("/api/auth/profile", requireAuth, async (req, res) => {
+    const userId = req.session.userId!;
+    const schema = z.object({
+      displayName: z.string().min(1).max(60).optional(),
+      avatarUrl: z.string().url().max(500).or(z.literal("")).optional(),
+    });
+    const parsed = schema.safeParse(req.body);
+    if (!parsed.success) return res.status(400).json({ message: parsed.error.message });
+    const updated = await storage.updateUser(userId, parsed.data);
+    if (!updated) return res.status(404).json({ message: "User not found" });
+    res.json(updated);
+  });
+
   // ── Users (admin only) ──────────────────────────────────────────────────────
 
   app.get("/api/users", requireAdmin, async (req, res) => {

@@ -44,7 +44,7 @@ export default function Login() {
             height: 420,
             top: "-15%",
             right: "-15%",
-            background: "radial-gradient(circle, #C8EC5A 0%, transparent 70%)",
+            background: "radial-gradient(circle, #5B21B6 0%, transparent 70%)",
             filter: "blur(90px)",
             opacity: 0.25,
           }}
@@ -57,7 +57,7 @@ export default function Login() {
             height: 280,
             bottom: "5%",
             left: "-10%",
-            background: "radial-gradient(circle, #C8EC5A 0%, transparent 70%)",
+            background: "radial-gradient(circle, #5B21B6 0%, transparent 70%)",
             filter: "blur(70px)",
             opacity: 0.15,
           }}
@@ -67,9 +67,9 @@ export default function Login() {
         <div className="relative z-10 flex items-center gap-3">
           <div
             className="h-9 w-9 rounded-xl flex items-center justify-center shrink-0"
-            style={{ background: "#C8EC5A" }}
+            style={{ background: "#5B21B6" }}
           >
-            <img src="/logo.png" alt="AINA" className="h-5 w-5 object-contain" style={{ filter: "brightness(0)" }} />
+            <img src="/logo.png" alt="AINA" className="h-5 w-5 object-contain" style={{ filter: "brightness(0) invert(1)" }} />
           </div>
           <div>
             <p className="font-bold text-white text-sm tracking-tight">AINA Centre</p>
@@ -81,7 +81,7 @@ export default function Login() {
         <div className="relative z-10">
           <h1 className="text-4xl font-black text-white leading-tight mb-4">
             Portal Internal<br />
-            <span style={{ color: "#C8EC5A" }}>AINA Centre</span>
+            <span style={{ color: "#A78BFA" }}>AINA Centre</span>
           </h1>
           <p className="text-base text-white/45 leading-relaxed max-w-xs">
             Kelola keuangan, notulensi, agenda, anggota, dan laporan organisasi dalam satu platform terpadu.
@@ -161,7 +161,7 @@ export default function Login() {
               className="w-full h-11 rounded-xl font-semibold text-sm transition-all duration-200 mt-2 disabled:opacity-40 disabled:cursor-not-allowed active:scale-[0.98]"
               style={{
                 background: submitting || !username || !password ? "rgba(28,28,28,0.35)" : "#1C1C1C",
-                color: submitting || !username || !password ? "#aaa" : "#C8EC5A",
+                color: submitting || !username || !password ? "#aaa" : "#A78BFA",
                 boxShadow: submitting || !username || !password ? "none" : "0 4px 18px rgba(0,0,0,0.18)",
               }}
             >

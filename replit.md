@@ -4,13 +4,15 @@ A secure internal management portal for the AINA organization. Built as a fullst
 
 ## Design System
 
-**Theme**: DoDo-inspired — warm gray background (`hsl(60,8%,88%)`), white sidebar + white main card, lime green primary (`#C8EC5A`), dark near-black (`#1C1C1C`) for CTAs and help card  
-**Logo**: `public/logo.png` (AINA Centre Management brand icon, black on lime background)  
-**Layout**: Fixed sidebar (200px, always visible, floating pill style with 12px margin); main content is a white rounded card to the right; sidebar has user profile (lime avatar), nav with lime active pills, and dark help/logout card at bottom  
-**Login**: Split-panel (dark `#1C1C1C` left with lime accent + warm gray right form panel)  
-**Dashboard**: DoDo-style — greeting with lime word highlight, 3 progress ring cards, agenda cards (dark), notulensi table rows, right panel with summary + calendar + finance (admin)  
+**Theme**: DoDo-inspired — warm gray background (`hsl(60,8%,88%)`), white sidebar + white main card, dark purple primary (`#5B21B6`), very dark purple (`#1E0A3C`) for help card  
+**Logo**: `public/logo.png` (AINA Centre Management brand icon, white on purple background)  
+**Layout**: Fixed sidebar (200px, always visible, floating pill style with 12px margin); main content is a white rounded card to the right; sidebar has user profile (purple avatar, clickable to edit profile), nav with purple active pills, and dismissible dark help/logout card at bottom  
+**Login**: Split-panel (dark `#1C1C1C` left with purple accent glows + warm gray right form panel)  
+**Dashboard**: DoDo-style — greeting with purple word highlight, 3 progress ring cards, agenda cards (dark), notulensi table rows, right panel with summary + calendar + finance (admin)  
 **PWA**: `public/manifest.json` + full PWA meta tags in `index.html`  
-**UI Components**: shadcn/ui with `.neo-card`, `.dark-card`, `.nav-active`, `.chip-*` utility classes; lime green as primary, dark as CTA
+**UI Components**: shadcn/ui with `.neo-card`, `.dark-card`, `.nav-active`, `.chip-*` utility classes; dark purple as primary, dark card is very dark purple  
+**Profile**: Users can edit display name and avatar URL via ProfileModal (click avatar or Settings icon); stored in `display_name` and `avatar_url` columns in the users table; API: `PATCH /api/auth/profile`  
+**Help card**: Dismissible via X button; state stored in `localStorage`; when dismissed, a simple logout button row is shown instead
 
 ## Architecture
 

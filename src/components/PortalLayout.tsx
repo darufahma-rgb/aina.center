@@ -9,6 +9,7 @@ import {
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
+import { ProfileModal } from "@/components/ProfileModal";
 
 // ─── Nav config ───────────────────────────────────────────────────────────────
 
@@ -41,12 +42,12 @@ export const NAV_SECTIONS = [
     { title: "Keuangan",  url: "/keuangan",  icon: Wallet,       exact: false },
   ]},
   { label: "Modul", items: [
-    { title: "Surat",         url: "/surat",      icon: Mail,     exact: false },
-    { title: "Inventaris",    url: "/inventaris", icon: Package,  exact: false },
-    { title: "Anggota",       url: "/anggota",    icon: Users,    exact: false },
-    { title: "Relasi",        url: "/relasi",     icon: Handshake, exact: false },
+    { title: "Surat",         url: "/surat",      icon: Mail,         exact: false },
+    { title: "Inventaris",    url: "/inventaris", icon: Package,      exact: false },
+    { title: "Anggota",       url: "/anggota",    icon: Users,        exact: false },
+    { title: "Relasi",        url: "/relasi",     icon: Handshake,    exact: false },
     { title: "Investor Mode", url: "/investor",   icon: Presentation, exact: false },
-    { title: "Fitur Terbaru", url: "/fitur",      icon: Sparkles, exact: false },
+    { title: "Fitur Terbaru", url: "/fitur",      icon: Sparkles,     exact: false },
   ]},
   { label: "Tools", items: [
     { title: "AI Report", url: "/ai-report", icon: Wand2, exact: false },
@@ -60,8 +61,9 @@ export const ADMIN_SECTION = {
 
 // ─── Sidebar width ────────────────────────────────────────────────────────────
 
-const SIDEBAR_W = 200;
+const SIDEBAR_W      = 200;
 const SIDEBAR_MARGIN = 12;
+const ACCENT         = "#5B21B6";
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -92,7 +94,7 @@ function NavItem({
       )}
     >
       <item.icon
-        className={cn("h-[17px] w-[17px] shrink-0 transition-colors", active ? "text-[#1A1A1A]" : "text-[#999] group-hover:text-[#555]")}
+        className={cn("h-[17px] w-[17px] shrink-0 transition-colors", active ? "text-white" : "text-[#999] group-hover:text-[#555]")}
       />
       <span className="truncate">{item.title}</span>
     </Link>
@@ -107,14 +109,27 @@ function Sidebar({
   onLogout,
   mobileOpen,
   onMobileClose,
+  onProfileOpen,
 }: {
   user: any;
   isAdmin: boolean;
   onLogout: () => void;
   mobileOpen: boolean;
   onMobileClose: () => void;
+  onProfileOpen: () => void;
 }) {
-  const initials = user?.username?.slice(0, 2).toUpperCase() ?? "??";
+  const displayName = user?.displayName || user?.username || "??";
+  const initials = displayName.slice(0, 2).toUpperCase();
+
+  const [helpDismissed, setHelpDismissed] = useState<boolean>(() => {
+    try { return localStorage.getItem("helpCardDismissed") === "true"; }
+    catch { return false; }
+  });
+
+  const dismissHelp = () => {
+    setHelpDismissed(true);
+    try { localStorage.setItem("helpCardDismissed", "true"); } catch {}
+  };
 
   return (
     <>
@@ -149,13 +164,13 @@ function Sidebar({
           <Link to="/" className="flex items-center gap-2.5">
             <div
               className="h-8 w-8 rounded-xl flex items-center justify-center shrink-0"
-              style={{ background: "#C8EC5A" }}
+              style={{ background: ACCENT }}
             >
               <img
                 src="/logo.png"
                 alt="AINA"
                 className="h-5 w-5 object-contain"
-                style={{ filter: "brightness(0)" }}
+                style={{ filter: "brightness(0) invert(1)" }}
               />
             </div>
             <span className="font-bold text-[15px] text-[#1A1A1A] leading-none">AINA Centre</span>
@@ -164,16 +179,25 @@ function Sidebar({
 
         {/* ── User profile ─────────────────────────────────────────── */}
         <div className="px-4 pb-5 shrink-0 flex flex-col items-center text-center">
-          <div
-            className="h-[72px] w-[72px] rounded-full flex items-center justify-center text-[#1A1A1A] text-xl font-bold mb-2.5 shrink-0"
-            style={{ background: "#C8EC5A" }}
+          <button
+            onClick={onProfileOpen}
+            className="h-[72px] w-[72px] rounded-full flex items-center justify-center text-white text-xl font-bold mb-2.5 shrink-0 overflow-hidden hover:opacity-90 transition-opacity active:scale-95"
+            style={{ background: ACCENT }}
+            title="Edit Profil"
           >
-            {initials}
-          </div>
-          <div className="flex items-center gap-1">
-            <p className="text-[14px] font-semibold text-[#1A1A1A]">{user?.username}</p>
+            {user?.avatarUrl ? (
+              <img src={user.avatarUrl} alt="avatar" className="h-full w-full object-cover" />
+            ) : (
+              initials
+            )}
+          </button>
+          <button
+            onClick={onProfileOpen}
+            className="flex items-center gap-1 hover:opacity-70 transition-opacity"
+          >
+            <p className="text-[14px] font-semibold text-[#1A1A1A]">{displayName}</p>
             <ChevronDown className="h-3.5 w-3.5 text-[#999]" />
-          </div>
+          </button>
           <p className="text-[12px] text-[#999] mt-0.5">{isAdmin ? "Administrator" : "Anggota"}</p>
         </div>
 
@@ -204,31 +228,55 @@ function Sidebar({
         </div>
 
         {/* ── Help center dark card ─────────────────────────────────── */}
-        <div className="p-3 pb-4 shrink-0">
-          <div className="dark-card p-4">
-            {/* Question circle */}
-            <div
-              className="h-8 w-8 rounded-full flex items-center justify-center mb-3 shrink-0"
-              style={{ background: "#C8EC5A" }}
-            >
-              <HelpCircle className="h-4 w-4 text-[#1A1A1A]" />
+        {!helpDismissed && (
+          <div className="p-3 pb-4 shrink-0">
+            <div className="dark-card p-4 relative">
+              {/* Dismiss button */}
+              <button
+                onClick={dismissHelp}
+                className="absolute top-2.5 right-2.5 h-5 w-5 rounded-full flex items-center justify-center text-white/40 hover:text-white/80 hover:bg-white/10 transition-all"
+                title="Tutup"
+              >
+                <X className="h-3 w-3" />
+              </button>
+
+              {/* Question circle */}
+              <div
+                className="h-8 w-8 rounded-full flex items-center justify-center mb-3 shrink-0"
+                style={{ background: ACCENT }}
+              >
+                <HelpCircle className="h-4 w-4 text-white" />
+              </div>
+
+              <p className="text-[13px] font-semibold text-white mb-1 leading-tight">Bantuan Portal</p>
+              <p className="text-[11px] text-white/50 mb-3 leading-relaxed">Ada pertanyaan? Hubungi admin atau lihat panduan.</p>
+
+              <button
+                onClick={onLogout}
+                data-testid="button-logout"
+                className="w-full h-8 rounded-xl text-[12px] font-semibold text-white flex items-center justify-center gap-1.5 transition-all hover:bg-white/20 active:scale-95"
+                style={{ background: "rgba(255,255,255,0.10)" }}
+              >
+                <LogOut className="h-3.5 w-3.5" />
+                Keluar
+              </button>
             </div>
+          </div>
+        )}
 
-            <p className="text-[13px] font-semibold text-white mb-1 leading-tight">Bantuan Portal</p>
-            <p className="text-[11px] text-white/50 mb-3 leading-relaxed">Ada pertanyaan? Hubungi admin atau lihat panduan.</p>
-
-            {/* Logout button styled like DoDo's "Go to help center" */}
+        {/* ── Logout-only when help card is dismissed ──────────────── */}
+        {helpDismissed && (
+          <div className="p-3 pb-4 shrink-0">
             <button
               onClick={onLogout}
               data-testid="button-logout"
-              className="w-full h-8 rounded-xl text-[12px] font-semibold text-white flex items-center justify-center gap-1.5 transition-all hover:bg-white/20 active:scale-95"
-              style={{ background: "rgba(255,255,255,0.10)" }}
+              className="w-full h-9 rounded-2xl text-[12px] font-semibold text-[#999] flex items-center justify-center gap-1.5 transition-all hover:bg-black/[0.05] hover:text-[#555] active:scale-95"
             >
               <LogOut className="h-3.5 w-3.5" />
               Keluar
             </button>
           </div>
-        </div>
+        )}
       </aside>
     </>
   );
@@ -253,8 +301,8 @@ export function PortalLayout({ children }: PortalLayoutProps) {
   const { pathname } = useLocation();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [searchVal, setSearchVal] = useState("");
+  const [profileOpen, setProfileOpen] = useState(false);
 
-  // Close mobile sidebar on route change
   useEffect(() => { setMobileOpen(false); }, [pathname]);
 
   const handleLogout = async () => {
@@ -274,6 +322,7 @@ export function PortalLayout({ children }: PortalLayoutProps) {
         onLogout={handleLogout}
         mobileOpen={mobileOpen}
         onMobileClose={() => setMobileOpen(false)}
+        onProfileOpen={() => setProfileOpen(true)}
       />
 
       {/* ── Main content — white card ────────────────────────────────── */}
@@ -296,7 +345,6 @@ export function PortalLayout({ children }: PortalLayoutProps) {
 
             {/* Left: mobile menu + page tabs */}
             <div className="flex items-center gap-1">
-              {/* Mobile hamburger */}
               <button
                 className="lg:hidden h-8 w-8 rounded-xl flex items-center justify-center text-[#999] hover:bg-black/[0.05] mr-1"
                 onClick={() => setMobileOpen(true)}
@@ -304,7 +352,6 @@ export function PortalLayout({ children }: PortalLayoutProps) {
                 <Menu className="h-4 w-4" />
               </button>
 
-              {/* Page tabs */}
               <nav className="hidden sm:flex items-center gap-0.5">
                 {PAGE_TABS.map((tab) => {
                   const active = tab.url === "/" ? pathname === "/" : pathname.startsWith(tab.url);
@@ -323,7 +370,7 @@ export function PortalLayout({ children }: PortalLayoutProps) {
                       {active && (
                         <span
                           className="ml-2 h-1.5 w-1.5 rounded-full inline-block"
-                          style={{ background: "#C8EC5A" }}
+                          style={{ background: ACCENT }}
                         />
                       )}
                     </Link>
@@ -334,7 +381,6 @@ export function PortalLayout({ children }: PortalLayoutProps) {
 
             {/* Right: search + controls */}
             <div className="flex items-center gap-2">
-              {/* Search */}
               <div className="relative hidden md:flex items-center">
                 <Search className="absolute left-2.5 h-3.5 w-3.5 text-[#bbb] pointer-events-none" />
                 <input
@@ -346,20 +392,21 @@ export function PortalLayout({ children }: PortalLayoutProps) {
                 />
               </div>
 
-              {/* Bell */}
               <button className="h-8 w-8 rounded-xl flex items-center justify-center text-[#999] hover:bg-black/[0.05] transition-all">
                 <Bell className="h-4 w-4" />
               </button>
 
-              {/* Settings */}
-              <button className="h-8 w-8 rounded-xl flex items-center justify-center text-[#999] hover:bg-black/[0.05] transition-all">
+              <button
+                className="h-8 w-8 rounded-xl flex items-center justify-center text-[#999] hover:bg-black/[0.05] transition-all"
+                onClick={() => setProfileOpen(true)}
+                title="Profil"
+              >
                 <Settings className="h-4 w-4" />
               </button>
 
-              {/* CTA button */}
               <button
                 className="h-8 px-3.5 rounded-xl text-[12px] font-semibold text-white flex items-center gap-1.5 transition-all hover:opacity-90 active:scale-95"
-                style={{ background: "#1A1A1A" }}
+                style={{ background: ACCENT }}
               >
                 <Plus className="h-3.5 w-3.5" />
                 Tambah Baru
@@ -373,6 +420,9 @@ export function PortalLayout({ children }: PortalLayoutProps) {
           </main>
         </div>
       </div>
+
+      {/* ── Profile Modal ────────────────────────────────────────────── */}
+      <ProfileModal open={profileOpen} onClose={() => setProfileOpen(false)} />
     </div>
   );
 }

@@ -57,7 +57,7 @@ function formatDate(d?: string | null) {
 
 // ─── Progress ring ────────────────────────────────────────────────────────────
 
-function ProgressRing({ pct, size = 56, stroke = 5, color = "#C8EC5A" }: { pct: number; size?: number; stroke?: number; color?: string }) {
+function ProgressRing({ pct, size = 56, stroke = 5, color = "#5B21B6" }: { pct: number; size?: number; stroke?: number; color?: string }) {
   const r = (size - stroke) / 2;
   const circ = 2 * Math.PI * r;
   const offset = circ - (pct / 100) * circ;
@@ -78,7 +78,7 @@ function ProgressRing({ pct, size = 56, stroke = 5, color = "#C8EC5A" }: { pct: 
 // ─── Stat card (DoDo style — label top, ring + value) ─────────────────────────
 
 function ProgressCard({
-  label, sublabel, pct, value, color = "#C8EC5A", link,
+  label, sublabel, pct, value, color = "#5B21B6", link,
 }: {
   label: string; sublabel: string; pct: number; value: string | number; color?: string; link?: string;
 }) {
@@ -117,7 +117,7 @@ function AgendaCard({ item }: { item: Agenda }) {
         style={{ background: "#1A1A1A" }}
       >
         <div className="flex items-start justify-between mb-3">
-          <span className="chip chip-lime text-[#5a7a00]">{item.status ?? "Mendatang"}</span>
+          <span className="chip" style={{ background: "rgba(167,139,250,0.20)", color: "#A78BFA" }}>{item.status ?? "Mendatang"}</span>
           <span className="text-[11px] text-white/40 flex items-center gap-1">
             <Clock className="h-3 w-3" />
             {item.time ?? "—"}
@@ -129,7 +129,7 @@ function AgendaCard({ item }: { item: Agenda }) {
           <div className="mt-3 flex items-center gap-2">
             <div
               className="h-6 w-6 rounded-full flex items-center justify-center text-[#1A1A1A] text-[9px] font-bold"
-              style={{ background: "#C8EC5A" }}
+              style={{ background: "#5B21B6" }}
             >
               {item.pic.slice(0, 2).toUpperCase()}
             </div>
@@ -159,7 +159,7 @@ function NotulensiRow({ item, index }: { item: Notulensi; index: number }) {
         {/* Index/avatar */}
         <div
           className="h-9 w-9 rounded-xl flex items-center justify-center text-[10px] font-bold shrink-0"
-          style={{ background: "#C8EC5A", color: "#1A1A1A" }}
+          style={{ background: "#5B21B6", color: "#ffffff" }}
         >
           {String(index + 1).padStart(2, "0")}
         </div>
@@ -231,7 +231,7 @@ export default function Dashboard() {
           </h1>
           <h2 className="text-3xl font-black leading-tight mb-3">
             Apa yang ingin kamu{" "}
-            <span style={{ color: "#C8EC5A" }}>kelola</span>
+            <span style={{ color: "#5B21B6" }}>kelola</span>
             {" "}hari ini?
           </h2>
           <p className="text-[14px] text-[#999] max-w-sm leading-relaxed">
@@ -242,16 +242,16 @@ export default function Dashboard() {
         {/* Quick stats badges */}
         <div className="flex flex-wrap items-center gap-2 lg:mt-1 shrink-0">
           <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white border border-black/[0.08] text-[12px] font-medium text-[#555]">
-            <Users className="h-3.5 w-3.5 text-[#C8EC5A]" style={{ filter: "drop-shadow(0 0 3px #C8EC5A)" }} />
+            <Users className="h-3.5 w-3.5 text-[#5B21B6]" style={{ filter: "drop-shadow(0 0 3px #5B21B6)" }} />
             {isLoading ? "—" : totalAnggota} Anggota
           </div>
           <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white border border-black/[0.08] text-[12px] font-medium text-[#555]">
-            <CalendarDays className="h-3.5 w-3.5 text-[#C8EC5A]" />
+            <CalendarDays className="h-3.5 w-3.5 text-[#5B21B6]" />
             {isLoading ? "—" : data?.upcomingAgenda ?? 0} Agenda
           </div>
           {isAdmin && (
             <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white border border-black/[0.08] text-[12px] font-medium text-[#555]">
-              <Wallet className="h-3.5 w-3.5 text-[#C8EC5A]" />
+              <Wallet className="h-3.5 w-3.5 text-[#5B21B6]" />
               {isLoading ? "—" : formatRp(data?.saldoTersedia ?? 0)}
             </div>
           )}
@@ -271,7 +271,7 @@ export default function Dashboard() {
               label="Penyelesaian"
               pct={completionPct}
               value={isLoading ? "—" : total}
-              color="#C8EC5A"
+              color="#5B21B6"
               link="/notulensi"
             />
             <ProgressCard
@@ -287,7 +287,7 @@ export default function Dashboard() {
               label="Progress"
               pct={fiturPct}
               value={isLoading ? "—" : completedFitur}
-              color="#C8EC5A"
+              color="#5B21B6"
               link="/fitur"
             />
           </div>
@@ -333,7 +333,7 @@ export default function Dashboard() {
                 Notulensi Terbaru
               </h3>
               <div className="flex items-center gap-3">
-                <span className="text-[11px] font-semibold px-2 py-0.5 rounded-full" style={{ background: "#C8EC5A", color: "#1A1A1A" }}>
+                <span className="text-[11px] font-semibold px-2 py-0.5 rounded-full" style={{ background: "#5B21B6", color: "#ffffff" }}>
                   {isLoading ? "—" : notulensi.length}
                 </span>
                 <Link to="/notulensi" className="text-[12px] text-[#999] hover:text-[#1A1A1A] transition-colors flex items-center gap-1">
@@ -389,7 +389,7 @@ export default function Dashboard() {
                     <p className="text-[12px] font-bold text-[#1A1A1A]">{isLoading ? "—" : total}</p>
                   </div>
                   <div className="h-1.5 rounded-full bg-black/[0.06] overflow-hidden">
-                    <div className="h-full rounded-full transition-all duration-700" style={{ width: `${completionPct}%`, background: "#C8EC5A" }} />
+                    <div className="h-full rounded-full transition-all duration-700" style={{ width: `${completionPct}%`, background: "#5B21B6" }} />
                   </div>
                 </div>
               </div>
@@ -421,7 +421,7 @@ export default function Dashboard() {
                     <p className="text-[12px] font-bold text-[#1A1A1A]">{isLoading ? "—" : `${completedFitur}/${totalFitur}`}</p>
                   </div>
                   <div className="h-1.5 rounded-full bg-black/[0.06] overflow-hidden">
-                    <div className="h-full rounded-full transition-all duration-700" style={{ width: `${fiturPct}%`, background: "#C8EC5A" }} />
+                    <div className="h-full rounded-full transition-all duration-700" style={{ width: `${fiturPct}%`, background: "#5B21B6" }} />
                   </div>
                 </div>
               </div>
@@ -436,7 +436,7 @@ export default function Dashboard() {
                 {agendaList.slice(0, 3).map((a) => (
                   <Link to="/agenda" key={a.id}>
                     <div className="flex items-start gap-3 py-2 rounded-xl hover:bg-black/[0.03] px-2 -mx-2 transition-all cursor-pointer">
-                      <div className="h-9 w-9 rounded-xl flex items-center justify-center shrink-0 text-[10px] font-bold text-[#1A1A1A]" style={{ background: "#C8EC5A" }}>
+                      <div className="h-9 w-9 rounded-xl flex items-center justify-center shrink-0 text-[10px] font-bold text-white" style={{ background: "#5B21B6" }}>
                         {formatDate(a.date).split(" ")[0]}
                       </div>
                       <div className="flex-1 min-w-0">
@@ -459,7 +459,7 @@ export default function Dashboard() {
             <div className="bg-white rounded-3xl p-5 border border-black/[0.06]" style={{ boxShadow: "0 2px 12px rgba(0,0,0,0.06)" }}>
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-[15px] font-bold text-[#1A1A1A]">Keuangan</h3>
-                <Link to="/keuangan" className="text-[11px] font-semibold text-[#C8EC5A] hover:opacity-80 transition-opacity">
+                <Link to="/keuangan" className="text-[11px] font-semibold text-[#5B21B6] hover:opacity-80 transition-opacity">
                   Detail →
                 </Link>
               </div>

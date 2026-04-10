@@ -9,6 +9,7 @@ interface AuthContextType {
   isLoading: boolean;
   login: (username: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
+  updateProfile: (data: { displayName?: string; avatarUrl?: string }) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType>({
@@ -17,6 +18,7 @@ const AuthContext = createContext<AuthContextType>({
   isLoading: true,
   login: async () => {},
   logout: async () => {},
+  updateProfile: async () => {},
 });
 
 export function useAuth() {
@@ -45,12 +47,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     },
   });
 
+  const profileMutation = useMutation({
+    mutationFn: (data: { displayName?: string; avatarUrl?: string }) =>
+      apiRequest("PATCH", "/api/auth/profile", data),
+    onSuccess: (data) => {
+      queryClient.setQueryData(["/api/auth/me"], data);
+    },
+  });
+
   const login = async (username: string, password: string) => {
     await loginMutation.mutateAsync({ username, password });
   };
 
   const logout = async () => {
     await logoutMutation.mutateAsync();
+  };
+
+  const updateProfile = async (data: { displayName?: string; avatarUrl?: string }) => {
+    await profileMutation.mutateAsync(data);
   };
 
   return (
@@ -60,6 +74,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       isLoading,
       login,
       logout,
+      updateProfile,
     }}>
       {children}
     </AuthContext.Provider>

@@ -16,31 +16,32 @@
     --popover:       0 0% 100%;
     --popover-foreground: 240 10% 8%;
 
-    --primary:       76 73% 58%;       /* lime green #C8EC5A */
-    --primary-foreground: 240 10% 8%; /* dark text on lime */
+    --primary:       263 72% 42%;      /* dark purple #5B21B6 */
+    --primary-foreground: 0 0% 100%;  /* white on purple */
 
-    --secondary:     76 40% 92%;
-    --secondary-foreground: 76 40% 25%;
+    --secondary:     263 40% 94%;
+    --secondary-foreground: 263 50% 30%;
 
     --muted:         60 5% 93%;
     --muted-foreground: 240 5% 50%;
 
-    --accent:        76 73% 58%;
-    --accent-foreground: 240 10% 8%;
+    --accent:        263 72% 42%;
+    --accent-foreground: 0 0% 100%;
 
     --destructive:   0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
     --border:        60 5% 88%;
     --input:         60 5% 92%;
-    --ring:          76 73% 58%;
+    --ring:          263 72% 42%;
 
     --radius: 0.75rem;
 
-    /* ── Lime accent ─────────────────────────────────────────────────*/
-    --lime:      #C8EC5A;
-    --lime-dark: #A8CC3A;
-    --dark-card: #1C1C1C;
+    /* ── Dark purple accent ──────────────────────────────────────────*/
+    --purple:       #5B21B6;
+    --purple-dark:  #4C1D95;
+    --purple-light: #7C3AED;
+    --dark-card:    #1E0A3C;
 
     /* ── Shadows ──────────────────────────────────────────────────── */
     --shadow-card:   0 2px 12px rgba(0,0,0,0.07), 0 1px 3px rgba(0,0,0,0.05);
@@ -48,8 +49,8 @@
     --shadow-md:     0 4px 20px rgba(0,0,0,0.10), 0 2px 8px rgba(0,0,0,0.06);
     --shadow-sidebar: 0 8px 40px rgba(0,0,0,0.12), 0 2px 10px rgba(0,0,0,0.06);
 
-    /* Legacy purple vars kept for other pages */
-    --gradient-primary: linear-gradient(135deg, #C8EC5A, #A8CC3A);
+    /* Legacy vars for other pages */
+    --gradient-primary: linear-gradient(135deg, #5B21B6, #7C3AED);
     --gradient-investor: linear-gradient(135deg, hsl(252,52%,6%), hsl(265,60%,18%));
 
     --chart-1: 76 73% 58%;
@@ -84,8 +85,8 @@
 @layer utilities {
   /* ── Active nav pill ──────────────────────────────────────────────── */
   .nav-active {
-    background: #C8EC5A;
-    color: #1A1A1A;
+    background: #5B21B6;
+    color: #ffffff;
     font-weight: 600;
   }
 
@@ -103,15 +104,15 @@
 
   /* ── Dark help card ───────────────────────────────────────────────── */
   .dark-card {
-    background: #1C1C1C;
+    background: #1E0A3C;
     color: white;
     border-radius: 20px;
   }
 
-  /* ── Lime badge ───────────────────────────────────────────────────── */
+  /* ── Purple badge ───────────────────────────────────────────────────── */
   .badge-lime {
-    background: #C8EC5A;
-    color: #1A1A1A;
+    background: #5B21B6;
+    color: #ffffff;
     font-size: 10px;
     font-weight: 700;
     padding: 1px 6px;
@@ -120,12 +121,12 @@
 
   /* ── Status chips ─────────────────────────────────────────────────── */
   .chip { @apply inline-flex items-center text-[10px] font-semibold px-2 py-0.5 rounded-full; }
-  .chip-green  { @apply chip; background: rgba(34,197,94,0.12);  color: #16a34a; }
-  .chip-amber  { @apply chip; background: rgba(245,158,11,0.12); color: #d97706; }
-  .chip-blue   { @apply chip; background: rgba(59,130,246,0.12); color: #2563eb; }
-  .chip-lime   { @apply chip; background: rgba(200,236,90,0.25); color: #5a7a00; }
-  .chip-gray   { @apply chip; background: rgba(0,0,0,0.06);      color: #555; }
-  .chip-red    { @apply chip; background: rgba(239,68,68,0.12);  color: #dc2626; }
+  .chip-green  { @apply chip; background: rgba(34,197,94,0.12);   color: #16a34a; }
+  .chip-amber  { @apply chip; background: rgba(245,158,11,0.12);  color: #d97706; }
+  .chip-blue   { @apply chip; background: rgba(59,130,246,0.12);  color: #2563eb; }
+  .chip-lime   { @apply chip; background: rgba(91,33,182,0.12);   color: #5B21B6; }
+  .chip-gray   { @apply chip; background: rgba(0,0,0,0.06);       color: #555; }
+  .chip-red    { @apply chip; background: rgba(239,68,68,0.12);   color: #dc2626; }
 
   /* ── Shadow helpers ───────────────────────────────────────────────── */
   .shadow-card { box-shadow: var(--shadow-card); }
