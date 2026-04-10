@@ -61,10 +61,10 @@ export default function Login() {
         <div className="relative z-10 flex-1 flex flex-col items-center justify-center" style={{ paddingTop: "env(safe-area-inset-top, 0px)" }}>
           <div className="logo-float">
             <img
-              src="/aigypt-icon.png"
-              alt="AIGYPT"
+              src="/login-logo.png"
+              alt="AINA Centre"
               className="object-contain"
-              style={{ height: 110, width: 110 }}
+              style={{ height: 160, width: 160 }}
             />
           </div>
           <p
