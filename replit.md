@@ -4,12 +4,13 @@ A secure internal management portal for the AINA organization. Built as a fullst
 
 ## Design System
 
-**Theme**: Light workspace with purple accents — `--primary: 265 83% 57%`, light gray background, white cards, dark sidebar  
-**Logo**: `public/logo.png` (AINA Centre Management brand icon)  
-**Layout**: Always-icon-only sidebar (60px); Dashboard is a 3-column full-bleed layout (dark left panel + center content + right floating cards, matching premium SaaS reference); other pages use standard padded layout; mobile bottom nav bar  
-**Login**: Split-panel (dark purple branding left + light form right)  
+**Theme**: DoDo-inspired — warm gray background (`hsl(60,8%,88%)`), white sidebar + white main card, lime green primary (`#C8EC5A`), dark near-black (`#1C1C1C`) for CTAs and help card  
+**Logo**: `public/logo.png` (AINA Centre Management brand icon, black on lime background)  
+**Layout**: Fixed sidebar (200px, always visible, floating pill style with 12px margin); main content is a white rounded card to the right; sidebar has user profile (lime avatar), nav with lime active pills, and dark help/logout card at bottom  
+**Login**: Split-panel (dark `#1C1C1C` left with lime accent + warm gray right form panel)  
+**Dashboard**: DoDo-style — greeting with lime word highlight, 3 progress ring cards, agenda cards (dark), notulensi table rows, right panel with summary + calendar + finance (admin)  
 **PWA**: `public/manifest.json` + full PWA meta tags in `index.html`  
-**UI Components**: shadcn/ui with neosoft layered shadow tokens (`shadow-neo-*`), purple gradient active pills (`.nav-active-pill`), glassmorphic header (`.glass-header`)
+**UI Components**: shadcn/ui with `.neo-card`, `.dark-card`, `.nav-active`, `.chip-*` utility classes; lime green as primary, dark as CTA
 
 ## Architecture
 

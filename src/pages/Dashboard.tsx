@@ -1,26 +1,22 @@
 import {
-  FileText, CalendarDays, Sparkles, Users,
-  TrendingUp, Clock, Search, Filter, ArrowUpDown,
-  MoreHorizontal, CheckCircle2, AlertCircle,
+  FileText, CalendarDays, Users, TrendingUp,
+  CheckCircle2, AlertCircle, Sparkles, Clock,
+  ArrowRight, MoreHorizontal, Wallet,
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
 import { cn } from "@/lib/utils";
-import { useState } from "react";
-import type { Notulensi, Agenda, FiturTerbaru } from "../../shared/schema";
+import type { Notulensi, Agenda } from "../../shared/schema";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 interface InsightData {
   notulensiThisWeek: number;
-  notulensiLastWeek: number;
   agendaThisMonth: number;
   fiturThisMonth: number;
   completedFitur: number;
-  inProgressFitur: number;
   totalFitur: number;
-  topCategory: string | null;
   incomeThisMonth: number;
   expenseThisMonth: number;
   balance: number;
@@ -37,7 +33,7 @@ interface DashboardData {
   totalExpense: number;
   recentNotulensi: Notulensi[];
   upcomingAgendaList: Agenda[];
-  latestFitur: FiturTerbaru[];
+  latestFitur: any[];
   insights: InsightData;
 }
 
@@ -50,344 +46,456 @@ function formatRp(n: number) {
   return "Rp " + n.toLocaleString("id-ID");
 }
 
-// ─── Stat card ────────────────────────────────────────────────────────────────
+function formatDate(d?: string | null) {
+  if (!d) return "—";
+  try {
+    return new Date(d).toLocaleDateString("id-ID", { day: "numeric", month: "short" });
+  } catch {
+    return d;
+  }
+}
 
-function StatCard({ label, value, sub, color, icon: Icon }: { label: string; value: string | number; sub?: string; color: string; icon: any }) {
+// ─── Progress ring ────────────────────────────────────────────────────────────
+
+function ProgressRing({ pct, size = 56, stroke = 5, color = "#C8EC5A" }: { pct: number; size?: number; stroke?: number; color?: string }) {
+  const r = (size - stroke) / 2;
+  const circ = 2 * Math.PI * r;
+  const offset = circ - (pct / 100) * circ;
   return (
-    <div className={cn("rounded-3xl p-5 flex flex-col justify-between min-h-[110px]", color)}>
-      <div className="flex items-center justify-between">
-        <div className="h-9 w-9 rounded-2xl bg-black/10 flex items-center justify-center">
-          <Icon className="h-4.5 w-4.5 text-black/60" style={{ height: 18, width: 18 }} />
-        </div>
-        <MoreHorizontal className="h-4 w-4 text-black/30" />
-      </div>
+    <svg width={size} height={size} className="-rotate-90">
+      <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="rgba(0,0,0,0.07)" strokeWidth={stroke} />
+      <circle
+        cx={size / 2} cy={size / 2} r={r} fill="none"
+        stroke={color} strokeWidth={stroke}
+        strokeDasharray={circ} strokeDashoffset={offset}
+        strokeLinecap="round"
+        style={{ transition: "stroke-dashoffset 0.6s ease" }}
+      />
+    </svg>
+  );
+}
+
+// ─── Stat card (DoDo style — label top, ring + value) ─────────────────────────
+
+function ProgressCard({
+  label, sublabel, pct, value, color = "#C8EC5A", link,
+}: {
+  label: string; sublabel: string; pct: number; value: string | number; color?: string; link?: string;
+}) {
+  const inner = (
+    <div
+      className="flex-1 rounded-2xl p-4 flex flex-col gap-3 transition-all duration-150 hover:-translate-y-0.5 cursor-pointer"
+      style={{ background: "rgba(0,0,0,0.03)", border: "1px solid rgba(0,0,0,0.06)" }}
+    >
       <div>
-        <p className="text-[12px] font-semibold text-black/55 mb-0.5">{label}</p>
-        <div className="flex items-end gap-2">
-          <span className="text-3xl font-bold text-black/80 leading-none">{value}</span>
-          {sub && <span className="text-[11px] text-black/45 mb-0.5">{sub}</span>}
+        <p className="text-[10px] font-bold uppercase tracking-widest text-[#999]">{sublabel}</p>
+        <p className="text-[14px] font-bold text-[#1A1A1A] mt-0.5">{label}</p>
+      </div>
+      <div className="flex items-center justify-between">
+        <div className="relative flex items-center justify-center">
+          <ProgressRing pct={pct} color={color} />
+          <span className="absolute text-[12px] font-bold text-[#1A1A1A]" style={{ transform: "rotate(90deg)" }}>
+            {pct}%
+          </span>
+        </div>
+        <div className="text-right">
+          <p className="text-2xl font-black text-[#1A1A1A] leading-none">{value}</p>
         </div>
       </div>
     </div>
   );
+  return link ? <Link to={link} className="flex flex-1">{inner}</Link> : inner;
 }
 
-// ─── Kanban card ──────────────────────────────────────────────────────────────
+// ─── Agenda / To-do card ──────────────────────────────────────────────────────
 
-interface KanbanCardData {
-  id: number | string;
-  title: string;
-  description?: string;
-  date?: string;
-  tags: { label: string; color: string }[];
-  pic?: string;
-  count?: { icon: any; value: number }[];
-  link: string;
-}
-
-function KanbanCard({ card }: { card: KanbanCardData }) {
+function AgendaCard({ item }: { item: Agenda }) {
   return (
-    <Link to={card.link}>
-      <div className="bg-white rounded-2xl p-4 hover:shadow-md transition-all duration-150 hover:-translate-y-0.5 cursor-pointer" style={{ boxShadow: "0 1px 3px rgba(0,0,0,0.06), 0 2px 8px rgba(0,0,0,0.04)" }}>
-        {/* Tags */}
-        {card.tags.length > 0 && (
-          <div className="flex flex-wrap gap-1.5 mb-3">
-            {card.tags.map((t, i) => (
-              <span key={i} className={cn("text-[10px] font-semibold px-2 py-0.5 rounded-full", t.color)}>{t.label}</span>
-            ))}
-          </div>
-        )}
-
-        {/* Title */}
-        <p className="text-[13px] font-semibold text-foreground leading-snug mb-2">{card.title}</p>
-
-        {/* Description */}
-        {card.description && (
-          <p className="text-[11px] text-muted-foreground leading-relaxed mb-3 line-clamp-2">{card.description}</p>
-        )}
-
-        {/* Footer */}
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2.5 text-[11px] text-muted-foreground">
-            {card.date && (
-              <span className="flex items-center gap-1">
-                <Clock className="h-3 w-3" />
-                {card.date}
-              </span>
-            )}
-            {card.count?.map((c, i) => (
-              <span key={i} className="flex items-center gap-1">
-                <c.icon className="h-3 w-3" />
-                {c.value}
-              </span>
-            ))}
-          </div>
-          {card.pic && (
-            <div className="h-6 w-6 rounded-full flex items-center justify-center text-white text-[9px] font-bold shrink-0" style={{ background: "linear-gradient(135deg, hsl(265,83%,57%), hsl(285,70%,50%))" }}>
-              {card.pic.slice(0, 2).toUpperCase()}
-            </div>
-          )}
+    <Link to="/agenda">
+      <div
+        className="rounded-2xl p-4 transition-all duration-150 hover:shadow-md cursor-pointer"
+        style={{ background: "#1A1A1A" }}
+      >
+        <div className="flex items-start justify-between mb-3">
+          <span className="chip chip-lime text-[#5a7a00]">{item.status ?? "Mendatang"}</span>
+          <span className="text-[11px] text-white/40 flex items-center gap-1">
+            <Clock className="h-3 w-3" />
+            {item.time ?? "—"}
+          </span>
         </div>
+        <p className="text-[13px] font-semibold text-white leading-snug mb-1 line-clamp-2">{item.title}</p>
+        <p className="text-[11px] text-white/45 leading-relaxed line-clamp-2">{item.description ?? ""}</p>
+        {item.pic && (
+          <div className="mt-3 flex items-center gap-2">
+            <div
+              className="h-6 w-6 rounded-full flex items-center justify-center text-[#1A1A1A] text-[9px] font-bold"
+              style={{ background: "#C8EC5A" }}
+            >
+              {item.pic.slice(0, 2).toUpperCase()}
+            </div>
+            <span className="text-[11px] text-white/50">{item.pic}</span>
+          </div>
+        )}
       </div>
     </Link>
   );
 }
 
-// ─── Kanban column ────────────────────────────────────────────────────────────
+// ─── Notulensi row (DoDo "my assignments") ────────────────────────────────────
 
-function KanbanColumn({ title, count, cards, loading }: { title: string; count: number; cards: KanbanCardData[]; loading: boolean }) {
+function NotulensiRow({ item, index }: { item: Notulensi; index: number }) {
+  const STATUS_COLOR: Record<string, { bg: string; text: string }> = {
+    final: { bg: "rgba(34,197,94,0.12)", text: "#16a34a" },
+    draft: { bg: "rgba(245,158,11,0.12)", text: "#d97706" },
+  };
+  const color = STATUS_COLOR[item.status ?? "draft"] ?? STATUS_COLOR.draft;
+
   return (
-    <div className="flex-1 min-w-[220px] flex flex-col">
-      {/* Column header */}
-      <div className="flex items-center gap-2 mb-3 shrink-0">
-        <h3 className="text-[13px] font-semibold text-foreground">{title}</h3>
-        <span className="text-[11px] font-semibold text-muted-foreground bg-black/[0.06] px-2 py-0.5 rounded-full">
-          {loading ? "—" : count}
-        </span>
-      </div>
+    <Link to="/notulensi">
+      <div className={cn(
+        "flex items-center gap-4 py-3 px-2 rounded-2xl transition-all hover:bg-black/[0.03] cursor-pointer",
+        index > 0 && "border-t border-black/[0.05]",
+      )}>
+        {/* Index/avatar */}
+        <div
+          className="h-9 w-9 rounded-xl flex items-center justify-center text-[10px] font-bold shrink-0"
+          style={{ background: "#C8EC5A", color: "#1A1A1A" }}
+        >
+          {String(index + 1).padStart(2, "0")}
+        </div>
 
-      {/* Cards */}
-      <div className="space-y-3 flex-1">
-        {loading ? (
-          <>
-            {[1, 2].map(i => <div key={i} className="h-28 rounded-2xl bg-white/80 animate-pulse" style={{ boxShadow: "0 1px 3px rgba(0,0,0,0.06)" }} />)}
-          </>
-        ) : cards.length === 0 ? (
-          <div className="rounded-2xl border-2 border-dashed p-6 text-center" style={{ borderColor: "hsl(var(--border))" }}>
-            <p className="text-[12px] text-muted-foreground/50">Tidak ada item</p>
-          </div>
-        ) : (
-          cards.map(card => <KanbanCard key={card.id} card={card} />)
+        {/* Title + date */}
+        <div className="flex-1 min-w-0">
+          <p className="text-[13px] font-semibold text-[#1A1A1A] truncate">{item.title}</p>
+          <p className="text-[11px] text-[#999] mt-0.5">{formatDate(item.date)}</p>
+        </div>
+
+        {/* Facilitator */}
+        {item.facilitator && (
+          <p className="text-[11px] text-[#999] hidden sm:block shrink-0">{item.facilitator}</p>
         )}
+
+        {/* Status badge */}
+        <span
+          className="px-2.5 py-0.5 rounded-full text-[11px] font-semibold shrink-0"
+          style={{ background: color.bg, color: color.text }}
+        >
+          {item.status === "final" ? "Final" : "Draft"}
+        </span>
+
+        {/* Decisions count */}
+        {(item.decisions?.length ?? 0) > 0 && (
+          <span className="text-[11px] text-[#bbb] shrink-0 hidden md:block">
+            <CheckCircle2 className="h-3.5 w-3.5 inline mr-0.5" />
+            {item.decisions.length}
+          </span>
+        )}
+
+        <ArrowRight className="h-4 w-4 text-[#ddd] shrink-0" />
       </div>
-    </div>
+    </Link>
   );
 }
 
 // ─── Dashboard ────────────────────────────────────────────────────────────────
 
 export default function Dashboard() {
-  const { isAdmin } = useAuth();
+  const { user, isAdmin } = useAuth();
   const { data, isLoading } = useQuery<DashboardData>({ queryKey: ["/api/dashboard"] });
-  const [search, setSearch] = useState("");
 
-  // Completion rate
   const total = data?.totalNotulensi ?? 0;
   const final = (data?.recentNotulensi ?? []).filter(n => n.status === "final").length;
   const completionPct = total > 0 ? Math.round((final / total) * 100) : 0;
 
-  // Build kanban data from API
   const notulensi = data?.recentNotulensi ?? [];
   const agendaList = data?.upcomingAgendaList ?? [];
-  const fiturList = data?.latestFitur ?? [];
 
-  const searchLower = search.toLowerCase();
+  const totalFitur = data?.insights?.totalFitur ?? 0;
+  const completedFitur = data?.insights?.completedFitur ?? 0;
+  const fiturPct = totalFitur > 0 ? Math.round((completedFitur / totalFitur) * 100) : 0;
 
-  const STATUS_COLOR: Record<string, string> = {
-    final:       "bg-emerald-100 text-emerald-700",
-    draft:       "bg-amber-100 text-amber-700",
-    completed:   "bg-emerald-100 text-emerald-700",
-    in_progress: "bg-violet-100 text-violet-700",
-    planned:     "bg-blue-100 text-blue-700",
-    on_hold:     "bg-gray-100 text-gray-600",
-  };
+  const agendaThisMonth = data?.insights?.agendaThisMonth ?? 0;
+  const totalAnggota = data?.totalAnggota ?? 0;
+  const agendaPct = totalAnggota > 0 ? Math.min(100, Math.round((agendaThisMonth / Math.max(totalAnggota, 1)) * 100)) : 0;
 
-  const draftCards: KanbanCardData[] = notulensi
-    .filter(n => n.status === "draft" && (!search || n.title?.toLowerCase().includes(searchLower)))
-    .map(n => ({
-      id: n.id,
-      title: n.title,
-      description: n.notes ?? "",
-      date: n.date,
-      tags: [
-        { label: "Notulensi", color: "bg-slate-100 text-slate-600" },
-        { label: "Draft",     color: STATUS_COLOR.draft },
-      ],
-      pic: n.facilitator ?? undefined,
-      count: (n.decisions?.length ?? 0) > 0 ? [{ icon: CheckCircle2, value: n.decisions.length }] : undefined,
-      link: "/notulensi",
-    }));
-
-  const agendaCards: KanbanCardData[] = agendaList
-    .filter(a => !search || a.title?.toLowerCase().includes(searchLower))
-    .map(a => ({
-      id: a.id,
-      title: a.title,
-      description: a.description ?? "",
-      date: `${a.date} · ${a.time}`,
-      tags: [
-        { label: "Agenda", color: "bg-blue-100 text-blue-700" },
-        { label: a.status ?? "upcoming", color: "bg-slate-100 text-slate-600" },
-      ],
-      pic: a.pic ?? undefined,
-      link: "/agenda",
-    }));
-
-  const fiturCards: KanbanCardData[] = fiturList
-    .filter(f => f.status === "in_progress" && (!search || f.name?.toLowerCase().includes(searchLower)))
-    .map(f => ({
-      id: f.id,
-      title: f.name,
-      description: f.description ?? "",
-      date: f.createdAt ? new Date(f.createdAt).toLocaleDateString("id-ID", { day: "numeric", month: "short" }) : undefined,
-      tags: [
-        { label: f.category ?? "Fitur", color: "bg-violet-100 text-violet-700" },
-        { label: "Aktif", color: STATUS_COLOR.in_progress },
-      ],
-      link: "/fitur",
-    }));
-
-  const finalCards: KanbanCardData[] = notulensi
-    .filter(n => n.status === "final" && (!search || n.title?.toLowerCase().includes(searchLower)))
-    .map(n => ({
-      id: n.id,
-      title: n.title,
-      date: n.date,
-      tags: [
-        { label: "Notulensi", color: "bg-slate-100 text-slate-600" },
-        { label: "Final",     color: STATUS_COLOR.final },
-      ],
-      pic: n.facilitator ?? undefined,
-      count: (n.decisions?.length ?? 0) > 0 ? [{ icon: CheckCircle2, value: n.decisions.length }] : undefined,
-      link: "/notulensi",
-    }));
+  const displayName = user?.username ?? "—";
 
   return (
-    <div className="animate-fade-in">
+    <div className="animate-fade-in max-w-full">
 
-      {/* ── Page header ────────────────────────────────────────────────── */}
-      <div className="flex items-center justify-between mb-5">
-        <h1 className="text-2xl font-bold text-foreground tracking-tight">AINA Dashboard</h1>
+      {/* ── Greeting ─────────────────────────────────────────────────── */}
+      <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6 mb-8">
+        <div>
+          <h1 className="text-3xl font-black text-[#1A1A1A] leading-tight mb-1">
+            Halo, {displayName}! <span role="img" aria-label="wave">👋</span>
+          </h1>
+          <h2 className="text-3xl font-black leading-tight mb-3">
+            Apa yang ingin kamu{" "}
+            <span style={{ color: "#C8EC5A" }}>kelola</span>
+            {" "}hari ini?
+          </h2>
+          <p className="text-[14px] text-[#999] max-w-sm leading-relaxed">
+            Pantau agenda, notulensi, dan keuangan organisasi AINA Centre dari satu tempat.
+          </p>
+        </div>
 
-        {/* View tabs */}
-        <div className="flex items-center gap-1 p-1 rounded-xl" style={{ background: "rgba(0,0,0,0.06)" }}>
-          {["Board", "List", "Workflow"].map((tab) => (
-            <button
-              key={tab}
-              className={cn(
-                "px-3 h-7 rounded-lg text-[12px] font-semibold transition-all",
-                tab === "Board"
-                  ? "bg-foreground text-background shadow-sm"
-                  : "text-muted-foreground hover:text-foreground",
-              )}
-            >
-              {tab}
-            </button>
-          ))}
+        {/* Quick stats badges */}
+        <div className="flex flex-wrap items-center gap-2 lg:mt-1 shrink-0">
+          <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white border border-black/[0.08] text-[12px] font-medium text-[#555]">
+            <Users className="h-3.5 w-3.5 text-[#C8EC5A]" style={{ filter: "drop-shadow(0 0 3px #C8EC5A)" }} />
+            {isLoading ? "—" : totalAnggota} Anggota
+          </div>
+          <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white border border-black/[0.08] text-[12px] font-medium text-[#555]">
+            <CalendarDays className="h-3.5 w-3.5 text-[#C8EC5A]" />
+            {isLoading ? "—" : data?.upcomingAgenda ?? 0} Agenda
+          </div>
+          {isAdmin && (
+            <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white border border-black/[0.08] text-[12px] font-medium text-[#555]">
+              <Wallet className="h-3.5 w-3.5 text-[#C8EC5A]" />
+              {isLoading ? "—" : formatRp(data?.saldoTersedia ?? 0)}
+            </div>
+          )}
         </div>
       </div>
 
-      {/* ── Search + filter bar ─────────────────────────────────────────── */}
-      <div className="flex items-center justify-between gap-4 mb-5">
-        <div className="relative flex-1 max-w-xs">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground/50 pointer-events-none" />
-          <input
-            type="text"
-            placeholder="Cari item..."
-            value={search}
-            onChange={e => setSearch(e.target.value)}
-            className="w-full h-9 pl-8 pr-3 rounded-xl text-[13px] bg-white border border-border text-foreground placeholder:text-muted-foreground/40 focus:outline-none focus:ring-2 focus:ring-primary/25 transition-all"
-            style={{ boxShadow: "0 1px 3px rgba(0,0,0,0.05)" }}
-          />
+      {/* ── Main grid ────────────────────────────────────────────────── */}
+      <div className="flex flex-col xl:flex-row gap-5">
+
+        {/* ── Left column ────────────────────────────────────────────── */}
+        <div className="flex-1 min-w-0 space-y-5">
+
+          {/* ── Progress cards row ─────────────────────────────────── */}
+          <div className="flex gap-3">
+            <ProgressCard
+              sublabel="Notulensi"
+              label="Penyelesaian"
+              pct={completionPct}
+              value={isLoading ? "—" : total}
+              color="#C8EC5A"
+              link="/notulensi"
+            />
+            <ProgressCard
+              sublabel="Agenda Bulan Ini"
+              label="Kehadiran"
+              pct={isLoading ? 0 : agendaPct}
+              value={isLoading ? "—" : data?.upcomingAgenda ?? 0}
+              color="#1A1A1A"
+              link="/agenda"
+            />
+            <ProgressCard
+              sublabel="Fitur"
+              label="Progress"
+              pct={fiturPct}
+              value={isLoading ? "—" : completedFitur}
+              color="#C8EC5A"
+              link="/fitur"
+            />
+          </div>
+
+          {/* ── Agenda mendatang (To-do list) ────────────────────── */}
+          <div className="bg-white rounded-3xl p-5 border border-black/[0.06]" style={{ boxShadow: "0 2px 12px rgba(0,0,0,0.06)" }}>
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-[15px] font-bold text-[#1A1A1A]">
+                Agenda Mendatang
+                {!isLoading && agendaList.length > 0 && (
+                  <span className="ml-2 text-[12px] font-semibold text-[#999]">{agendaList.length} item</span>
+                )}
+              </h3>
+              <div className="flex items-center gap-2 text-[12px] text-[#999]">
+                <Link to="/agenda" className="hover:text-[#1A1A1A] transition-colors flex items-center gap-1">
+                  <ArrowRight className="h-3.5 w-3.5" /> Semua
+                </Link>
+              </div>
+            </div>
+
+            {isLoading ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {[1, 2].map(i => <div key={i} className="h-32 rounded-2xl bg-black/[0.04] animate-pulse" />)}
+              </div>
+            ) : agendaList.length === 0 ? (
+              <div className="py-10 text-center">
+                <CalendarDays className="h-8 w-8 text-[#ddd] mx-auto mb-2" />
+                <p className="text-[13px] text-[#bbb]">Belum ada agenda mendatang</p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {agendaList.slice(0, 4).map((a) => (
+                  <AgendaCard key={a.id} item={a} />
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* ── Notulensi terbaru (My assignments) ───────────────── */}
+          <div className="bg-white rounded-3xl p-5 border border-black/[0.06]" style={{ boxShadow: "0 2px 12px rgba(0,0,0,0.06)" }}>
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-[15px] font-bold text-[#1A1A1A]">
+                Notulensi Terbaru
+              </h3>
+              <div className="flex items-center gap-3">
+                <span className="text-[11px] font-semibold px-2 py-0.5 rounded-full" style={{ background: "#C8EC5A", color: "#1A1A1A" }}>
+                  {isLoading ? "—" : notulensi.length}
+                </span>
+                <Link to="/notulensi" className="text-[12px] text-[#999] hover:text-[#1A1A1A] transition-colors flex items-center gap-1">
+                  <ArrowRight className="h-3.5 w-3.5" />
+                </Link>
+              </div>
+            </div>
+
+            {isLoading ? (
+              <div className="space-y-3">
+                {[1, 2, 3].map(i => <div key={i} className="h-14 rounded-2xl bg-black/[0.04] animate-pulse" />)}
+              </div>
+            ) : notulensi.length === 0 ? (
+              <div className="py-10 text-center">
+                <FileText className="h-8 w-8 text-[#ddd] mx-auto mb-2" />
+                <p className="text-[13px] text-[#bbb]">Belum ada notulensi</p>
+              </div>
+            ) : (
+              <div>
+                {notulensi.slice(0, 5).map((n, i) => (
+                  <NotulensiRow key={n.id} item={n} index={i} />
+                ))}
+                <Link
+                  to="/notulensi"
+                  className="mt-3 flex items-center justify-center gap-2 py-2.5 rounded-2xl text-[12px] font-semibold text-[#999] hover:text-[#1A1A1A] hover:bg-black/[0.03] transition-all border-2 border-dashed border-black/[0.08]"
+                >
+                  <span>+ Tambah Notulensi Baru</span>
+                </Link>
+              </div>
+            )}
+          </div>
         </div>
-        <div className="flex items-center gap-2 text-[12px] text-muted-foreground/60">
-          <button className="flex items-center gap-1.5 hover:text-foreground transition-colors">
-            <Filter className="h-3.5 w-3.5" /> Filter
-          </button>
-          <span className="text-border">|</span>
-          <button className="flex items-center gap-1.5 hover:text-foreground transition-colors">
-            <ArrowUpDown className="h-3.5 w-3.5" /> Sort by
-          </button>
-        </div>
-      </div>
 
-      {/* ── Stat cards row ──────────────────────────────────────────────── */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-7">
-        <StatCard
-          label="Total Notulensi"
-          value={isLoading ? "—" : data?.totalNotulensi ?? 0}
-          sub={data?.insights?.notulensiThisWeek ? `+${data.insights.notulensiThisWeek} minggu ini` : undefined}
-          color="bg-[#C4B5F8]"
-          icon={FileText}
-        />
-        <StatCard
-          label="Agenda Aktif"
-          value={isLoading ? "—" : data?.upcomingAgenda ?? 0}
-          sub={isLoading ? undefined : `${data?.totalAnggota ?? 0} anggota`}
-          color="bg-[#F4A18A]"
-          icon={CalendarDays}
-        />
-        <StatCard
-          label="Penyelesaian"
-          value={isLoading ? "—" : `${completionPct}%`}
-          sub={isLoading ? undefined : `${data?.insights?.completedFitur ?? 0} fitur selesai`}
-          color="bg-[#A8B4F0]"
-          icon={CheckCircle2}
-        />
-      </div>
+        {/* ── Right column ───────────────────────────────────────────── */}
+        <div className="xl:w-72 space-y-5 shrink-0">
 
-      {/* ── Kanban board ────────────────────────────────────────────────── */}
-      <div className="flex gap-4 overflow-x-auto pb-4" style={{ scrollbarWidth: "thin" }}>
+          {/* ── Stats summary (right panel top) ──────────────────── */}
+          <div className="bg-white rounded-3xl p-5 border border-black/[0.06]" style={{ boxShadow: "0 2px 12px rgba(0,0,0,0.06)" }}>
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-[15px] font-bold text-[#1A1A1A]">Ringkasan</h3>
+              <MoreHorizontal className="h-4 w-4 text-[#ccc]" />
+            </div>
 
-        <KanbanColumn
-          title="Draft"
-          count={draftCards.length}
-          cards={draftCards}
-          loading={isLoading}
-        />
+            <div className="space-y-3">
+              {/* Notulensi */}
+              <div className="flex items-center gap-3">
+                <div className="h-9 w-9 rounded-xl flex items-center justify-center shrink-0" style={{ background: "rgba(200,236,90,0.20)" }}>
+                  <FileText className="h-4 w-4 text-[#5a7a00]" />
+                </div>
+                <div className="flex-1">
+                  <div className="flex items-center justify-between mb-1">
+                    <p className="text-[12px] font-semibold text-[#1A1A1A]">Notulensi</p>
+                    <p className="text-[12px] font-bold text-[#1A1A1A]">{isLoading ? "—" : total}</p>
+                  </div>
+                  <div className="h-1.5 rounded-full bg-black/[0.06] overflow-hidden">
+                    <div className="h-full rounded-full transition-all duration-700" style={{ width: `${completionPct}%`, background: "#C8EC5A" }} />
+                  </div>
+                </div>
+              </div>
 
-        <KanbanColumn
-          title="Agenda Mendatang"
-          count={agendaCards.length}
-          cards={agendaCards}
-          loading={isLoading}
-        />
+              {/* Agenda */}
+              <div className="flex items-center gap-3">
+                <div className="h-9 w-9 rounded-xl flex items-center justify-center shrink-0" style={{ background: "rgba(0,0,0,0.05)" }}>
+                  <CalendarDays className="h-4 w-4 text-[#555]" />
+                </div>
+                <div className="flex-1">
+                  <div className="flex items-center justify-between mb-1">
+                    <p className="text-[12px] font-semibold text-[#1A1A1A]">Agenda</p>
+                    <p className="text-[12px] font-bold text-[#1A1A1A]">{isLoading ? "—" : data?.upcomingAgenda ?? 0}</p>
+                  </div>
+                  <div className="h-1.5 rounded-full bg-black/[0.06] overflow-hidden">
+                    <div className="h-full rounded-full transition-all duration-700" style={{ width: `${Math.min(100, (data?.upcomingAgenda ?? 0) * 20)}%`, background: "#1A1A1A" }} />
+                  </div>
+                </div>
+              </div>
 
-        <KanbanColumn
-          title="Fitur Aktif"
-          count={fiturCards.length}
-          cards={fiturCards}
-          loading={isLoading}
-        />
-
-        <KanbanColumn
-          title="Final / Selesai"
-          count={finalCards.length}
-          cards={finalCards}
-          loading={isLoading}
-        />
-
-      </div>
-
-      {/* ── Financial quick summary ─────────────────────────────────────── */}
-      {isAdmin && (
-        <div className="mt-4 flex flex-wrap gap-3">
-          <div className="bg-white rounded-2xl px-4 py-3 flex items-center gap-3 border border-border" style={{ boxShadow: "0 1px 3px rgba(0,0,0,0.05)" }}>
-            <TrendingUp className="h-4 w-4 text-emerald-500" />
-            <div>
-              <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Dana Masuk</p>
-              <p className="text-sm font-bold text-emerald-600">{isLoading ? "—" : formatRp(data?.totalIncome ?? 0)}</p>
+              {/* Fitur */}
+              <div className="flex items-center gap-3">
+                <div className="h-9 w-9 rounded-xl flex items-center justify-center shrink-0" style={{ background: "rgba(200,236,90,0.15)" }}>
+                  <Sparkles className="h-4 w-4 text-[#5a7a00]" />
+                </div>
+                <div className="flex-1">
+                  <div className="flex items-center justify-between mb-1">
+                    <p className="text-[12px] font-semibold text-[#1A1A1A]">Fitur Selesai</p>
+                    <p className="text-[12px] font-bold text-[#1A1A1A]">{isLoading ? "—" : `${completedFitur}/${totalFitur}`}</p>
+                  </div>
+                  <div className="h-1.5 rounded-full bg-black/[0.06] overflow-hidden">
+                    <div className="h-full rounded-full transition-all duration-700" style={{ width: `${fiturPct}%`, background: "#C8EC5A" }} />
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
-          <div className="bg-white rounded-2xl px-4 py-3 flex items-center gap-3 border border-border" style={{ boxShadow: "0 1px 3px rgba(0,0,0,0.05)" }}>
-            <AlertCircle className="h-4 w-4 text-rose-500" />
-            <div>
-              <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Dana Keluar</p>
-              <p className="text-sm font-bold text-rose-600">{isLoading ? "—" : formatRp(data?.totalExpense ?? 0)}</p>
+
+          {/* ── Upcoming agenda dates (calendar section) ──────────── */}
+          {agendaList.length > 0 && (
+            <div className="bg-white rounded-3xl p-5 border border-black/[0.06]" style={{ boxShadow: "0 2px 12px rgba(0,0,0,0.06)" }}>
+              <h3 className="text-[15px] font-bold text-[#1A1A1A] mb-4">Jadwal Terdekat</h3>
+              <div className="space-y-3">
+                {agendaList.slice(0, 3).map((a) => (
+                  <Link to="/agenda" key={a.id}>
+                    <div className="flex items-start gap-3 py-2 rounded-xl hover:bg-black/[0.03] px-2 -mx-2 transition-all cursor-pointer">
+                      <div className="h-9 w-9 rounded-xl flex items-center justify-center shrink-0 text-[10px] font-bold text-[#1A1A1A]" style={{ background: "#C8EC5A" }}>
+                        {formatDate(a.date).split(" ")[0]}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-[12px] font-semibold text-[#1A1A1A] leading-tight truncate">{a.title}</p>
+                        <p className="text-[11px] text-[#999] mt-0.5 flex items-center gap-1">
+                          <Clock className="h-3 w-3" />
+                          {a.time ?? "—"} · {formatDate(a.date)}
+                        </p>
+                      </div>
+                      <MoreHorizontal className="h-4 w-4 text-[#ddd] shrink-0 mt-0.5" />
+                    </div>
+                  </Link>
+                ))}
+              </div>
             </div>
-          </div>
-          <div className="bg-white rounded-2xl px-4 py-3 flex items-center gap-3 border border-border" style={{ boxShadow: "0 1px 3px rgba(0,0,0,0.05)" }}>
-            <Sparkles className="h-4 w-4 text-violet-500" />
-            <div>
-              <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Saldo Bersih</p>
-              <p className="text-sm font-bold text-violet-600">{isLoading ? "—" : formatRp(data?.saldoTersedia ?? 0)}</p>
+          )}
+
+          {/* ── Financial summary (admin only) ────────────────────── */}
+          {isAdmin && (
+            <div className="bg-white rounded-3xl p-5 border border-black/[0.06]" style={{ boxShadow: "0 2px 12px rgba(0,0,0,0.06)" }}>
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-[15px] font-bold text-[#1A1A1A]">Keuangan</h3>
+                <Link to="/keuangan" className="text-[11px] font-semibold text-[#C8EC5A] hover:opacity-80 transition-opacity">
+                  Detail →
+                </Link>
+              </div>
+
+              <div className="space-y-2.5">
+                <div className="flex items-center justify-between py-2 border-b border-black/[0.05]">
+                  <div className="flex items-center gap-2">
+                    <TrendingUp className="h-4 w-4 text-green-500" />
+                    <span className="text-[12px] text-[#555]">Dana Masuk</span>
+                  </div>
+                  <span className="text-[13px] font-bold text-green-600">{isLoading ? "—" : formatRp(data?.totalIncome ?? 0)}</span>
+                </div>
+                <div className="flex items-center justify-between py-2 border-b border-black/[0.05]">
+                  <div className="flex items-center gap-2">
+                    <AlertCircle className="h-4 w-4 text-rose-500" />
+                    <span className="text-[12px] text-[#555]">Dana Keluar</span>
+                  </div>
+                  <span className="text-[13px] font-bold text-rose-600">{isLoading ? "—" : formatRp(data?.totalExpense ?? 0)}</span>
+                </div>
+                <div className="flex items-center justify-between py-2">
+                  <div className="flex items-center gap-2">
+                    <Wallet className="h-4 w-4 text-[#5a7a00]" />
+                    <span className="text-[12px] font-semibold text-[#1A1A1A]">Saldo</span>
+                  </div>
+                  <span
+                    className="text-[14px] font-black"
+                    style={{ color: (data?.saldoTersedia ?? 0) >= 0 ? "#5a7a00" : "#dc2626" }}
+                  >
+                    {isLoading ? "—" : formatRp(data?.saldoTersedia ?? 0)}
+                  </span>
+                </div>
+              </div>
             </div>
-          </div>
-          <Link to="/keuangan" className="bg-white rounded-2xl px-4 py-3 flex items-center gap-2 border border-border hover:border-violet-200 hover:bg-violet-50 transition-all text-[12px] font-semibold text-muted-foreground hover:text-violet-700" style={{ boxShadow: "0 1px 3px rgba(0,0,0,0.05)" }}>
-            Detail Keuangan →
-          </Link>
+          )}
         </div>
-      )}
+      </div>
     </div>
   );
 }

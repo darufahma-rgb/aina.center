@@ -34,56 +34,62 @@ export default function Login() {
       {/* ── Left panel — branding ── */}
       <div
         className="hidden lg:flex flex-col justify-between w-[44%] p-10 relative overflow-hidden"
-        style={{ background: "linear-gradient(145deg, hsl(265,83%,30%) 0%, hsl(240,60%,14%) 100%)" }}
+        style={{ background: "#1C1C1C" }}
       >
-        {/* Subtle grid overlay */}
-        <div
-          className="absolute inset-0 pointer-events-none opacity-[0.06]"
-          style={{
-            backgroundImage: "linear-gradient(rgba(255,255,255,0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.5) 1px, transparent 1px)",
-            backgroundSize: "48px 48px",
-          }}
-        />
-        {/* Glow orb */}
+        {/* Lime glow orb top-right */}
         <div
           className="absolute rounded-full pointer-events-none"
           style={{
-            width: 500,
-            height: 500,
-            top: "-10%",
-            right: "-20%",
-            background: "radial-gradient(circle, hsl(265,83%,57%) 0%, transparent 70%)",
-            filter: "blur(80px)",
-            opacity: 0.35,
+            width: 420,
+            height: 420,
+            top: "-15%",
+            right: "-15%",
+            background: "radial-gradient(circle, #C8EC5A 0%, transparent 70%)",
+            filter: "blur(90px)",
+            opacity: 0.25,
+          }}
+        />
+        {/* Lime glow orb bottom-left */}
+        <div
+          className="absolute rounded-full pointer-events-none"
+          style={{
+            width: 280,
+            height: 280,
+            bottom: "5%",
+            left: "-10%",
+            background: "radial-gradient(circle, #C8EC5A 0%, transparent 70%)",
+            filter: "blur(70px)",
+            opacity: 0.15,
           }}
         />
 
         {/* Logo */}
         <div className="relative z-10 flex items-center gap-3">
-          <img
-            src="/logo.png"
-            alt="AINA"
-            className="h-10 w-10 object-contain"
-            style={{ filter: "drop-shadow(0 0 12px rgba(180,140,255,0.80))" }}
-          />
+          <div
+            className="h-9 w-9 rounded-xl flex items-center justify-center shrink-0"
+            style={{ background: "#C8EC5A" }}
+          >
+            <img src="/logo.png" alt="AINA" className="h-5 w-5 object-contain" style={{ filter: "brightness(0)" }} />
+          </div>
           <div>
             <p className="font-bold text-white text-sm tracking-tight">AINA Centre</p>
-            <p className="text-[10px] font-semibold tracking-[0.20em] uppercase text-white/40">Management</p>
+            <p className="text-[10px] font-semibold tracking-[0.20em] uppercase text-white/35">Management</p>
           </div>
         </div>
 
         {/* Center text */}
         <div className="relative z-10">
-          <h1 className="text-4xl font-bold text-white leading-tight mb-4">
-            Portal Internal<br />AINA Centre
+          <h1 className="text-4xl font-black text-white leading-tight mb-4">
+            Portal Internal<br />
+            <span style={{ color: "#C8EC5A" }}>AINA Centre</span>
           </h1>
-          <p className="text-base text-white/55 leading-relaxed max-w-xs">
+          <p className="text-base text-white/45 leading-relaxed max-w-xs">
             Kelola keuangan, notulensi, agenda, anggota, dan laporan organisasi dalam satu platform terpadu.
           </p>
         </div>
 
         {/* Bottom */}
-        <p className="relative z-10 text-[11px] text-white/30">
+        <p className="relative z-10 text-[11px] text-white/25">
           AINA Centre Management — Sistem Portal Internal
         </p>
       </div>
@@ -152,14 +158,11 @@ export default function Login() {
               type="submit"
               data-testid="button-login"
               disabled={submitting || !username || !password}
-              className="w-full h-11 rounded-xl font-semibold text-sm text-white transition-all duration-200 mt-2 disabled:opacity-45 disabled:cursor-not-allowed active:scale-[0.98] hover:brightness-110"
+              className="w-full h-11 rounded-xl font-semibold text-sm transition-all duration-200 mt-2 disabled:opacity-40 disabled:cursor-not-allowed active:scale-[0.98]"
               style={{
-                background: submitting || !username || !password
-                  ? "rgba(124,58,237,0.35)"
-                  : "linear-gradient(135deg, hsl(265,83%,57%) 0%, hsl(285,75%,50%) 100%)",
-                boxShadow: submitting || !username || !password
-                  ? "none"
-                  : "0 4px 18px rgba(124,58,237,0.35)",
+                background: submitting || !username || !password ? "rgba(28,28,28,0.35)" : "#1C1C1C",
+                color: submitting || !username || !password ? "#aaa" : "#C8EC5A",
+                boxShadow: submitting || !username || !password ? "none" : "0 4px 18px rgba(0,0,0,0.18)",
               }}
             >
               {submitting ? "Masuk..." : "Masuk"}

@@ -3,7 +3,8 @@ import { Link, useLocation } from "react-router-dom";
 import {
   LayoutDashboard, FileText, Wallet, CalendarDays,
   Sparkles, Mail, Package, Users, Handshake, Presentation,
-  Wand2, UserCog, LogOut, X, Bell, Plus, ChevronRight,
+  Wand2, UserCog, LogOut, Bell, Settings, Plus, HelpCircle,
+  ChevronDown, Search, X, Menu,
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
@@ -16,7 +17,6 @@ const PRIMARY_NAV = [
   { title: "Notulensi",     url: "/notulensi",  icon: FileText,        exact: false },
   { title: "Agenda",        url: "/agenda",     icon: CalendarDays,    exact: false },
   { title: "Keuangan",      url: "/keuangan",   icon: Wallet,          exact: false },
-  { title: "Fitur Terbaru", url: "/fitur",      icon: Sparkles,        exact: false },
   { title: "AI Report",     url: "/ai-report",  icon: Wand2,           exact: false },
 ];
 
@@ -26,6 +26,7 @@ const MODUL_NAV = [
   { title: "Anggota",       url: "/anggota",    icon: Users,           exact: false },
   { title: "Relasi",        url: "/relasi",     icon: Handshake,       exact: false },
   { title: "Investor Mode", url: "/investor",   icon: Presentation,    exact: false },
+  { title: "Fitur Terbaru", url: "/fitur",      icon: Sparkles,        exact: false },
 ];
 
 const ADMIN_NAV = [
@@ -39,17 +40,13 @@ export const NAV_SECTIONS = [
     { title: "Agenda",    url: "/agenda",    icon: CalendarDays, exact: false },
     { title: "Keuangan",  url: "/keuangan",  icon: Wallet,       exact: false },
   ]},
-  { label: "Documentation", items: [
-    { title: "Fitur Terbaru", url: "/fitur",      icon: Sparkles, exact: false },
+  { label: "Modul", items: [
     { title: "Surat",         url: "/surat",      icon: Mail,     exact: false },
     { title: "Inventaris",    url: "/inventaris", icon: Package,  exact: false },
-  ]},
-  { label: "Organization", items: [
-    { title: "Anggota", url: "/anggota", icon: Users,     exact: false },
-    { title: "Relasi",  url: "/relasi",  icon: Handshake, exact: false },
-  ]},
-  { label: "Presentation", items: [
-    { title: "Investor Mode", url: "/investor", icon: Presentation, exact: false },
+    { title: "Anggota",       url: "/anggota",    icon: Users,    exact: false },
+    { title: "Relasi",        url: "/relasi",     icon: Handshake, exact: false },
+    { title: "Investor Mode", url: "/investor",   icon: Presentation, exact: false },
+    { title: "Fitur Terbaru", url: "/fitur",      icon: Sparkles, exact: false },
   ]},
   { label: "Tools", items: [
     { title: "AI Report", url: "/ai-report", icon: Wand2, exact: false },
@@ -61,6 +58,11 @@ export const ADMIN_SECTION = {
   items: [{ title: "Kelola Pengguna", url: "/admin/users", icon: UserCog, exact: false }],
 };
 
+// ─── Sidebar width ────────────────────────────────────────────────────────────
+
+const SIDEBAR_W = 200;
+const SIDEBAR_MARGIN = 12;
+
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
 function useIsActive(url: string, exact: boolean) {
@@ -68,39 +70,9 @@ function useIsActive(url: string, exact: boolean) {
   return exact ? pathname === url : pathname.startsWith(url);
 }
 
-const ALL_NAV = [...PRIMARY_NAV, ...MODUL_NAV];
-const RAIL_WIDTH = 64;
+// ─── Nav link item ────────────────────────────────────────────────────────────
 
-// ─── Icon rail item (collapsed) ───────────────────────────────────────────────
-
-function RailIcon({
-  item,
-  onOpen,
-}: {
-  item: { title: string; url: string; icon: any; exact: boolean };
-  onOpen: () => void;
-}) {
-  const active = useIsActive(item.url, item.exact);
-  return (
-    <Link
-      to={item.url}
-      title={item.title}
-      onClick={onOpen}
-      className={cn(
-        "flex items-center justify-center h-10 w-10 rounded-2xl transition-all duration-150 shrink-0",
-        active
-          ? "bg-violet-100 text-violet-700"
-          : "text-foreground/35 hover:text-foreground/65 hover:bg-black/[0.05]",
-      )}
-    >
-      <item.icon className="h-[18px] w-[18px]" />
-    </Link>
-  );
-}
-
-// ─── Full panel nav item (expanded) ───────────────────────────────────────────
-
-function PanelLink({
+function NavItem({
   item,
   onClick,
 }: {
@@ -113,228 +85,163 @@ function PanelLink({
       to={item.url}
       onClick={onClick}
       className={cn(
-        "flex items-center gap-3 px-3 h-10 rounded-2xl text-[13px] font-medium w-full transition-all duration-150",
+        "flex items-center gap-3 px-3 h-10 rounded-2xl text-[13px] font-medium w-full transition-all duration-150 group",
         active
-          ? "bg-violet-100 text-violet-700 font-semibold"
-          : "text-foreground/55 hover:text-foreground/80 hover:bg-black/[0.04]",
+          ? "nav-active"
+          : "text-[#555] hover:bg-black/[0.05] hover:text-[#1A1A1A]",
       )}
     >
-      <item.icon className={cn("h-4 w-4 shrink-0", active ? "text-violet-600" : "text-foreground/35")} />
+      <item.icon
+        className={cn("h-[17px] w-[17px] shrink-0 transition-colors", active ? "text-[#1A1A1A]" : "text-[#999] group-hover:text-[#555]")}
+      />
       <span className="truncate">{item.title}</span>
-      {active && <ChevronRight className="h-3.5 w-3.5 ml-auto text-violet-400" />}
     </Link>
   );
 }
 
-// ─── Sidebar (icon rail + floating full panel) ────────────────────────────────
+// ─── Sidebar component ────────────────────────────────────────────────────────
 
 function Sidebar({
-  open,
-  onOpen,
-  onClose,
   user,
   isAdmin,
   onLogout,
+  mobileOpen,
+  onMobileClose,
 }: {
-  open: boolean;
-  onOpen: () => void;
-  onClose: () => void;
   user: any;
   isAdmin: boolean;
   onLogout: () => void;
+  mobileOpen: boolean;
+  onMobileClose: () => void;
 }) {
   const initials = user?.username?.slice(0, 2).toUpperCase() ?? "??";
-  const { pathname } = useLocation();
-
-  // Close full panel on route change
-  useEffect(() => { onClose(); }, [pathname]);
-
-  // Escape key
-  useEffect(() => {
-    const handler = (e: KeyboardEvent) => { if (e.key === "Escape") onClose(); };
-    document.addEventListener("keydown", handler);
-    return () => document.removeEventListener("keydown", handler);
-  }, [onClose]);
-
-  // Lock body scroll when full panel is open
-  useEffect(() => {
-    document.body.style.overflow = open ? "hidden" : "";
-    return () => { document.body.style.overflow = ""; };
-  }, [open]);
 
   return (
     <>
-      {/* ── Backdrop (only when full panel is open) ───────────────── */}
-      <div
-        onClick={onClose}
+      {/* Mobile backdrop */}
+      {mobileOpen && (
+        <div
+          className="fixed inset-0 z-40 bg-black/30 backdrop-blur-sm lg:hidden"
+          onClick={onMobileClose}
+        />
+      )}
+
+      {/* Sidebar panel */}
+      <aside
         className={cn(
-          "fixed inset-0 z-40 transition-all duration-300",
-          open ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none",
-        )}
-        style={{ background: "rgba(15,15,20,0.35)", backdropFilter: "blur(2px)" }}
-        aria-hidden="true"
-      />
-
-      {/* ── Icon rail — floating pill, always visible ─────────────── */}
-      <div
-        className="fixed z-50 flex flex-col items-center py-4 gap-1"
-        style={{
-          left: 12,
-          top: 12,
-          width: RAIL_WIDTH,
-          height: "calc(100vh - 24px)",
-          borderRadius: 24,
-          background: "#ffffff",
-          boxShadow: "0 8px 32px rgba(0,0,0,0.10), 0 2px 8px rgba(0,0,0,0.06)",
-        }}
-      >
-        {/* Logo button — toggles full panel */}
-        <button
-          onClick={() => (open ? onClose() : onOpen())}
-          className="h-10 w-10 rounded-2xl flex items-center justify-center mb-2 transition-all duration-150 hover:scale-105 active:scale-95 shrink-0"
-          style={{ background: "linear-gradient(135deg, hsl(265,83%,57%), hsl(285,70%,50%))" }}
-          aria-label="Toggle sidebar"
-        >
-          <img
-            src="/logo.png"
-            alt="AINA"
-            className="h-5 w-5 object-contain"
-            style={{ filter: "brightness(0) invert(1)" }}
-          />
-        </button>
-
-        {/* Nav icons */}
-        <div className="flex-1 flex flex-col items-center gap-1 w-full px-2.5 overflow-hidden">
-          {PRIMARY_NAV.map((item) => (
-            <RailIcon key={item.url} item={item} onOpen={onOpen} />
-          ))}
-
-          {/* Divider */}
-          <div className="w-8 border-t my-1" style={{ borderColor: "hsl(var(--border))" }} />
-
-          {MODUL_NAV.map((item) => (
-            <RailIcon key={item.url} item={item} onOpen={onOpen} />
-          ))}
-
-          {isAdmin && ADMIN_NAV.map((item) => (
-            <RailIcon key={item.url} item={item} onOpen={onOpen} />
-          ))}
-        </div>
-
-        {/* User avatar at bottom */}
-        <button
-          onClick={() => (open ? onClose() : onOpen())}
-          className="h-9 w-9 rounded-full flex items-center justify-center text-white text-[10px] font-bold shrink-0 transition-all hover:opacity-80 active:scale-95"
-          style={{ background: "linear-gradient(135deg, hsl(265,83%,57%), hsl(285,70%,50%))" }}
-          title={user?.username}
-        >
-          {initials}
-        </button>
-      </div>
-
-      {/* ── Full floating panel — slides over icon rail ───────────── */}
-      <div
-        className={cn(
-          "fixed z-50 flex flex-col transition-all duration-300 ease-[cubic-bezier(0.32,0.72,0,1)]",
-          open ? "translate-x-0 opacity-100" : "-translate-x-full opacity-0 pointer-events-none",
+          "fixed top-0 bottom-0 z-50 flex flex-col transition-transform duration-300 ease-[cubic-bezier(0.32,0.72,0,1)]",
+          "lg:translate-x-0",
+          mobileOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0",
         )}
         style={{
-          left: 0,
-          top: 0,
-          width: 268,
-          margin: "10px",
-          height: "calc(100vh - 20px)",
+          left: SIDEBAR_MARGIN,
+          top: SIDEBAR_MARGIN,
+          bottom: SIDEBAR_MARGIN,
+          width: SIDEBAR_W,
+          height: `calc(100vh - ${SIDEBAR_MARGIN * 2}px)`,
           borderRadius: 24,
           background: "#ffffff",
-          boxShadow: "0 24px 60px rgba(0,0,0,0.14), 0 8px 20px rgba(0,0,0,0.08)",
+          boxShadow: "0 8px 40px rgba(0,0,0,0.10), 0 2px 10px rgba(0,0,0,0.06)",
         }}
       >
-        {/* Header */}
-        <div className="flex items-center justify-between px-5 py-4 shrink-0">
-          <div className="flex items-center gap-2.5">
+        {/* ── Logo ─────────────────────────────────────────────────── */}
+        <div className="px-5 pt-5 pb-4 shrink-0">
+          <Link to="/" className="flex items-center gap-2.5">
             <div
               className="h-8 w-8 rounded-xl flex items-center justify-center shrink-0"
-              style={{ background: "linear-gradient(135deg, hsl(265,83%,57%), hsl(285,70%,50%))" }}
+              style={{ background: "#C8EC5A" }}
             >
               <img
                 src="/logo.png"
                 alt="AINA"
                 className="h-5 w-5 object-contain"
-                style={{ filter: "brightness(0) invert(1)" }}
+                style={{ filter: "brightness(0)" }}
               />
             </div>
-            <div>
-              <p className="font-bold text-[14px] text-foreground leading-tight">AINA Centre</p>
-              <p className="text-[9px] font-semibold tracking-[0.18em] uppercase text-muted-foreground/50">Management</p>
-            </div>
-          </div>
-          <button
-            onClick={onClose}
-            className="h-8 w-8 rounded-xl flex items-center justify-center text-muted-foreground/40 hover:text-foreground hover:bg-black/[0.05] transition-all"
-          >
-            <X className="h-4 w-4" />
-          </button>
+            <span className="font-bold text-[15px] text-[#1A1A1A] leading-none">AINA Centre</span>
+          </Link>
         </div>
 
-        <div className="mx-5 border-t mb-2" style={{ borderColor: "hsl(var(--border))" }} />
+        {/* ── User profile ─────────────────────────────────────────── */}
+        <div className="px-4 pb-5 shrink-0 flex flex-col items-center text-center">
+          <div
+            className="h-[72px] w-[72px] rounded-full flex items-center justify-center text-[#1A1A1A] text-xl font-bold mb-2.5 shrink-0"
+            style={{ background: "#C8EC5A" }}
+          >
+            {initials}
+          </div>
+          <div className="flex items-center gap-1">
+            <p className="text-[14px] font-semibold text-[#1A1A1A]">{user?.username}</p>
+            <ChevronDown className="h-3.5 w-3.5 text-[#999]" />
+          </div>
+          <p className="text-[12px] text-[#999] mt-0.5">{isAdmin ? "Administrator" : "Anggota"}</p>
+        </div>
 
-        {/* Scrollable nav */}
+        {/* ── Divider ──────────────────────────────────────────────── */}
+        <div className="mx-4 border-t border-black/[0.06] mb-2 shrink-0" />
+
+        {/* ── Nav ──────────────────────────────────────────────────── */}
         <div className="flex-1 overflow-y-auto px-3 py-1 space-y-0.5" style={{ scrollbarWidth: "none" }}>
           {PRIMARY_NAV.map((item) => (
-            <PanelLink key={item.url} item={item} onClick={onClose} />
+            <NavItem key={item.url} item={item} onClick={onMobileClose} />
           ))}
 
           <div className="pt-4 pb-1">
-            <div className="flex items-center justify-between px-3 mb-2">
-              <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/40">Modul</p>
-              <Plus className="h-3 w-3 text-muted-foreground/30" />
-            </div>
+            <p className="text-[10px] font-bold uppercase tracking-widest text-[#bbb] px-3 mb-2">Modul</p>
             {MODUL_NAV.map((item) => (
-              <PanelLink key={item.url} item={item} onClick={onClose} />
+              <NavItem key={item.url} item={item} onClick={onMobileClose} />
             ))}
           </div>
 
           {isAdmin && (
             <div className="pt-2 pb-1">
-              <div className="px-3 mb-2">
-                <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/40">Admin</p>
-              </div>
+              <p className="text-[10px] font-bold uppercase tracking-widest text-[#bbb] px-3 mb-2">Admin</p>
               {ADMIN_NAV.map((item) => (
-                <PanelLink key={item.url} item={item} onClick={onClose} />
+                <NavItem key={item.url} item={item} onClick={onMobileClose} />
               ))}
             </div>
           )}
         </div>
 
-        <div className="mx-5 border-t mt-2" style={{ borderColor: "hsl(var(--border))" }} />
-
-        {/* User footer */}
-        <div className="px-3 py-4 shrink-0">
-          <div className="flex items-center gap-2.5 px-3 py-2 rounded-2xl hover:bg-black/[0.04] transition-colors group cursor-default">
+        {/* ── Help center dark card ─────────────────────────────────── */}
+        <div className="p-3 pb-4 shrink-0">
+          <div className="dark-card p-4">
+            {/* Question circle */}
             <div
-              className="h-8 w-8 rounded-full flex items-center justify-center text-white text-[10px] font-bold shrink-0"
-              style={{ background: "linear-gradient(135deg, hsl(265,83%,57%), hsl(285,70%,50%))" }}
+              className="h-8 w-8 rounded-full flex items-center justify-center mb-3 shrink-0"
+              style={{ background: "#C8EC5A" }}
             >
-              {initials}
+              <HelpCircle className="h-4 w-4 text-[#1A1A1A]" />
             </div>
-            <div className="flex-1 min-w-0">
-              <p className="text-[12px] font-semibold text-foreground truncate">{user?.username}</p>
-              <p className="text-[10px] text-muted-foreground/55">{isAdmin ? "Admin" : "User"}</p>
-            </div>
+
+            <p className="text-[13px] font-semibold text-white mb-1 leading-tight">Bantuan Portal</p>
+            <p className="text-[11px] text-white/50 mb-3 leading-relaxed">Ada pertanyaan? Hubungi admin atau lihat panduan.</p>
+
+            {/* Logout button styled like DoDo's "Go to help center" */}
             <button
               onClick={onLogout}
-              className="h-7 w-7 rounded-xl flex items-center justify-center hover:bg-rose-50 hover:text-rose-500 text-muted-foreground/35 transition-all opacity-0 group-hover:opacity-100"
               data-testid="button-logout"
-              title="Logout"
+              className="w-full h-8 rounded-xl text-[12px] font-semibold text-white flex items-center justify-center gap-1.5 transition-all hover:bg-white/20 active:scale-95"
+              style={{ background: "rgba(255,255,255,0.10)" }}
             >
               <LogOut className="h-3.5 w-3.5" />
+              Keluar
             </button>
           </div>
         </div>
-      </div>
+      </aside>
     </>
   );
 }
+
+// ─── Page tabs ────────────────────────────────────────────────────────────────
+
+const PAGE_TABS = [
+  { title: "Dashboard",  url: "/" },
+  { title: "Notulensi",  url: "/notulensi" },
+  { title: "Agenda",     url: "/agenda" },
+  { title: "Keuangan",   url: "/keuangan" },
+];
 
 // ─── Portal layout ────────────────────────────────────────────────────────────
 
@@ -342,69 +249,129 @@ interface PortalLayoutProps { children: ReactNode; }
 
 export function PortalLayout({ children }: PortalLayoutProps) {
   const { user, isAdmin, logout } = useAuth();
-  const [sidebarOpen, setSidebarOpen] = useState(false);
   const { toast } = useToast();
+  const { pathname } = useLocation();
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [searchVal, setSearchVal] = useState("");
 
-  const initials = user?.username?.slice(0, 2).toUpperCase() ?? "??";
+  // Close mobile sidebar on route change
+  useEffect(() => { setMobileOpen(false); }, [pathname]);
 
   const handleLogout = async () => {
     try { await logout(); }
     catch { toast({ title: "Gagal logout", variant: "destructive" }); }
   };
 
-  return (
-    <div className="min-h-screen bg-background">
+  const contentLeft = SIDEBAR_W + SIDEBAR_MARGIN * 2;
 
-      {/* Sidebar (icon rail + floating panel) */}
+  return (
+    <div className="min-h-screen bg-background flex">
+
+      {/* ── Sidebar ─────────────────────────────────────────────────── */}
       <Sidebar
-        open={sidebarOpen}
-        onOpen={() => setSidebarOpen(true)}
-        onClose={() => setSidebarOpen(false)}
         user={user}
         isAdmin={isAdmin}
         onLogout={handleLogout}
+        mobileOpen={mobileOpen}
+        onMobileClose={() => setMobileOpen(false)}
       />
 
-      {/* Content — full width, sidebar floats over it */}
-      <div className="flex flex-col min-h-screen">
-        {/* Top header — padded left to clear the floating icon rail */}
-        <header
-          className="h-14 flex items-center justify-between shrink-0 sticky top-0 z-30"
-          style={{
-            paddingLeft: RAIL_WIDTH + 24,
-            paddingRight: 20,
-            background: "rgba(250,247,243,0.90)",
-            backdropFilter: "blur(14px)",
-            borderBottom: "1px solid hsl(var(--border))",
-          }}
+      {/* ── Main content — white card ────────────────────────────────── */}
+      <div
+        className="flex-1 flex flex-col min-h-screen transition-none"
+        style={{
+          marginLeft: `${contentLeft}px`,
+          marginRight: SIDEBAR_MARGIN,
+          marginTop: SIDEBAR_MARGIN,
+          marginBottom: SIDEBAR_MARGIN,
+        }}
+      >
+        {/* White card wrapper */}
+        <div
+          className="flex-1 flex flex-col bg-white min-h-[calc(100vh-24px)]"
+          style={{ borderRadius: 24, overflow: "hidden" }}
         >
-          <p className="text-[12px] font-medium text-muted-foreground hidden sm:block">
-            AINA Centre Management Portal
-          </p>
-          <p className="text-[13px] font-bold text-foreground sm:hidden">AINA Centre</p>
+          {/* ── Top bar ──────────────────────────────────────────── */}
+          <header className="flex items-center justify-between px-5 py-3.5 border-b shrink-0" style={{ borderColor: "rgba(0,0,0,0.07)" }}>
 
-          <div className="flex items-center gap-2">
-            <button className="h-8 w-8 rounded-xl flex items-center justify-center text-foreground/45 hover:bg-black/[0.05] transition-all">
-              <Bell className="h-4 w-4" />
-            </button>
-            <button
-              onClick={() => setSidebarOpen((v) => !v)}
-              className="h-8 w-8 rounded-full flex items-center justify-center text-white text-[10px] font-bold transition-all hover:opacity-80 active:scale-95"
-              style={{ background: "linear-gradient(135deg, hsl(265,83%,57%), hsl(285,70%,50%))" }}
-              title={user?.username}
-            >
-              {initials}
-            </button>
-          </div>
-        </header>
+            {/* Left: mobile menu + page tabs */}
+            <div className="flex items-center gap-1">
+              {/* Mobile hamburger */}
+              <button
+                className="lg:hidden h-8 w-8 rounded-xl flex items-center justify-center text-[#999] hover:bg-black/[0.05] mr-1"
+                onClick={() => setMobileOpen(true)}
+              >
+                <Menu className="h-4 w-4" />
+              </button>
 
-        {/* Page content — left padding clears the floating icon rail */}
-        <main
-          className="flex-1 pb-10 pt-5 pr-5"
-          style={{ paddingLeft: RAIL_WIDTH + 24 }}
-        >
-          {children}
-        </main>
+              {/* Page tabs */}
+              <nav className="hidden sm:flex items-center gap-0.5">
+                {PAGE_TABS.map((tab) => {
+                  const active = tab.url === "/" ? pathname === "/" : pathname.startsWith(tab.url);
+                  return (
+                    <Link
+                      key={tab.url}
+                      to={tab.url}
+                      className={cn(
+                        "px-3 h-8 rounded-xl text-[13px] font-medium transition-all flex items-center",
+                        active
+                          ? "text-[#1A1A1A] font-semibold"
+                          : "text-[#999] hover:text-[#555] hover:bg-black/[0.04]",
+                      )}
+                    >
+                      {tab.title}
+                      {active && (
+                        <span
+                          className="ml-2 h-1.5 w-1.5 rounded-full inline-block"
+                          style={{ background: "#C8EC5A" }}
+                        />
+                      )}
+                    </Link>
+                  );
+                })}
+              </nav>
+            </div>
+
+            {/* Right: search + controls */}
+            <div className="flex items-center gap-2">
+              {/* Search */}
+              <div className="relative hidden md:flex items-center">
+                <Search className="absolute left-2.5 h-3.5 w-3.5 text-[#bbb] pointer-events-none" />
+                <input
+                  type="text"
+                  placeholder="Cari atau ketik perintah"
+                  value={searchVal}
+                  onChange={e => setSearchVal(e.target.value)}
+                  className="h-8 pl-8 pr-3 rounded-xl text-[12px] bg-black/[0.04] border-0 text-[#555] placeholder:text-[#bbb] focus:outline-none focus:ring-2 focus:ring-black/10 transition-all w-44 focus:w-52"
+                />
+              </div>
+
+              {/* Bell */}
+              <button className="h-8 w-8 rounded-xl flex items-center justify-center text-[#999] hover:bg-black/[0.05] transition-all">
+                <Bell className="h-4 w-4" />
+              </button>
+
+              {/* Settings */}
+              <button className="h-8 w-8 rounded-xl flex items-center justify-center text-[#999] hover:bg-black/[0.05] transition-all">
+                <Settings className="h-4 w-4" />
+              </button>
+
+              {/* CTA button */}
+              <button
+                className="h-8 px-3.5 rounded-xl text-[12px] font-semibold text-white flex items-center gap-1.5 transition-all hover:opacity-90 active:scale-95"
+                style={{ background: "#1A1A1A" }}
+              >
+                <Plus className="h-3.5 w-3.5" />
+                Tambah Baru
+              </button>
+            </div>
+          </header>
+
+          {/* ── Page content ──────────────────────────────────────── */}
+          <main className="flex-1 p-5 pb-10 overflow-auto">
+            {children}
+          </main>
+        </div>
       </div>
     </div>
   );
