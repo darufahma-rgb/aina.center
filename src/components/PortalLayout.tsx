@@ -3,13 +3,13 @@ import { Link, useLocation } from "react-router-dom";
 import {
   LayoutDashboard, FileText, Wallet, CalendarDays,
   Sparkles, Mail, Package, Users, Handshake, Presentation,
-  Wand2, UserCog, LogOut, Menu, X, Bell, Plus, ChevronRight,
+  Wand2, UserCog, LogOut, X, Bell, Plus, ChevronRight,
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 
-// ─── Nav config ──────────────────────────────────────────────────────────────
+// ─── Nav config ───────────────────────────────────────────────────────────────
 
 const PRIMARY_NAV = [
   { title: "Dashboard",     url: "/",           icon: LayoutDashboard, exact: true  },
@@ -32,7 +32,6 @@ const ADMIN_NAV = [
   { title: "Kelola Pengguna", url: "/admin/users", icon: UserCog, exact: false },
 ];
 
-// exported for other components that may need it
 export const NAV_SECTIONS = [
   { label: "Overview",      items: [{ title: "Dashboard", url: "/", icon: LayoutDashboard, exact: true }] },
   { label: "Operations",    items: [
@@ -41,9 +40,9 @@ export const NAV_SECTIONS = [
     { title: "Keuangan",  url: "/keuangan",  icon: Wallet,       exact: false },
   ]},
   { label: "Documentation", items: [
-    { title: "Fitur Terbaru", url: "/fitur",       icon: Sparkles, exact: false },
-    { title: "Surat",         url: "/surat",       icon: Mail,     exact: false },
-    { title: "Inventaris",    url: "/inventaris",  icon: Package,  exact: false },
+    { title: "Fitur Terbaru", url: "/fitur",      icon: Sparkles, exact: false },
+    { title: "Surat",         url: "/surat",      icon: Mail,     exact: false },
+    { title: "Inventaris",    url: "/inventaris", icon: Package,  exact: false },
   ]},
   { label: "Organization", items: [
     { title: "Anggota", url: "/anggota", icon: Users,     exact: false },
@@ -69,9 +68,42 @@ function useIsActive(url: string, exact: boolean) {
   return exact ? pathname === url : pathname.startsWith(url);
 }
 
-// ─── Sidebar nav item ─────────────────────────────────────────────────────────
+const ALL_NAV = [...PRIMARY_NAV, ...MODUL_NAV];
+const RAIL_WIDTH = 64;
 
-function SidebarLink({ item, onClick }: {
+// ─── Icon rail item (collapsed) ───────────────────────────────────────────────
+
+function RailIcon({
+  item,
+  onOpen,
+}: {
+  item: { title: string; url: string; icon: any; exact: boolean };
+  onOpen: () => void;
+}) {
+  const active = useIsActive(item.url, item.exact);
+  return (
+    <Link
+      to={item.url}
+      title={item.title}
+      onClick={onOpen}
+      className={cn(
+        "flex items-center justify-center h-10 w-10 rounded-2xl transition-all duration-150 shrink-0",
+        active
+          ? "bg-violet-100 text-violet-700"
+          : "text-foreground/35 hover:text-foreground/65 hover:bg-black/[0.05]",
+      )}
+    >
+      <item.icon className="h-[18px] w-[18px]" />
+    </Link>
+  );
+}
+
+// ─── Full panel nav item (expanded) ───────────────────────────────────────────
+
+function PanelLink({
+  item,
+  onClick,
+}: {
   item: { title: string; url: string; icon: any; exact: boolean };
   onClick?: () => void;
 }) {
@@ -87,45 +119,44 @@ function SidebarLink({ item, onClick }: {
           : "text-foreground/55 hover:text-foreground/80 hover:bg-black/[0.04]",
       )}
     >
-      <item.icon
-        className={cn("h-4 w-4 shrink-0", active ? "text-violet-600" : "text-foreground/35")}
-      />
+      <item.icon className={cn("h-4 w-4 shrink-0", active ? "text-violet-600" : "text-foreground/35")} />
       <span className="truncate">{item.title}</span>
       {active && <ChevronRight className="h-3.5 w-3.5 ml-auto text-violet-400" />}
     </Link>
   );
 }
 
-// ─── Floating sidebar panel ───────────────────────────────────────────────────
+// ─── Sidebar (icon rail + floating full panel) ────────────────────────────────
 
-function FloatingSidebar({
+function Sidebar({
   open,
+  onOpen,
   onClose,
   user,
   isAdmin,
   onLogout,
 }: {
   open: boolean;
+  onOpen: () => void;
   onClose: () => void;
   user: any;
   isAdmin: boolean;
   onLogout: () => void;
 }) {
   const initials = user?.username?.slice(0, 2).toUpperCase() ?? "??";
-  const allItems = [...PRIMARY_NAV, ...MODUL_NAV, ...(isAdmin ? ADMIN_NAV : [])];
-
-  // Close on route change
   const { pathname } = useLocation();
+
+  // Close full panel on route change
   useEffect(() => { onClose(); }, [pathname]);
 
-  // Close on Escape key
+  // Escape key
   useEffect(() => {
-    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") onClose(); };
-    document.addEventListener("keydown", onKey);
-    return () => document.removeEventListener("keydown", onKey);
+    const handler = (e: KeyboardEvent) => { if (e.key === "Escape") onClose(); };
+    document.addEventListener("keydown", handler);
+    return () => document.removeEventListener("keydown", handler);
   }, [onClose]);
 
-  // Prevent body scroll when open
+  // Lock body scroll when full panel is open
   useEffect(() => {
     document.body.style.overflow = open ? "hidden" : "";
     return () => { document.body.style.overflow = ""; };
@@ -133,32 +164,84 @@ function FloatingSidebar({
 
   return (
     <>
-      {/* ── Backdrop ─────────────────────────────────────────────────── */}
+      {/* ── Backdrop (only when full panel is open) ───────────────── */}
       <div
         onClick={onClose}
         className={cn(
           "fixed inset-0 z-40 transition-all duration-300",
           open ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none",
         )}
-        style={{ background: "rgba(15,15,20,0.40)", backdropFilter: "blur(2px)" }}
+        style={{ background: "rgba(15,15,20,0.35)", backdropFilter: "blur(2px)" }}
         aria-hidden="true"
       />
 
-      {/* ── Sidebar panel ────────────────────────────────────────────── */}
+      {/* ── Icon rail — always visible ────────────────────────────── */}
+      <div
+        className="fixed left-0 top-0 bottom-0 z-50 flex flex-col items-center py-4 gap-1"
+        style={{
+          width: RAIL_WIDTH,
+          background: "#ffffff",
+          borderRight: "1px solid hsl(var(--border))",
+        }}
+      >
+        {/* Logo button — toggles full panel */}
+        <button
+          onClick={() => (open ? onClose() : onOpen())}
+          className="h-10 w-10 rounded-2xl flex items-center justify-center mb-2 transition-all duration-150 hover:scale-105 active:scale-95 shrink-0"
+          style={{ background: "linear-gradient(135deg, hsl(265,83%,57%), hsl(285,70%,50%))" }}
+          aria-label="Toggle sidebar"
+        >
+          <img
+            src="/logo.png"
+            alt="AINA"
+            className="h-5 w-5 object-contain"
+            style={{ filter: "brightness(0) invert(1)" }}
+          />
+        </button>
+
+        {/* Nav icons */}
+        <div className="flex-1 flex flex-col items-center gap-1 w-full px-2.5 overflow-hidden">
+          {PRIMARY_NAV.map((item) => (
+            <RailIcon key={item.url} item={item} onOpen={onOpen} />
+          ))}
+
+          {/* Divider */}
+          <div className="w-8 border-t my-1" style={{ borderColor: "hsl(var(--border))" }} />
+
+          {MODUL_NAV.map((item) => (
+            <RailIcon key={item.url} item={item} onOpen={onOpen} />
+          ))}
+
+          {isAdmin && ADMIN_NAV.map((item) => (
+            <RailIcon key={item.url} item={item} onOpen={onOpen} />
+          ))}
+        </div>
+
+        {/* User avatar at bottom */}
+        <button
+          onClick={() => (open ? onClose() : onOpen())}
+          className="h-9 w-9 rounded-full flex items-center justify-center text-white text-[10px] font-bold shrink-0 transition-all hover:opacity-80 active:scale-95"
+          style={{ background: "linear-gradient(135deg, hsl(265,83%,57%), hsl(285,70%,50%))" }}
+          title={user?.username}
+        >
+          {initials}
+        </button>
+      </div>
+
+      {/* ── Full floating panel — slides over icon rail ───────────── */}
       <div
         className={cn(
-          "fixed left-0 top-0 bottom-0 z-50 flex flex-col transition-all duration-300 ease-[cubic-bezier(0.32,0.72,0,1)]",
-          open ? "translate-x-0" : "-translate-x-full",
+          "fixed top-0 bottom-0 z-50 flex flex-col transition-all duration-300 ease-[cubic-bezier(0.32,0.72,0,1)]",
+          open ? "translate-x-0 opacity-100" : "-translate-x-full opacity-0 pointer-events-none",
         )}
         style={{
-          width: 260,
-          margin: "12px",
-          height: "calc(100vh - 24px)",
+          left: 0,
+          width: 268,
+          margin: "10px",
+          height: "calc(100vh - 20px)",
           borderRadius: 24,
           background: "#ffffff",
-          boxShadow: open
-            ? "0 24px 60px rgba(0,0,0,0.18), 0 8px 20px rgba(0,0,0,0.12)"
-            : "none",
+          boxShadow: "0 24px 60px rgba(0,0,0,0.16), 0 8px 20px rgba(0,0,0,0.10)",
         }}
       >
         {/* Header */}
@@ -176,55 +259,48 @@ function FloatingSidebar({
               />
             </div>
             <div>
-              <p className="font-bold text-[14px] text-foreground leading-tight tracking-tight">AINA Centre</p>
+              <p className="font-bold text-[14px] text-foreground leading-tight">AINA Centre</p>
               <p className="text-[9px] font-semibold tracking-[0.18em] uppercase text-muted-foreground/50">Management</p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="h-8 w-8 rounded-xl flex items-center justify-center text-muted-foreground/50 hover:text-foreground hover:bg-black/[0.05] transition-all"
+            className="h-8 w-8 rounded-xl flex items-center justify-center text-muted-foreground/40 hover:text-foreground hover:bg-black/[0.05] transition-all"
           >
             <X className="h-4 w-4" />
           </button>
         </div>
 
-        {/* Divider */}
         <div className="mx-5 border-t mb-2" style={{ borderColor: "hsl(var(--border))" }} />
 
-        {/* Nav items — scrollable */}
+        {/* Scrollable nav */}
         <div className="flex-1 overflow-y-auto px-3 py-1 space-y-0.5" style={{ scrollbarWidth: "none" }}>
-
-          {/* Primary nav */}
           {PRIMARY_NAV.map((item) => (
-            <SidebarLink key={item.url} item={item} onClick={onClose} />
+            <PanelLink key={item.url} item={item} onClick={onClose} />
           ))}
 
-          {/* Modul section */}
           <div className="pt-4 pb-1">
             <div className="flex items-center justify-between px-3 mb-2">
-              <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/45">Modul</p>
-              <Plus className="h-3 w-3 text-muted-foreground/35" />
+              <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/40">Modul</p>
+              <Plus className="h-3 w-3 text-muted-foreground/30" />
             </div>
             {MODUL_NAV.map((item) => (
-              <SidebarLink key={item.url} item={item} onClick={onClose} />
+              <PanelLink key={item.url} item={item} onClick={onClose} />
             ))}
           </div>
 
-          {/* Admin section */}
           {isAdmin && (
             <div className="pt-2 pb-1">
               <div className="px-3 mb-2">
-                <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/45">Admin</p>
+                <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/40">Admin</p>
               </div>
               {ADMIN_NAV.map((item) => (
-                <SidebarLink key={item.url} item={item} onClick={onClose} />
+                <PanelLink key={item.url} item={item} onClick={onClose} />
               ))}
             </div>
           )}
-
         </div>
 
-        {/* Divider */}
         <div className="mx-5 border-t mt-2" style={{ borderColor: "hsl(var(--border))" }} />
 
         {/* User footer */}
@@ -242,7 +318,7 @@ function FloatingSidebar({
             </div>
             <button
               onClick={onLogout}
-              className="h-7 w-7 rounded-xl flex items-center justify-center hover:bg-rose-50 hover:text-rose-500 text-muted-foreground/40 transition-all shrink-0 opacity-0 group-hover:opacity-100"
+              className="h-7 w-7 rounded-xl flex items-center justify-center hover:bg-rose-50 hover:text-rose-500 text-muted-foreground/35 transition-all opacity-0 group-hover:opacity-100"
               data-testid="button-logout"
               title="Logout"
             >
@@ -274,58 +350,37 @@ export function PortalLayout({ children }: PortalLayoutProps) {
   return (
     <div className="min-h-screen bg-background">
 
-      {/* ── Floating sidebar ─────────────────────────────────────────── */}
-      <FloatingSidebar
+      {/* Sidebar (icon rail + floating panel) */}
+      <Sidebar
         open={sidebarOpen}
+        onOpen={() => setSidebarOpen(true)}
         onClose={() => setSidebarOpen(false)}
         user={user}
         isAdmin={isAdmin}
         onLogout={handleLogout}
       />
 
-      {/* ── Full-width content ───────────────────────────────────────── */}
-      <div className="flex flex-col min-h-screen">
-
+      {/* Content — always offset by icon rail width */}
+      <div
+        className="flex flex-col min-h-screen transition-none"
+        style={{ marginLeft: RAIL_WIDTH }}
+      >
         {/* Top header */}
         <header
-          className="h-14 flex items-center justify-between px-4 shrink-0 sticky top-0 z-30"
+          className="h-14 flex items-center justify-between px-5 shrink-0 sticky top-0 z-30"
           style={{
             background: "rgba(250,247,243,0.90)",
             backdropFilter: "blur(14px)",
             borderBottom: "1px solid hsl(var(--border))",
           }}
         >
-          {/* Left: hamburger + brand */}
-          <div className="flex items-center gap-3">
-            <button
-              onClick={() => setSidebarOpen((v) => !v)}
-              className="h-9 w-9 rounded-xl flex items-center justify-center text-foreground/60 hover:text-foreground hover:bg-black/[0.06] transition-all duration-150 active:scale-95"
-              data-testid="button-mobile-menu"
-              aria-label="Toggle sidebar"
-            >
-              <Menu className="h-5 w-5" />
-            </button>
-            <div className="flex items-center gap-2.5">
-              <div
-                className="h-7 w-7 rounded-lg flex items-center justify-center shrink-0"
-                style={{ background: "linear-gradient(135deg, hsl(265,83%,57%), hsl(285,70%,50%))" }}
-              >
-                <img
-                  src="/logo.png"
-                  alt="AINA"
-                  className="h-4 w-4 object-contain"
-                  style={{ filter: "brightness(0) invert(1)" }}
-                />
-              </div>
-              <span className="font-bold text-[14px] text-foreground tracking-tight hidden sm:block">
-                AINA Centre
-              </span>
-            </div>
-          </div>
+          <p className="text-[12px] font-medium text-muted-foreground hidden sm:block">
+            AINA Centre Management Portal
+          </p>
+          <p className="text-[13px] font-bold text-foreground sm:hidden">AINA Centre</p>
 
-          {/* Right: actions + avatar */}
           <div className="flex items-center gap-2">
-            <button className="h-8 w-8 rounded-xl flex items-center justify-center text-foreground/45 hover:text-foreground hover:bg-black/[0.05] transition-all">
+            <button className="h-8 w-8 rounded-xl flex items-center justify-center text-foreground/45 hover:bg-black/[0.05] transition-all">
               <Bell className="h-4 w-4" />
             </button>
             <button
@@ -340,10 +395,9 @@ export function PortalLayout({ children }: PortalLayoutProps) {
         </header>
 
         {/* Page content */}
-        <main className="flex-1 p-5 pb-24">
+        <main className="flex-1 p-5 pb-10">
           {children}
         </main>
-
       </div>
     </div>
   );
