@@ -56,63 +56,31 @@ function SummaryCards({ items, sponsors }: { items: Keuangan[]; sponsors: Sponso
   const totalPledged = sponsors.reduce((s, sp) => s + Number(sp.pledgedAmount), 0);
   const totalReceived = sponsors.reduce((s, sp) => s + Number(sp.receivedAmount), 0);
 
+  const cards = [
+    { icon: <TrendingUp className="h-3.5 w-3.5 text-violet-600" />, bg: "bg-violet-100", label: "Dana Masuk",       value: totalIncome,   color: "text-violet-600",  testid: "stat-total-income", extra: "" },
+    { icon: <TrendingDown className="h-3.5 w-3.5 text-purple-700" />, bg: "bg-purple-100", label: "Dana Keluar",   value: totalExpense,  color: "text-purple-700",  testid: "stat-total-expense", extra: "" },
+    { icon: <Wallet className={`h-3.5 w-3.5 ${balance >= 0 ? "text-primary" : "text-destructive"}`} />, bg: balance >= 0 ? "bg-primary/10" : "bg-destructive/10", label: "Saldo", value: balance, color: balance >= 0 ? "text-primary" : "text-destructive", testid: "stat-balance", extra: balance >= 0 ? "border-primary/30 bg-primary/[0.02]" : "border-destructive/30" },
+    { icon: <Target className="h-3.5 w-3.5 text-purple-600" />, bg: "bg-purple-100",      label: "Dijanjikan",    value: totalPledged,  color: "text-purple-600",  testid: "stat-pledged", extra: "" },
+    { icon: <CheckCircle2 className="h-3.5 w-3.5 text-primary" />, bg: "bg-primary/10",   label: "Diterima",      value: totalReceived, color: "text-primary",     testid: "stat-received", extra: "" },
+  ];
+
   return (
-    <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
-      <Card className="col-span-2 lg:col-span-1">
-        <CardContent className="p-4">
-          <div className="flex items-center gap-2 mb-2">
-            <div className="h-7 w-7 rounded-md bg-violet-100 flex items-center justify-center">
-              <TrendingUp className="h-3.5 w-3.5 text-violet-600" />
+    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 sm:gap-3">
+      {cards.map((c, i) => (
+        <Card key={i} className={`${i === 0 ? "col-span-2 sm:col-span-1" : ""} ${c.extra} min-w-0`}>
+          <CardContent className="p-3 sm:p-4">
+            <div className="flex items-center gap-1.5 mb-2 min-w-0">
+              <div className={`h-6 w-6 sm:h-7 sm:w-7 rounded-md ${c.bg} flex items-center justify-center shrink-0`}>
+                {c.icon}
+              </div>
+              <span className="text-[10px] sm:text-xs text-muted-foreground truncate">{c.label}</span>
             </div>
-            <span className="text-xs text-muted-foreground">Dana Masuk</span>
-          </div>
-          <p className="text-xl font-bold text-violet-600" data-testid="stat-total-income">{formatRp(totalIncome)}</p>
-        </CardContent>
-      </Card>
-      <Card>
-        <CardContent className="p-4">
-          <div className="flex items-center gap-2 mb-2">
-            <div className="h-7 w-7 rounded-md bg-purple-100 flex items-center justify-center">
-              <TrendingDown className="h-3.5 w-3.5 text-purple-700" />
-            </div>
-            <span className="text-xs text-muted-foreground">Dana Keluar</span>
-          </div>
-          <p className="text-xl font-bold text-purple-700" data-testid="stat-total-expense">{formatRp(totalExpense)}</p>
-        </CardContent>
-      </Card>
-      <Card className={balance >= 0 ? "border-primary/30 bg-primary/[0.02]" : "border-destructive/30"}>
-        <CardContent className="p-4">
-          <div className="flex items-center gap-2 mb-2">
-            <div className={`h-7 w-7 rounded-md flex items-center justify-center ${balance >= 0 ? "bg-primary/10" : "bg-destructive/10"}`}>
-              <Wallet className={`h-3.5 w-3.5 ${balance >= 0 ? "text-primary" : "text-destructive"}`} />
-            </div>
-            <span className="text-xs text-muted-foreground">Saldo</span>
-          </div>
-          <p className={`text-xl font-bold ${balance >= 0 ? "text-primary" : "text-destructive"}`} data-testid="stat-balance">{formatRp(balance)}</p>
-        </CardContent>
-      </Card>
-      <Card>
-        <CardContent className="p-4">
-          <div className="flex items-center gap-2 mb-2">
-            <div className="h-7 w-7 rounded-md bg-purple-100 flex items-center justify-center">
-              <Target className="h-3.5 w-3.5 text-purple-600" />
-            </div>
-            <span className="text-xs text-muted-foreground">Dijanjikan</span>
-          </div>
-          <p className="text-xl font-bold text-purple-600" data-testid="stat-pledged">{formatRp(totalPledged)}</p>
-        </CardContent>
-      </Card>
-      <Card>
-        <CardContent className="p-4">
-          <div className="flex items-center gap-2 mb-2">
-            <div className="h-7 w-7 rounded-md bg-primary/10 flex items-center justify-center">
-              <CheckCircle2 className="h-3.5 w-3.5 text-primary" />
-            </div>
-            <span className="text-xs text-muted-foreground">Diterima Sponsor</span>
-          </div>
-          <p className="text-xl font-bold text-primary" data-testid="stat-received">{formatRp(totalReceived)}</p>
-        </CardContent>
-      </Card>
+            <p className="text-base sm:text-xl font-bold truncate" style={{ color: "inherit" }}>
+              <span className={c.color} data-testid={c.testid}>{formatRp(c.value)}</span>
+            </p>
+          </CardContent>
+        </Card>
+      ))}
     </div>
   );
 }
@@ -542,12 +510,14 @@ export default function KeuanganPage() {
       <SummaryCards items={items} sponsors={sponsors} />
 
       <Tabs defaultValue="overview">
-        <TabsList className="h-9">
-          <TabsTrigger value="overview" className="text-xs">Overview</TabsTrigger>
-          <TabsTrigger value="income" className="text-xs">Pemasukan ({income.length})</TabsTrigger>
-          <TabsTrigger value="expense" className="text-xs">Pengeluaran ({expenses.length})</TabsTrigger>
-          <TabsTrigger value="sponsor" className="text-xs">Sponsor ({sponsors.length})</TabsTrigger>
-        </TabsList>
+        <div className="overflow-x-auto -mx-1 px-1 pb-0.5">
+          <TabsList className="h-9 w-max min-w-full">
+            <TabsTrigger value="overview" className="text-xs whitespace-nowrap">Overview</TabsTrigger>
+            <TabsTrigger value="income" className="text-xs whitespace-nowrap">Pemasukan ({income.length})</TabsTrigger>
+            <TabsTrigger value="expense" className="text-xs whitespace-nowrap">Pengeluaran ({expenses.length})</TabsTrigger>
+            <TabsTrigger value="sponsor" className="text-xs whitespace-nowrap">Sponsor ({sponsors.length})</TabsTrigger>
+          </TabsList>
+        </div>
 
         {/* ── Overview Tab ── */}
         <TabsContent value="overview" className="mt-4 space-y-4">
