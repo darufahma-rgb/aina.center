@@ -153,7 +153,7 @@ function Sidebar({
       {/* Mobile backdrop */}
       {mobileOpen && (
         <div
-          className="fixed inset-0 z-40 bg-black/30 backdrop-blur-sm lg:hidden"
+          className="fixed inset-0 z-[65] bg-black/30 backdrop-blur-sm lg:hidden"
           onClick={onMobileClose}
         />
       )}
@@ -161,7 +161,7 @@ function Sidebar({
       {/* Sidebar panel */}
       <aside
         className={cn(
-          "sidebar-panel fixed top-0 bottom-0 z-50 flex flex-col transition-transform duration-300 ease-[cubic-bezier(0.32,0.72,0,1)]",
+          "sidebar-panel fixed top-0 bottom-0 z-[70] flex flex-col transition-transform duration-300 ease-[cubic-bezier(0.32,0.72,0,1)]",
           "lg:translate-x-0",
           mobileOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0",
         )}
@@ -170,8 +170,7 @@ function Sidebar({
           top: 0,
           bottom: 0,
           width: SIDEBAR_W,
-          height: "100dvh",
-          borderRadius: "0 24px 24px 0",
+          borderRadius: "0 24px 0 0",
           background: ACCENT,
           border: "none",
         } : {
