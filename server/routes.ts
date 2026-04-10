@@ -15,6 +15,7 @@ import {
   insertUserSchema,
   insertSponsorSchema,
 } from "../shared/schema";
+import { generateReport, type ReportMode } from "./aiReport";
 import { z } from "zod";
 
 export function registerRoutes(app: Router) {
@@ -228,6 +229,66 @@ export function registerRoutes(app: Router) {
 
   app.delete("/api/sponsor/:id", requireAdmin, async (req, res) => {
     const ok = await storage.deleteSponsor(parseInt(req.params.id), req.session.userId!);
+    if (!ok) return res.status(404).json({ message: "Not found" });
+    res.json({ message: "Deleted" });
+  });
+
+  // ── AI Report ────────────────────────────────────────────────────────────────
+
+  app.post("/api/ai-report/generate", requireAuth, async (req, res) => {
+    const { rawText, mode } = req.body as { rawText: string; mode: ReportMode };
+    if (!rawText || typeof rawText !== "string") {
+      return res.status(400).json({ message: "rawText diperlukan." });
+    }
+    const validModes: ReportMode[] = ["notulensi", "progress", "investor", "summary"];
+    if (!validModes.includes(mode)) {
+      return res.status(400).json({ message: "mode tidak valid." });
+    }
+    try {
+      const result = await generateReport(rawText, mode);
+      res.json(result);
+    } catch (e: any) {
+      res.status(422).json({ message: e.message ?? "Gagal memproses teks." });
+    }
+  });
+
+  app.get("/api/reports", requireAuth, async (req, res) => {
+    const userId = req.session.userId!;
+    const isAdmin = req.session.userRole === "admin";
+    // Admins see all reports; regular users see their own
+    const list = await storage.listReports(isAdmin ? undefined : userId);
+    res.json(list);
+  });
+
+  app.get("/api/reports/:id", requireAuth, async (req, res) => {
+    const r = await storage.getReport(parseInt(req.params.id));
+    if (!r) return res.status(404).json({ message: "Not found" });
+    // Check ownership
+    if (req.session.userRole !== "admin" && r.createdBy !== req.session.userId) {
+      return res.status(403).json({ message: "Forbidden" });
+    }
+    res.json(r);
+  });
+
+  app.post("/api/reports", requireAuth, async (req, res) => {
+    const { title, mode, rawInput, generatedOutput, savedToModule, relatedId } = req.body;
+    if (!title || !mode || !rawInput || !generatedOutput) {
+      return res.status(400).json({ message: "Field wajib tidak lengkap." });
+    }
+    const r = await storage.createReport(
+      { title, mode, rawInput, generatedOutput, savedToModule: savedToModule ?? null, relatedId: relatedId ?? null },
+      req.session.userId!
+    );
+    res.status(201).json(r);
+  });
+
+  app.delete("/api/reports/:id", requireAuth, async (req, res) => {
+    const r = await storage.getReport(parseInt(req.params.id));
+    if (!r) return res.status(404).json({ message: "Not found" });
+    if (req.session.userRole !== "admin" && r.createdBy !== req.session.userId) {
+      return res.status(403).json({ message: "Forbidden" });
+    }
+    const ok = await storage.deleteReport(parseInt(req.params.id));
     if (!ok) return res.status(404).json({ message: "Not found" });
     res.json({ message: "Deleted" });
   });

@@ -17,6 +17,7 @@ export const suratTypeEnum = pgEnum("surat_type", ["masuk", "keluar"]);
 export const suratStatusEnum = pgEnum("surat_status", ["draft", "sent", "received", "archived"]);
 export const inventarisConditionEnum = pgEnum("inventaris_condition", ["baik", "rusak", "perlu_perbaikan"]);
 export const auditActionEnum = pgEnum("audit_action", ["create", "update", "delete"]);
+export const reportModeEnum = pgEnum("report_mode", ["notulensi", "progress", "investor", "summary"]);
 export const sponsorStatusEnum = pgEnum("sponsor_status", ["prospect", "confirmed", "active", "completed", "withdrawn"]);
 
 // ─── Users ────────────────────────────────────────────────────────────────────
@@ -285,6 +286,26 @@ export const insertInvestorContentSchema = createInsertSchema(investorContent).o
 });
 export type InsertInvestorContent = z.infer<typeof insertInvestorContentSchema>;
 export type InvestorContent = typeof investorContent.$inferSelect;
+
+// ─── AI Reports ───────────────────────────────────────────────────────────────
+
+export const reports = pgTable("reports", {
+  id: serial("id").primaryKey(),
+  title: text("title").notNull(),
+  mode: reportModeEnum("mode").notNull(),
+  rawInput: text("raw_input").notNull(),
+  generatedOutput: text("generated_output").notNull(),
+  savedToModule: text("saved_to_module"),
+  relatedId: integer("related_id"),
+  createdBy: integer("created_by").references(() => users.id),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+});
+
+export const insertReportSchema = createInsertSchema(reports).omit({
+  id: true, createdAt: true, createdBy: true,
+});
+export type InsertReport = z.infer<typeof insertReportSchema>;
+export type Report = typeof reports.$inferSelect;
 
 // ─── Audit Logs ───────────────────────────────────────────────────────────────
 

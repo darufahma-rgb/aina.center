@@ -1,6 +1,6 @@
 import {
   LayoutDashboard, FileText, Sparkles, Wallet, CalendarDays, Users,
-  Handshake, Mail, Package, Presentation, Bot, LogOut, UserCog,
+  Handshake, Mail, Package, Presentation, Wand2, LogOut, UserCog,
 } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useAuth } from "@/contexts/AuthContext";
@@ -44,6 +44,10 @@ const navSections = [
   {
     label: "Presentation",
     items: [{ title: "Investor Mode", url: "/investor", icon: Presentation }],
+  },
+  {
+    label: "Tools",
+    items: [{ title: "AI Report Assistant", url: "/ai-report", icon: Wand2 }],
   },
 ];
 
@@ -122,22 +126,6 @@ export function AppSidebar() {
           </>
         )}
 
-        {!collapsed && (
-          <SidebarGroup>
-            <SidebarGroupContent>
-              <div className="mx-3 p-3 rounded-lg bg-sidebar-accent/50 border border-sidebar-border">
-                <div className="flex items-center gap-2 mb-1">
-                  <Bot className="h-4 w-4 text-sidebar-primary" />
-                  <span className="text-sidebar-primary-foreground text-xs font-medium">AI Report Assistant</span>
-                </div>
-                <p className="text-sidebar-muted text-[10px] leading-relaxed">Coming soon — auto-tidy reports & notes</p>
-                <Badge variant="outline" className="mt-2 text-[10px] border-sidebar-primary/30 text-sidebar-primary">
-                  Preview
-                </Badge>
-              </div>
-            </SidebarGroupContent>
-          </SidebarGroup>
-        )}
       </SidebarContent>
 
       <SidebarFooter className="p-3 border-t border-sidebar-border">

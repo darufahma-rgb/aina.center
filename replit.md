@@ -37,6 +37,7 @@ The app starts via `npx tsx server/index.ts` which runs Express (port 5000) with
 8. **Surat** — Document/letter management
 9. **Inventaris** — Asset/equipment management
 10. **Investor Mode** — Curated content for investors (admin-controlled visibility)
+11. **AI Report Assistant** (`/ai-report`) — Convert raw notes into structured reports (4 modes: Notulensi, Progress, Investor Summary, Short Summary). Template-based extraction engine in `server/aiReport.ts` with clear LLM integration seam. Supports edit-before-save, copy, save to history, and one-click save to Notulensi module.
 
 ## Key Files
 

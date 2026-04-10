@@ -1,7 +1,7 @@
 import { eq, isNull, and, desc } from "drizzle-orm";
 import { db } from "./db";
 import {
-  users, notulensi, fiturTerbaru, keuangan, agenda, anggota, relasi, surat, inventaris, investorContent, auditLogs, sponsor,
+  users, notulensi, fiturTerbaru, keuangan, agenda, anggota, relasi, surat, inventaris, investorContent, auditLogs, sponsor, reports,
   type User, type SafeUser, type InsertUser,
   type Notulensi, type InsertNotulensi,
   type FiturTerbaru, type InsertFiturTerbaru,
@@ -13,6 +13,7 @@ import {
   type Inventaris, type InsertInventaris,
   type InvestorContent, type InsertInvestorContent,
   type Sponsor, type InsertSponsor,
+  type Report, type InsertReport,
   type AuditLog,
 } from "../shared/schema";
 import bcrypt from "bcryptjs";
@@ -94,6 +95,12 @@ export interface IStorage {
   listInvestorContent(): Promise<InvestorContent[]>;
   upsertInvestorContent(key: string, data: Partial<InsertInvestorContent>, userId: number): Promise<InvestorContent>;
   updateInvestorContentVisibility(id: number, isVisible: boolean, userId: number): Promise<InvestorContent | undefined>;
+
+  // Reports
+  listReports(userId?: number): Promise<Report[]>;
+  getReport(id: number): Promise<Report | undefined>;
+  createReport(data: InsertReport, userId: number): Promise<Report>;
+  deleteReport(id: number): Promise<boolean>;
 
   // Audit
   createAuditLog(tableName: string, recordId: number, action: "create" | "update" | "delete", oldData: any, newData: any, userId: number): Promise<void>;
@@ -446,6 +453,30 @@ export class DatabaseStorage implements IStorage {
   async updateInvestorContentVisibility(id: number, isVisible: boolean, userId: number) {
     const [c] = await db.update(investorContent).set({ isVisible, updatedBy: userId, updatedAt: now() }).where(eq(investorContent.id, id)).returning();
     return c;
+  }
+
+  // ── Reports ──
+
+  async listReports(userId?: number) {
+    if (userId) {
+      return db.select().from(reports).where(eq(reports.createdBy, userId)).orderBy(desc(reports.createdAt));
+    }
+    return db.select().from(reports).orderBy(desc(reports.createdAt));
+  }
+
+  async getReport(id: number) {
+    const [r] = await db.select().from(reports).where(eq(reports.id, id));
+    return r;
+  }
+
+  async createReport(data: InsertReport, userId: number) {
+    const [r] = await db.insert(reports).values({ ...data, createdBy: userId }).returning();
+    return r;
+  }
+
+  async deleteReport(id: number) {
+    const [r] = await db.delete(reports).where(eq(reports.id, id)).returning();
+    return !!r;
   }
 
   // ── Audit Logs ──
