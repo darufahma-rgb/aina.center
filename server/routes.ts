@@ -523,8 +523,42 @@ export function registerRoutes(app: Router) {
       storage.listAnggota(),
     ]);
 
-    const totalIncome = allKeuangan.filter(k => k.type === "income").reduce((s, k) => s + parseFloat(k.amount.toString()), 0);
-    const totalExpense = allKeuangan.filter(k => k.type === "expense").reduce((s, k) => s + parseFloat(k.amount.toString()), 0);
+    const now = new Date();
+    const weekAgo      = new Date(now.getTime() - 7  * 86400000);
+    const twoWeeksAgo  = new Date(now.getTime() - 14 * 86400000);
+    const monthAgo     = new Date(now.getTime() - 30 * 86400000);
+    const twoMonthsAgo = new Date(now.getTime() - 60 * 86400000);
+
+    const afterDate  = (d: string | Date, from: Date) => new Date(d) >= from;
+    const betweenDate = (d: string | Date, from: Date, to: Date) => new Date(d) >= from && new Date(d) < to;
+
+    // ── Week-over-week notulensi ──
+    const notulensiThisWeek = allNotulensi.filter(n => afterDate(n.createdAt, weekAgo)).length;
+    const notulensiLastWeek = allNotulensi.filter(n => betweenDate(n.createdAt, twoWeeksAgo, weekAgo)).length;
+
+    // ── Month-over-month agenda created ──
+    const agendaThisMonth = allAgenda.filter(a => afterDate(a.createdAt, monthAgo)).length;
+    const agendaLastMonth = allAgenda.filter(a => betweenDate(a.createdAt, twoMonthsAgo, monthAgo)).length;
+
+    // ── Feature stats ──
+    const fiturThisMonth  = allFitur.filter(f => afterDate(f.createdAt, monthAgo)).length;
+    const completedFitur  = allFitur.filter(f => f.status === "completed").length;
+    const inProgressFitur = allFitur.filter(f => f.status === "in_progress").length;
+    const categoryCounts  = allFitur.reduce((acc, f) => { acc[f.category] = (acc[f.category] ?? 0) + 1; return acc; }, {} as Record<string, number>);
+    const topCategory     = Object.entries(categoryCounts).sort((a, b) => b[1] - a[1])[0]?.[0] ?? null;
+
+    // ── Month-over-month financials ──
+    const sumKeuangan = (type: string, from: Date, to?: Date) =>
+      allKeuangan
+        .filter(k => k.type === type && (to ? betweenDate(k.createdAt, from, to) : afterDate(k.createdAt, from)))
+        .reduce((s, k) => s + parseFloat(k.amount.toString()), 0);
+
+    const totalIncome      = allKeuangan.filter(k => k.type === "income").reduce((s, k) => s + parseFloat(k.amount.toString()), 0);
+    const totalExpense     = allKeuangan.filter(k => k.type === "expense").reduce((s, k) => s + parseFloat(k.amount.toString()), 0);
+    const incomeThisMonth  = sumKeuangan("income",  monthAgo);
+    const incomeLastMonth  = sumKeuangan("income",  twoMonthsAgo, monthAgo);
+    const expenseThisMonth = sumKeuangan("expense", monthAgo);
+    const expenseLastMonth = sumKeuangan("expense", twoMonthsAgo, monthAgo);
 
     res.json({
       totalAnggota: allAnggota.filter(a => a.status === "active").length,
@@ -537,6 +571,23 @@ export function registerRoutes(app: Router) {
       recentNotulensi: allNotulensi.slice(0, 3),
       upcomingAgendaList: allAgenda.filter(a => a.status === "upcoming").slice(0, 3),
       latestFitur: allFitur.slice(0, 3),
+      // ── Insight data ──
+      insights: {
+        notulensiThisWeek,
+        notulensiLastWeek,
+        agendaThisMonth,
+        agendaLastMonth,
+        fiturThisMonth,
+        completedFitur,
+        inProgressFitur,
+        totalFitur: allFitur.length,
+        topCategory,
+        incomeThisMonth,
+        incomeLastMonth,
+        expenseThisMonth,
+        expenseLastMonth,
+        balance: totalIncome - totalExpense,
+      },
     });
   });
 

@@ -1,0 +1,92 @@
+Now implement a powerful “AI Report Assistant” feature inside AINA Portal.
+
+Goal:
+Help admin turn messy raw notes into clean, structured, and usable reports.
+
+This should become one of the most useful tools in the system.
+
+==================================================
+MAIN FUNCTION
+==================================================
+
+User can paste raw text (messy notes), and AI will transform it into structured output.
+
+==================================================
+INPUT
+==================================================
+
+- textarea input
+- user pastes raw notes (meeting notes, updates, ideas, etc.)
+
+==================================================
+OUTPUT MODES
+==================================================
+
+Create multiple selectable output modes:
+
+1. Notulensi Mode
+Output structure:
+- Judul
+- Tanggal
+- Peserta
+- Ringkasan
+- Keputusan
+- Tindak Lanjut
+
+2. Internal Report Mode
+Output structure:
+- Fokus Update
+- Perkembangan Utama
+- Kendala
+- Insight
+- Next Step
+
+3. Investor Summary Mode
+Output structure:
+- Highlight Utama
+- Progress Penting
+- Dampak Strategis
+- Arah Selanjutnya
+
+4. Short Summary Mode
+Output:
+- concise bullet summary
+
+==================================================
+UX REQUIREMENTS
+==================================================
+
+- user can edit AI output before saving
+- copy button
+- save to module (Notulensi or Reports)
+- clear loading state
+- error handling
+
+==================================================
+TECHNICAL REQUIREMENTS
+==================================================
+
+- integrate with LLM API (prepare structure, don’t hardcode secrets)
+- create prompt templates for each mode
+- keep prompt easily editable in code
+- do not fabricate data, only restructure and summarize
+- keep responses grounded in input text
+
+==================================================
+SAFETY NOTE
+==================================================
+
+Add UI reminder:
+“Review AI-generated output before saving.”
+
+==================================================
+GOAL RESULT
+==================================================
+
+This feature should:
+- save time
+- improve report quality
+- make internal data cleaner
+- help convert internal notes into investor-ready summaries
+
+This is a core intelligence feature, not a gimmick.

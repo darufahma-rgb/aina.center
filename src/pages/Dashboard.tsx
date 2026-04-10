@@ -1,6 +1,8 @@
 import {
   Users, Wallet, CalendarDays, FileText, Sparkles,
-  TrendingUp, ArrowRight, Bot, Clock, CheckCircle2
+  TrendingUp, TrendingDown, ArrowRight, Bot, Clock,
+  CheckCircle2, AlertCircle, Minus, Zap, Activity,
+  BarChart3, MessageSquare,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -11,6 +13,25 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
 import type { Notulensi, Agenda, FiturTerbaru } from "../../shared/schema";
+
+// ─── Types ────────────────────────────────────────────────────────────────────
+
+interface InsightData {
+  notulensiThisWeek: number;
+  notulensiLastWeek: number;
+  agendaThisMonth: number;
+  agendaLastMonth: number;
+  fiturThisMonth: number;
+  completedFitur: number;
+  inProgressFitur: number;
+  totalFitur: number;
+  topCategory: string | null;
+  incomeThisMonth: number;
+  incomeLastMonth: number;
+  expenseThisMonth: number;
+  expenseLastMonth: number;
+  balance: number;
+}
 
 interface DashboardData {
   totalAnggota: number;
@@ -23,7 +44,262 @@ interface DashboardData {
   recentNotulensi: Notulensi[];
   upcomingAgendaList: Agenda[];
   latestFitur: FiturTerbaru[];
+  insights: InsightData;
 }
+
+// ─── Insight generation ───────────────────────────────────────────────────────
+
+type InsightTone = "positive" | "negative" | "neutral" | "warning";
+
+interface Insight {
+  id: string;
+  tone: InsightTone;
+  icon: any;
+  label: string;
+  text: string;
+  link?: string;
+}
+
+function buildInsights(data: DashboardData): Insight[] {
+  const { insights, draftNotulensi, upcomingAgenda } = data;
+  const list: Insight[] = [];
+
+  // ── Activity: notulensi week-over-week ──────────────────────────────────────
+  if (insights.notulensiThisWeek > 0 || insights.notulensiLastWeek > 0) {
+    if (insights.notulensiThisWeek > insights.notulensiLastWeek) {
+      list.push({
+        id: "notulensi-up",
+        tone: "positive",
+        icon: FileText,
+        label: "Aktivitas Notulensi",
+        text: `${insights.notulensiThisWeek} notulensi baru minggu ini — naik dari ${insights.notulensiLastWeek} minggu lalu.`,
+        link: "/notulensi",
+      });
+    } else if (insights.notulensiThisWeek < insights.notulensiLastWeek) {
+      list.push({
+        id: "notulensi-down",
+        tone: "neutral",
+        icon: FileText,
+        label: "Aktivitas Notulensi",
+        text: `${insights.notulensiThisWeek} notulensi minggu ini vs ${insights.notulensiLastWeek} minggu lalu — aktivitas menurun.`,
+        link: "/notulensi",
+      });
+    } else if (insights.notulensiThisWeek > 0) {
+      list.push({
+        id: "notulensi-stable",
+        tone: "neutral",
+        icon: FileText,
+        label: "Aktivitas Notulensi",
+        text: `${insights.notulensiThisWeek} notulensi minggu ini — aktivitas stabil dibanding minggu lalu.`,
+        link: "/notulensi",
+      });
+    }
+  } else {
+    list.push({
+      id: "notulensi-none",
+      tone: "warning",
+      icon: FileText,
+      label: "Aktivitas Notulensi",
+      text: "Belum ada notulensi baru minggu ini. Dokumentasi rapat perlu diperbarui.",
+      link: "/notulensi",
+    });
+  }
+
+  // ── Operational: draft notulensi ─────────────────────────────────────────────
+  if (draftNotulensi > 0) {
+    list.push({
+      id: "draft-pending",
+      tone: "warning",
+      icon: AlertCircle,
+      label: "Draft Tertunda",
+      text: `${draftNotulensi} notulensi masih berstatus draft — perlu difinalkan sebelum arsip.`,
+      link: "/notulensi",
+    });
+  }
+
+  // ── Financial: balance & expense trend ───────────────────────────────────────
+  if (insights.balance > 0) {
+    if (insights.expenseThisMonth > 0 && insights.expenseLastMonth > 0) {
+      const expPct = ((insights.expenseThisMonth - insights.expenseLastMonth) / insights.expenseLastMonth) * 100;
+      if (expPct > 20) {
+        list.push({
+          id: "expense-up",
+          tone: "warning",
+          icon: TrendingUp,
+          label: "Tren Pengeluaran",
+          text: `Pengeluaran bulan ini naik ${expPct.toFixed(0)}% dibanding bulan lalu. Perlu perhatian.`,
+          link: "/keuangan",
+        });
+      } else if (expPct < -10) {
+        list.push({
+          id: "expense-down",
+          tone: "positive",
+          icon: TrendingDown,
+          label: "Tren Pengeluaran",
+          text: `Pengeluaran bulan ini turun ${Math.abs(expPct).toFixed(0)}% dibanding bulan lalu — efisiensi meningkat.`,
+          link: "/keuangan",
+        });
+      } else {
+        list.push({
+          id: "balance-healthy",
+          tone: "positive",
+          icon: Wallet,
+          label: "Kondisi Keuangan",
+          text: `Saldo kas positif dan pengeluaran stabil. Kondisi keuangan sehat.`,
+          link: "/keuangan",
+        });
+      }
+    } else {
+      list.push({
+        id: "balance-positive",
+        tone: "positive",
+        icon: Wallet,
+        label: "Kondisi Keuangan",
+        text: `Saldo kas positif — kondisi keuangan terjaga dengan baik.`,
+        link: "/keuangan",
+      });
+    }
+  } else if (data.totalIncome > 0 || data.totalExpense > 0) {
+    list.push({
+      id: "balance-low",
+      tone: "negative",
+      icon: Wallet,
+      label: "Kondisi Keuangan",
+      text: `Saldo kas negatif atau nol — pengeluaran melebihi pemasukan. Perlu tindakan segera.`,
+      link: "/keuangan",
+    });
+  }
+
+  // ── Product: feature activity ─────────────────────────────────────────────────
+  if (insights.totalFitur > 0) {
+    if (insights.fiturThisMonth > 0) {
+      list.push({
+        id: "fitur-active",
+        tone: "positive",
+        icon: Sparkles,
+        label: "Pengembangan Produk",
+        text: `${insights.fiturThisMonth} fitur baru ditambahkan bulan ini.${insights.topCategory ? ` Kategori paling aktif: ${insights.topCategory}.` : ""}`,
+        link: "/fitur",
+      });
+    } else if (insights.topCategory) {
+      list.push({
+        id: "fitur-category",
+        tone: "neutral",
+        icon: Sparkles,
+        label: "Pengembangan Produk",
+        text: `${insights.completedFitur} dari ${insights.totalFitur} fitur sudah selesai. Kategori terbanyak: ${insights.topCategory}.`,
+        link: "/fitur",
+      });
+    }
+  }
+
+  // ── Operational: upcoming agenda ─────────────────────────────────────────────
+  if (upcomingAgenda > 2) {
+    list.push({
+      id: "agenda-busy",
+      tone: "neutral",
+      icon: CalendarDays,
+      label: "Agenda Mendatang",
+      text: `${upcomingAgenda} agenda mendatang dalam antrean — pastikan semua peserta sudah diberitahu.`,
+      link: "/agenda",
+    });
+  } else if (upcomingAgenda === 0 && data.totalNotulensi > 0) {
+    list.push({
+      id: "agenda-empty",
+      tone: "neutral",
+      icon: CalendarDays,
+      label: "Agenda",
+      text: "Tidak ada agenda mendatang yang terdaftar. Waktu yang baik untuk merencanakan sesi berikutnya.",
+      link: "/agenda",
+    });
+  }
+
+  // Return top 4 most relevant insights
+  return list.slice(0, 4);
+}
+
+// ─── Tone → style mapping ─────────────────────────────────────────────────────
+
+const TONE_STYLE: Record<InsightTone, { bg: string; border: string; icon: string; badge: string }> = {
+  positive: {
+    bg: "bg-emerald-500/5",
+    border: "border-emerald-500/20",
+    icon: "text-emerald-600",
+    badge: "bg-emerald-500/10 text-emerald-700 dark:text-emerald-400",
+  },
+  negative: {
+    bg: "bg-destructive/5",
+    border: "border-destructive/20",
+    icon: "text-destructive",
+    badge: "bg-destructive/10 text-destructive",
+  },
+  warning: {
+    bg: "bg-amber-500/5",
+    border: "border-amber-500/20",
+    icon: "text-amber-600",
+    badge: "bg-amber-500/10 text-amber-700 dark:text-amber-400",
+  },
+  neutral: {
+    bg: "bg-muted/40",
+    border: "border-border",
+    icon: "text-muted-foreground",
+    badge: "bg-muted text-muted-foreground",
+  },
+};
+
+// ─── Insight Card ─────────────────────────────────────────────────────────────
+
+function InsightCard({ insight }: { insight: Insight }) {
+  const style = TONE_STYLE[insight.tone];
+  const Icon = insight.icon;
+
+  const content = (
+    <div
+      className={`flex items-start gap-3 p-4 rounded-xl border ${style.bg} ${style.border} h-full transition-shadow hover:shadow-sm`}
+      data-testid={`insight-card-${insight.id}`}
+    >
+      <div className={`h-8 w-8 rounded-lg bg-background/70 flex items-center justify-center shrink-0 mt-0.5 border ${style.border}`}>
+        <Icon className={`h-3.5 w-3.5 ${style.icon}`} />
+      </div>
+      <div className="flex-1 min-w-0 space-y-1">
+        <span className={`inline-block text-[10px] font-bold uppercase tracking-wide px-1.5 py-0.5 rounded ${style.badge}`}>
+          {insight.label}
+        </span>
+        <p className="text-sm text-foreground/80 leading-relaxed">{insight.text}</p>
+      </div>
+    </div>
+  );
+
+  if (insight.link) {
+    return <Link to={insight.link} className="block">{content}</Link>;
+  }
+  return content;
+}
+
+// ─── Insight Layer ────────────────────────────────────────────────────────────
+
+function InsightLayer({ data }: { data: DashboardData }) {
+  if (!data.insights) return null;
+  const insights = buildInsights(data);
+  if (insights.length === 0) return null;
+
+  return (
+    <div className="space-y-3" data-testid="insight-layer">
+      <div className="flex items-center gap-2">
+        <Activity className="h-4 w-4 text-primary" />
+        <h2 className="text-sm font-semibold">Ringkasan Situasi</h2>
+        <span className="text-xs text-muted-foreground">— apa yang sedang terjadi</span>
+      </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        {insights.map((insight) => (
+          <InsightCard key={insight.id} insight={insight} />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ─── Helpers ──────────────────────────────────────────────────────────────────
 
 function formatRp(n: number) {
   return "Rp " + n.toLocaleString("id-ID");
@@ -35,21 +311,46 @@ function statusColor(status: string) {
   return "text-muted-foreground";
 }
 
+// ─── Insight Skeleton ─────────────────────────────────────────────────────────
+
+function InsightSkeleton() {
+  return (
+    <div className="space-y-3">
+      <div className="flex items-center gap-2">
+        <div className="h-4 w-4 rounded bg-muted animate-pulse" />
+        <div className="h-4 w-36 rounded bg-muted animate-pulse" />
+      </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        {[1, 2, 3, 4].map((i) => (
+          <div key={i} className="h-20 rounded-xl border bg-muted/30 animate-pulse" />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ─── Main Page ────────────────────────────────────────────────────────────────
+
 export default function Dashboard() {
   const { isAdmin } = useAuth();
   const { data, isLoading } = useQuery<DashboardData>({ queryKey: ["/api/dashboard"] });
 
   return (
     <div className="space-y-6 animate-fade-in">
-      <PageHeader title="Dashboard" description="Command center — overview of AINA operations" />
+      <PageHeader title="Dashboard" description="Command center — situasi dan aktivitas terkini AINA" />
 
+      {/* ── Insight Layer ── */}
+      {isLoading ? <InsightSkeleton /> : data?.insights ? <InsightLayer data={data} /> : null}
+
+      {/* ── Stat Cards ── */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard icon={Users} title="Total Anggota" value={isLoading ? "—" : data?.totalAnggota ?? 0} subtitle="Anggota aktif" gradient />
-        <StatCard icon={Wallet} title="Saldo Tersedia" value={isLoading ? "—" : formatRp(data?.saldoTersedia ?? 0)} subtitle="Keuangan bersih" trendUp />
-        <StatCard icon={CalendarDays} title="Agenda Mendatang" value={isLoading ? "—" : data?.upcomingAgenda ?? 0} subtitle="Agenda upcoming" />
-        <StatCard icon={FileText} title="Notulensi" value={isLoading ? "—" : data?.totalNotulensi ?? 0} subtitle={`${data?.draftNotulensi ?? 0} draft pending`} />
+        <StatCard icon={Users}       title="Total Anggota"    value={isLoading ? "—" : data?.totalAnggota ?? 0}              subtitle="Anggota aktif"                          gradient />
+        <StatCard icon={Wallet}      title="Saldo Tersedia"   value={isLoading ? "—" : formatRp(data?.saldoTersedia ?? 0)}   subtitle="Keuangan bersih"                        trendUp />
+        <StatCard icon={CalendarDays} title="Agenda Mendatang" value={isLoading ? "—" : data?.upcomingAgenda ?? 0}           subtitle="Agenda upcoming" />
+        <StatCard icon={FileText}    title="Notulensi"        value={isLoading ? "—" : data?.totalNotulensi ?? 0}            subtitle={`${data?.draftNotulensi ?? 0} draft pending`} />
       </div>
 
+      {/* ── Notulensi + Agenda ── */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <Card className="lg:col-span-2">
           <CardHeader className="pb-3">
@@ -86,7 +387,7 @@ export default function Dashboard() {
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="text-base font-semibold flex items-center gap-2">
-              <CalendarDays className="h-4 w-4 text-primary" /> Agenda
+              <CalendarDays className="h-4 w-4 text-primary" /> Agenda Mendatang
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
@@ -109,6 +410,7 @@ export default function Dashboard() {
         </Card>
       </div>
 
+      {/* ── Features + AI CTA ── */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <Card className="lg:col-span-2">
           <CardHeader className="pb-3">
@@ -145,20 +447,40 @@ export default function Dashboard() {
           </CardContent>
         </Card>
 
-        <Card className="border-dashed border-2 border-primary/20 bg-primary/[0.02]">
-          <CardContent className="p-5 flex flex-col items-center justify-center text-center h-full">
-            <div className="h-12 w-12 rounded-xl gradient-primary flex items-center justify-center mb-3">
-              <Bot className="h-6 w-6 text-primary-foreground" />
-            </div>
-            <h3 className="text-sm font-semibold mb-1">AI Report Assistant</h3>
-            <p className="text-xs text-muted-foreground leading-relaxed mb-3">
-              Auto-tidy messy reports, summarize meeting notes, and generate investor-ready content.
-            </p>
-            <Badge variant="outline" className="text-[10px]">Coming Soon</Badge>
-          </CardContent>
-        </Card>
+        {isAdmin ? (
+          <Link to="/ai-report" className="block">
+            <Card className="border-dashed border-2 border-primary/20 bg-primary/[0.02] hover:bg-primary/[0.04] hover:shadow-sm transition-all h-full cursor-pointer">
+              <CardContent className="p-5 flex flex-col items-center justify-center text-center h-full">
+                <div className="h-12 w-12 rounded-xl gradient-primary flex items-center justify-center mb-3 shadow-sm">
+                  <Bot className="h-6 w-6 text-primary-foreground" />
+                </div>
+                <h3 className="text-sm font-semibold mb-1">AI Report Assistant</h3>
+                <p className="text-xs text-muted-foreground leading-relaxed mb-3">
+                  Ubah catatan mentah menjadi notulensi, laporan progress, atau ringkasan investor dalam hitungan detik.
+                </p>
+                <Badge variant="outline" className="text-[10px] border-primary/30 text-primary gap-1">
+                  <Zap className="h-2.5 w-2.5" /> GPT-4o mini · Aktif
+                </Badge>
+              </CardContent>
+            </Card>
+          </Link>
+        ) : (
+          <Card className="border-dashed border-2 border-primary/20 bg-primary/[0.02]">
+            <CardContent className="p-5 flex flex-col items-center justify-center text-center h-full">
+              <div className="h-12 w-12 rounded-xl gradient-primary flex items-center justify-center mb-3">
+                <Bot className="h-6 w-6 text-primary-foreground" />
+              </div>
+              <h3 className="text-sm font-semibold mb-1">AI Report Assistant</h3>
+              <p className="text-xs text-muted-foreground leading-relaxed mb-3">
+                Fitur AI tersedia untuk admin — otomatis susun laporan dari catatan mentah.
+              </p>
+              <Badge variant="outline" className="text-[10px]">Admin Only</Badge>
+            </CardContent>
+          </Card>
+        )}
       </div>
 
+      {/* ── Financial Summary ── */}
       <Card>
         <CardHeader className="pb-3">
           <div className="flex items-center justify-between">
@@ -176,16 +498,16 @@ export default function Dashboard() {
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            <div className="p-4 rounded-lg bg-success/10">
-              <p className="text-xs text-muted-foreground mb-1">Dana Masuk</p>
-              <p className="text-lg font-bold text-success">{isLoading ? "—" : formatRp(data?.totalIncome ?? 0)}</p>
+            <div className="p-4 rounded-xl bg-emerald-500/8 border border-emerald-500/15">
+              <p className="text-xs text-muted-foreground mb-1 font-medium uppercase tracking-wide">Dana Masuk</p>
+              <p className="text-lg font-bold text-emerald-600">{isLoading ? "—" : formatRp(data?.totalIncome ?? 0)}</p>
             </div>
-            <div className="p-4 rounded-lg bg-destructive/10">
-              <p className="text-xs text-muted-foreground mb-1">Dana Keluar</p>
+            <div className="p-4 rounded-xl bg-destructive/8 border border-destructive/15">
+              <p className="text-xs text-muted-foreground mb-1 font-medium uppercase tracking-wide">Dana Keluar</p>
               <p className="text-lg font-bold text-destructive">{isLoading ? "—" : formatRp(data?.totalExpense ?? 0)}</p>
             </div>
-            <div className="p-4 rounded-lg bg-primary/10">
-              <p className="text-xs text-muted-foreground mb-1">Saldo Tersedia</p>
+            <div className="p-4 rounded-xl bg-primary/8 border border-primary/15">
+              <p className="text-xs text-muted-foreground mb-1 font-medium uppercase tracking-wide">Saldo Tersedia</p>
               <p className="text-lg font-bold text-primary">{isLoading ? "—" : formatRp(data?.saldoTersedia ?? 0)}</p>
             </div>
           </div>

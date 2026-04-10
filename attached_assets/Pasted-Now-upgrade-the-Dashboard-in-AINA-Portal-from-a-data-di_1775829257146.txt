@@ -1,0 +1,77 @@
+Now upgrade the Dashboard in AINA Portal from a data display into an insight-driven command center.
+
+Current state:
+Dashboard shows statistics and summaries.
+
+Goal:
+Make Dashboard explain what is happening, not just show numbers.
+
+==================================================
+MAIN UPGRADE
+==================================================
+
+Add an “Insight Layer” on top of existing data.
+
+==================================================
+INSIGHT TYPES
+==================================================
+
+1. Activity Insight
+Examples:
+- “There are X new notulensi this week”
+- “Agenda increased compared to last week”
+
+2. Financial Insight
+Examples:
+- “Expenses increased by X% compared to last period”
+- “Current balance is stable / decreasing / increasing”
+
+3. Product Insight
+Examples:
+- “X new features added recently”
+- “Most active feature category: AI / System / UI”
+
+4. Operational Insight
+Examples:
+- “Most active module: Notulensi”
+- “Low activity in Agenda this week”
+
+==================================================
+IMPLEMENTATION APPROACH
+==================================================
+
+- use simple comparisons (this week vs last week, this month vs last month)
+- generate human-readable sentences
+- keep logic simple but meaningful
+
+==================================================
+UI REQUIREMENTS
+==================================================
+
+- create an “Insights” section on dashboard
+- display insights as cards or short text blocks
+- make it easy to scan in seconds
+- do not overwhelm with too many insights
+
+==================================================
+IMPORTANT RULES
+==================================================
+
+- prioritize clarity over complexity
+- avoid fake or random insights
+- always base insights on real data
+- keep tone informative and neutral
+
+==================================================
+GOAL RESULT
+==================================================
+
+Dashboard should feel like:
+- a command center
+- a quick briefing tool
+- something the founder can open and immediately understand what is happening inside AINA
+
+Not just:
+“what the numbers are”
+but:
+“what those numbers mean”
