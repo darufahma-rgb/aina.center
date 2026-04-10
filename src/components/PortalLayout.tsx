@@ -431,7 +431,7 @@ export function PortalLayout({ children }: PortalLayoutProps) {
           </header>
 
           {/* ── Page content ──────────────────────────────────────── */}
-          <main className="flex-1 p-4 sm:p-5 pb-24 lg:pb-10 overflow-auto">
+          <main className="flex-1 p-4 sm:p-5 pb-24 lg:pb-10 overflow-y-auto overflow-x-hidden min-w-0">
             {children}
           </main>
         </div>
