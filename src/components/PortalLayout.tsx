@@ -335,7 +335,7 @@ export function PortalLayout({ children }: PortalLayoutProps) {
   const contentLeft = SIDEBAR_W + SIDEBAR_MARGIN * 2;
 
   return (
-    <div className="min-h-screen bg-background flex">
+    <div className="min-h-screen bg-background flex" style={{ overflowX: "clip", maxWidth: "100vw" }}>
 
       {/* ── Sidebar ─────────────────────────────────────────────────── */}
       <Sidebar
