@@ -3,7 +3,8 @@ import {
   Target, Lightbulb, Shield, Sparkles, TrendingUp, Rocket,
   Eye, EyeOff, Edit2, Wallet, BarChart3, Settings2, LayoutList,
   CheckCheck, ChevronRight, ArrowLeft, Presentation, Handshake,
-  CircleDot, Save, X,
+  CircleDot, Save, X, AlertCircle, HeartHandshake, Zap, Map,
+  DollarSign, Activity, Building2,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -36,14 +37,57 @@ const DEFAULT_CONFIG: InvestorConfig = {
   hideAmounts: false,
 };
 
-// ─── Sections definition ──────────────────────────────────────────────────────
+// ─── Sections definition (narrative order) ────────────────────────────────────
 
 const SECTIONS = [
-  { key: "about",      badge: "Tentang Kami",  defaultTitle: "Tentang AINA",                   icon: Target,    defaultContent: "AINA adalah platform manajemen organisasi internal yang dirancang untuk meningkatkan efisiensi operasional dan transparansi dengan pendekatan berbasis data." },
-  { key: "problem",    badge: "Masalah",        defaultTitle: "Masalah yang Kami Selesaikan",   icon: Lightbulb, defaultContent: "Organisasi modern sering kesulitan mengelola dokumentasi, komunikasi, dan pelaporan internal secara efisien. AINA hadir sebagai solusi terintegrasi." },
-  { key: "strengths",  badge: "Keunggulan",     defaultTitle: "Keunggulan Kami",                icon: Shield,    defaultContent: "AI-powered assistance • Role-based access control • Real-time collaboration • Modular architecture • Audit trail menyeluruh" },
-  { key: "milestones", badge: "Pencapaian",     defaultTitle: "Milestone & Pencapaian",         icon: CheckCheck,defaultContent: "MVP Launch Q1 2026 • Beta Testing Q2 2026 • Public Release Q3 2026 • Enterprise Features Q4 2026" },
-  { key: "roadmap",    badge: "Roadmap",        defaultTitle: "Arah Pengembangan",              icon: Rocket,    defaultContent: "Phase 1: Core modules (selesai) • Phase 2: AI integration (berjalan) • Phase 3: Mobile app • Phase 4: Enterprise features" },
+  {
+    key: "about",
+    label: "Tentang AINA",
+    chapter: "01",
+    defaultTitle: "Platform Manajemen Organisasi Internal",
+    icon: Building2,
+    defaultContent: "AINA adalah sistem portal internal yang menyatukan seluruh operasional organisasi — dari dokumentasi rapat, pengelolaan keuangan, hingga relasi anggota — dalam satu platform yang efisien dan transparan.",
+  },
+  {
+    key: "problem",
+    label: "Masalah",
+    chapter: "02",
+    defaultTitle: "Organisasi Masih Berjalan Manual",
+    icon: AlertCircle,
+    defaultContent: "Sebagian besar organisasi masih mengandalkan spreadsheet terpisah, grup chat yang tidak terstruktur, dan proses manual yang membuang waktu. Data tersebar, tidak terekam, dan sulit dilacak. Akibatnya, keputusan dibuat tanpa data yang cukup.",
+  },
+  {
+    key: "why_matters",
+    label: "Mengapa Penting",
+    chapter: "03",
+    defaultTitle: "Inefisiensi Adalah Biaya Tersembunyi",
+    icon: HeartHandshake,
+    defaultContent: "Setiap jam yang hilang karena proses manual adalah biaya nyata. Ketika organisasi tumbuh, masalah ini semakin besar. Saat ini adalah waktu yang tepat — digitalisasi operasional bukan lagi pilihan, melainkan kebutuhan untuk bertahan dan berkembang.",
+  },
+  {
+    key: "solution",
+    label: "Solusi",
+    chapter: "04",
+    defaultTitle: "AINA: Satu Platform, Semua Terjawab",
+    icon: Zap,
+    defaultContent: "AINA menyatukan seluruh alur kerja organisasi dalam satu sistem yang mudah digunakan. Tidak perlu lagi berpindah antara berbagai aplikasi. Semua orang di organisasi melihat informasi yang sama, secara real-time, dengan akses yang disesuaikan perannya.",
+  },
+  {
+    key: "milestones",
+    label: "Progress",
+    chapter: "06",
+    defaultTitle: "Pencapaian & Milestone",
+    icon: CheckCheck,
+    defaultContent: "MVP selesai Q1 2026 • Beta testing berjalan Q2 2026 • 12 modul inti aktif • Sistem autentikasi & manajemen peran tersedia • AI Report Assistant terintegrasi",
+  },
+  {
+    key: "roadmap",
+    label: "Roadmap",
+    chapter: "08",
+    defaultTitle: "Yang Akan Datang",
+    icon: Map,
+    defaultContent: "Fase 2: Aplikasi mobile (Q3 2026) • Fase 3: Integrasi kalender & notifikasi otomatis • Fase 4: Dashboard analytics lanjutan • Fase 5: Fitur enterprise & multi-organisasi",
+  },
 ];
 
 const formatRp = (n: number) => "Rp " + Number(n).toLocaleString("id-ID");
@@ -51,24 +95,101 @@ const formatRp = (n: number) => "Rp " + Number(n).toLocaleString("id-ID");
 // ─── Presentation Section ─────────────────────────────────────────────────────
 
 function PresentationSection({
-  num, badge, title, content, icon: Icon,
+  chapter, label, title, content, icon: Icon, accent = false,
 }: {
-  num: number; badge: string; title: string; content: string; icon: any;
+  chapter: string; label: string; title: string; content: string;
+  icon: any; accent?: boolean;
 }) {
+  const lines = content.split(/\n|•/).map((s) => s.trim()).filter(Boolean);
+  const isBullet = content.includes("•") || (lines.length > 2 && !content.includes("\n\n"));
+
   return (
-    <section className="flex items-start gap-6 py-10 border-b border-border/30 last:border-0" data-testid={`present-section-${num}`}>
-      <div className="text-[80px] font-black text-foreground/[0.04] leading-none shrink-0 select-none hidden md:block w-[72px] text-right">
-        {String(num).padStart(2, "0")}
-      </div>
-      <div className="flex-1 space-y-4 min-w-0">
-        <div className="flex items-center gap-2">
-          <div className="h-7 w-7 rounded-md bg-primary/10 flex items-center justify-center shrink-0">
-            <Icon className="h-3.5 w-3.5 text-primary" />
-          </div>
-          <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-muted-foreground">{badge}</span>
+    <section
+      className="py-14 sm:py-16 border-b border-border/25 last:border-0"
+      data-testid={`present-section-${chapter}`}
+    >
+      <div className="space-y-6">
+        {/* Chapter label */}
+        <div className="flex items-center gap-3">
+          <span className="text-[10px] font-bold tracking-[0.22em] uppercase text-muted-foreground/60">
+            {chapter} — {label}
+          </span>
         </div>
-        <h2 className="text-2xl sm:text-3xl font-bold leading-tight">{title}</h2>
-        <p className="text-base text-foreground/70 leading-relaxed whitespace-pre-line">{content}</p>
+
+        {/* Heading + body */}
+        <div className="space-y-4 max-w-2xl">
+          <h2 className="text-3xl sm:text-4xl font-black leading-tight tracking-tight text-foreground">
+            {title}
+          </h2>
+
+          {isBullet ? (
+            <ul className="space-y-2.5 mt-5">
+              {lines.map((line, i) => (
+                <li key={i} className="flex items-start gap-3 text-base text-foreground/70 leading-relaxed">
+                  <span className="mt-2 h-1.5 w-1.5 rounded-full bg-primary shrink-0" />
+                  {line}
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="text-lg text-foreground/65 leading-relaxed whitespace-pre-line">{content}</p>
+          )}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+// ─── Feature Cards Presentation ───────────────────────────────────────────────
+
+function FeaturedFeaturesPresentation({ fitur, chapter }: { fitur: FiturTerbaru[]; chapter: string }) {
+  if (fitur.length === 0) return null;
+
+  const statusColor: Record<string, string> = {
+    completed: "text-emerald-600 bg-emerald-500/10 border-emerald-500/20",
+    in_progress: "text-blue-600 bg-blue-500/10 border-blue-500/20",
+    planned: "text-amber-600 bg-amber-500/10 border-amber-500/20",
+    on_hold: "text-muted-foreground bg-muted border-border",
+  };
+  const statusLabel: Record<string, string> = {
+    completed: "Selesai", in_progress: "Berjalan", planned: "Direncanakan", on_hold: "Tertunda",
+  };
+
+  return (
+    <section className="py-14 sm:py-16 border-b border-border/25" data-testid="present-section-features">
+      <div className="space-y-8">
+        <div className="space-y-4 max-w-2xl">
+          <span className="text-[10px] font-bold tracking-[0.22em] uppercase text-muted-foreground/60">
+            {chapter} — Fitur Utama
+          </span>
+          <h2 className="text-3xl sm:text-4xl font-black leading-tight tracking-tight">
+            Kemampuan Inti AINA
+          </h2>
+          <p className="text-lg text-foreground/65 leading-relaxed">
+            Modul-modul utama yang menjalankan operasional organisasi secara menyeluruh.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {fitur.map((f) => (
+            <div
+              key={f.id}
+              className="flex items-start gap-4 p-5 rounded-2xl border bg-card hover:shadow-sm transition-shadow"
+              data-testid={`present-feature-${f.id}`}
+            >
+              <div className="h-10 w-10 rounded-xl bg-primary/8 border border-primary/10 flex items-center justify-center shrink-0">
+                <CircleDot className="h-4 w-4 text-primary" />
+              </div>
+              <div className="flex-1 min-w-0 space-y-1.5">
+                <p className="font-bold text-sm leading-snug">{f.name}</p>
+                <p className="text-xs text-muted-foreground">{f.category}</p>
+                <span className={`inline-flex items-center text-[10px] font-semibold px-2 py-0.5 rounded-full border ${statusColor[f.status] ?? "bg-muted text-muted-foreground border-border"}`}>
+                  {statusLabel[f.status] ?? f.status}
+                </span>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     </section>
   );
@@ -76,70 +197,105 @@ function PresentationSection({
 
 // ─── Financial Summary Presentation ──────────────────────────────────────────
 
-function FinancialPresentation({ showSponsor, hideAmounts }: { showSponsor: boolean; hideAmounts: boolean }) {
+function FinancialPresentation({
+  showSponsor, hideAmounts, chapter,
+}: {
+  showSponsor: boolean; hideAmounts: boolean; chapter: string;
+}) {
   const { data: summary } = useQuery<any>({ queryKey: ["/api/finance/summary"] });
   if (!summary) return null;
 
   const balance = Number(summary.balance ?? 0);
   const income = Number(summary.totalIncome ?? 0);
+  const expenses = Number(summary.totalExpenses ?? 0);
   const received = Number(summary.totalReceived ?? 0);
   const pledged = Number(summary.totalPledged ?? 0);
-  const fundingPct = pledged > 0 ? Math.min((received / pledged) * 100, 100) : 0;
 
   const val = (n: number) => hideAmounts ? "—" : formatRp(n);
 
+  const metrics = [
+    {
+      label: "Saldo Tersedia",
+      value: val(balance),
+      sub: "kas aktif organisasi",
+      color: balance >= 0 ? "text-emerald-600" : "text-destructive",
+      icon: Wallet,
+    },
+    {
+      label: "Total Pemasukan",
+      value: val(income),
+      sub: "akumulasi sejak berdiri",
+      color: "text-blue-600",
+      icon: TrendingUp,
+    },
+    {
+      label: "Total Pengeluaran",
+      value: val(expenses),
+      sub: "operasional & program",
+      color: "text-amber-600",
+      icon: BarChart3,
+    },
+  ];
+
   return (
-    <section className="flex items-start gap-6 py-10 border-b border-border/30" data-testid="present-section-financial">
-      <div className="text-[80px] font-black text-foreground/[0.04] leading-none shrink-0 select-none hidden md:block w-[72px] text-right">
-        ₊
-      </div>
-      <div className="flex-1 space-y-6 min-w-0">
-        <div className="flex items-center gap-2">
-          <div className="h-7 w-7 rounded-md bg-primary/10 flex items-center justify-center shrink-0">
-            <Wallet className="h-3.5 w-3.5 text-primary" />
-          </div>
-          <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-muted-foreground">Keuangan</span>
+    <section className="py-14 sm:py-16 border-b border-border/25" data-testid="present-section-financial">
+      <div className="space-y-8">
+        <div className="space-y-4 max-w-2xl">
+          <span className="text-[10px] font-bold tracking-[0.22em] uppercase text-muted-foreground/60">
+            {chapter} — Keuangan
+          </span>
+          <h2 className="text-3xl sm:text-4xl font-black leading-tight tracking-tight">
+            Ringkasan Keuangan
+          </h2>
+          <p className="text-lg text-foreground/65 leading-relaxed">
+            Gambaran kondisi finansial organisasi secara agregat — tidak ada detail transaksi individual.
+          </p>
         </div>
-        <h2 className="text-2xl sm:text-3xl font-bold leading-tight">Ringkasan Keuangan</h2>
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <div className="rounded-xl border bg-card p-5">
-            <p className="text-xs text-muted-foreground mb-1 uppercase tracking-wide">Saldo Tersedia</p>
-            <p className={`text-2xl font-bold ${balance >= 0 ? "text-primary" : "text-destructive"}`}>{val(balance)}</p>
-          </div>
-          <div className="rounded-xl border bg-card p-5">
-            <p className="text-xs text-muted-foreground mb-1 uppercase tracking-wide">Total Pemasukan</p>
-            <p className="text-2xl font-bold text-green-600">{val(income)}</p>
-          </div>
-          <div className="rounded-xl border bg-card p-5">
-            <p className="text-xs text-muted-foreground mb-1 uppercase tracking-wide">Dana Sponsor Diterima</p>
-            <p className="text-2xl font-bold text-amber-600">{val(received)}</p>
-            {!hideAmounts && pledged > 0 && (
-              <p className="text-xs text-muted-foreground mt-1">dari {formatRp(pledged)} dijanjikan</p>
-            )}
-          </div>
+          {metrics.map((m) => {
+            const MIcon = m.icon;
+            return (
+              <div key={m.label} className="p-6 rounded-2xl border bg-card space-y-3">
+                <div className="flex items-center justify-between">
+                  <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">{m.label}</p>
+                  <MIcon className="h-4 w-4 text-muted-foreground/40" />
+                </div>
+                <p className={`text-2xl font-black ${m.color}`}>{m.value}</p>
+                <p className="text-xs text-muted-foreground">{m.sub}</p>
+              </div>
+            );
+          })}
         </div>
 
         {showSponsor && summary.sponsorList?.length > 0 && (
-          <div className="space-y-3">
-            <p className="text-sm font-semibold text-muted-foreground">
-              Sponsor ({summary.activeSponsor} aktif dari {summary.totalSponsor} total)
-            </p>
-            <div className="space-y-2.5">
+          <div className="space-y-4 pt-2">
+            <div className="flex items-center justify-between">
+              <p className="text-sm font-semibold">
+                Sponsor & Pendukung
+              </p>
+              <Badge variant="secondary" className="text-xs">
+                {summary.activeSponsor} aktif
+              </Badge>
+            </div>
+            <div className="space-y-3">
               {summary.sponsorList.slice(0, 5).map((sp: any) => {
                 const pct = Number(sp.pledgedAmount) > 0
                   ? Math.min((Number(sp.receivedAmount) / Number(sp.pledgedAmount)) * 100, 100)
                   : 0;
-                const statusLabel: Record<string, string> = { prospect: "Prospek", confirmed: "Dikonfirmasi", active: "Aktif", completed: "Selesai", withdrawn: "Batal" };
+                const statusLabel: Record<string, string> = {
+                  prospect: "Prospek", confirmed: "Dikonfirmasi", active: "Aktif",
+                  completed: "Selesai", withdrawn: "Batal",
+                };
                 return (
-                  <div key={sp.id} className="flex items-center gap-4" data-testid={`present-sponsor-${sp.id}`}>
-                    <div className="w-32 shrink-0">
-                      <p className="text-sm font-medium truncate">{sp.name}</p>
-                      <Badge variant="secondary" className="text-[9px] mt-0.5">{statusLabel[sp.status] ?? sp.status}</Badge>
+                  <div key={sp.id} className="flex items-center gap-4 p-4 rounded-xl border bg-muted/20" data-testid={`present-sponsor-${sp.id}`}>
+                    <div className="w-36 shrink-0">
+                      <p className="text-sm font-semibold truncate">{sp.name}</p>
+                      <p className="text-xs text-muted-foreground mt-0.5">{statusLabel[sp.status] ?? sp.status}</p>
                     </div>
-                    <div className="flex-1 space-y-0.5">
-                      <div className="h-2 w-full bg-muted rounded-full overflow-hidden">
-                        <div className="h-full bg-primary/60 rounded-full transition-all" style={{ width: `${pct}%` }} />
+                    <div className="flex-1 space-y-1">
+                      <div className="h-1.5 w-full bg-muted rounded-full overflow-hidden">
+                        <div className="h-full bg-primary/50 rounded-full transition-all" style={{ width: `${pct}%` }} />
                       </div>
                       <p className="text-[10px] text-muted-foreground">{pct.toFixed(0)}% terealisasi</p>
                     </div>
@@ -154,116 +310,87 @@ function FinancialPresentation({ showSponsor, hideAmounts }: { showSponsor: bool
   );
 }
 
-// ─── Feature Cards Presentation ───────────────────────────────────────────────
-
-function FeaturedFeaturesPresentation({ fitur }: { fitur: FiturTerbaru[] }) {
-  if (fitur.length === 0) return null;
-  const statusColor: Record<string, string> = {
-    completed: "text-green-600 bg-green-500/10",
-    in_progress: "text-blue-600 bg-blue-500/10",
-    planned: "text-amber-600 bg-amber-500/10",
-    on_hold: "text-muted-foreground bg-muted",
-  };
-  const statusLabel: Record<string, string> = { completed: "Selesai", in_progress: "Berjalan", planned: "Direncanakan", on_hold: "Tertunda" };
-
-  return (
-    <section className="flex items-start gap-6 py-10 border-b border-border/30" data-testid="present-section-features">
-      <div className="text-[80px] font-black text-foreground/[0.04] leading-none shrink-0 select-none hidden md:block w-[72px] text-right">
-        ✦
-      </div>
-      <div className="flex-1 space-y-4 min-w-0">
-        <div className="flex items-center gap-2">
-          <div className="h-7 w-7 rounded-md bg-primary/10 flex items-center justify-center shrink-0">
-            <Sparkles className="h-3.5 w-3.5 text-primary" />
-          </div>
-          <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-muted-foreground">Fitur Unggulan</span>
-        </div>
-        <h2 className="text-2xl sm:text-3xl font-bold leading-tight">Kemampuan Utama AINA</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          {fitur.map((f) => (
-            <div key={f.id} className="flex items-start gap-3 p-4 rounded-xl border bg-card/60 hover:bg-card transition-colors" data-testid={`present-feature-${f.id}`}>
-              <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center shrink-0 mt-0.5">
-                <CircleDot className="h-3.5 w-3.5 text-primary" />
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="font-semibold text-sm">{f.name}</p>
-                <p className="text-xs text-muted-foreground mt-0.5">{f.category}</p>
-                <span className={`inline-block text-[10px] font-medium px-1.5 py-0.5 rounded mt-1.5 ${statusColor[f.status] ?? "bg-muted text-muted-foreground"}`}>
-                  {statusLabel[f.status] ?? f.status}
-                </span>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
 // ─── Presentation View ────────────────────────────────────────────────────────
 
 function PresentationView({
   contents, config, allFitur, onExit, isAdmin,
 }: {
-  contents: InvestorContent[]; config: InvestorConfig;
-  allFitur: FiturTerbaru[]; onExit?: () => void; isAdmin: boolean;
+  contents: InvestorContent[];
+  config: InvestorConfig;
+  allFitur: FiturTerbaru[];
+  onExit?: () => void;
+  isAdmin: boolean;
 }) {
   const getContent = (key: string) => contents.find((c) => c.key === key);
-
-  const visibleSections = SECTIONS.filter((s) => {
-    const item = getContent(s.key);
-    return item ? item.isVisible : true;
-  });
 
   const featuredFitur = config.featuredFiturIds.length > 0
     ? allFitur.filter((f) => config.featuredFiturIds.includes(f.id))
     : allFitur.filter((f) => f.isInvestorVisible);
 
-  let sectionNum = 0;
+  // Visible text sections in narrative order
+  const textSections = SECTIONS.filter((s) => {
+    const item = getContent(s.key);
+    return item ? item.isVisible : true;
+  });
+
+  // Determine chapter numbers for dynamic sections
+  const textCount = textSections.length;
+  const featChapter = String(Math.min(textSections.findIndex((s) => s.key === "solution") + 2, textCount + 1)).padStart(2, "0");
+  const finChapter = String(parseInt(featChapter) + 1).padStart(2, "0");
 
   return (
     <div className="min-h-full bg-background">
-      {/* Control bar (admin only) */}
+      {/* Admin control bar */}
       {isAdmin && onExit && (
-        <div className="sticky top-0 z-10 bg-background/95 backdrop-blur border-b border-border/40 px-4 py-2 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Button variant="ghost" size="sm" className="gap-1.5 text-xs" onClick={onExit} data-testid="button-exit-presentation">
-              <ArrowLeft className="h-3.5 w-3.5" /> Keluar Presentasi
-            </Button>
-          </div>
-          <Badge variant="outline" className="text-[10px] border-primary/30 text-primary">
-            Mode Presentasi — tampilan investor
+        <div className="sticky top-0 z-10 bg-background/95 backdrop-blur-sm border-b border-border/30 px-5 py-2.5 flex items-center justify-between">
+          <Button
+            variant="ghost" size="sm"
+            className="gap-1.5 text-xs text-muted-foreground hover:text-foreground"
+            onClick={onExit}
+            data-testid="button-exit-presentation"
+          >
+            <ArrowLeft className="h-3.5 w-3.5" /> Kembali ke Panel Admin
+          </Button>
+          <Badge variant="outline" className="text-[10px] border-primary/30 text-primary/80">
+            Tampilan Investor
           </Badge>
         </div>
       )}
 
-      <div className="max-w-3xl mx-auto px-5 sm:px-8 pb-20">
-        {/* Hero */}
-        <div className="text-center py-16 sm:py-20 space-y-5" data-testid="present-hero">
-          <div className="h-16 w-16 rounded-2xl gradient-primary flex items-center justify-center mx-auto shadow-lg">
-            <span className="text-primary-foreground font-black text-2xl">A</span>
+      <div className="max-w-[700px] mx-auto px-6 sm:px-10 pb-24">
+
+        {/* ── Hero ─────────────────────────────────────────────────── */}
+        <div className="pt-20 sm:pt-28 pb-16 sm:pb-20 space-y-8" data-testid="present-hero">
+          <div className="h-14 w-14 rounded-2xl bg-primary flex items-center justify-center shadow-md">
+            <span className="text-primary-foreground font-black text-xl tracking-tight">A</span>
           </div>
-          <div className="space-y-2">
-            <h1 className="text-4xl sm:text-5xl font-black tracking-tight">AINA Portal</h1>
-            <p className="text-lg text-muted-foreground font-medium">Internal Management System</p>
+          <div className="space-y-3">
+            <p className="text-[11px] font-bold tracking-[0.25em] uppercase text-muted-foreground/60">
+              Internal Management System
+            </p>
+            <h1 className="text-5xl sm:text-6xl font-black tracking-tight leading-none text-foreground">
+              AINA Portal
+            </h1>
+            <p className="text-xl text-muted-foreground font-medium leading-relaxed max-w-md">
+              Satu sistem untuk semua kebutuhan operasional organisasi.
+            </p>
           </div>
-          <div className="flex items-center justify-center gap-2">
-            <Badge variant="outline" className="text-xs px-3 py-1">
+          <div className="flex items-center gap-3 pt-2">
+            <div className="h-px w-8 bg-primary/40" />
+            <p className="text-xs text-muted-foreground">
               {new Date().toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" })}
-            </Badge>
+            </p>
           </div>
-          <div className="w-16 h-0.5 bg-gradient-to-r from-primary/0 via-primary to-primary/0 mx-auto" />
         </div>
 
-        {/* Text content sections */}
-        {visibleSections.map((s) => {
+        {/* ── Narrative Sections ───────────────────────────────────── */}
+        {textSections.map((s, idx) => {
           const item = getContent(s.key);
-          sectionNum++;
           return (
             <PresentationSection
               key={s.key}
-              num={sectionNum}
-              badge={s.badge}
+              chapter={s.chapter}
+              label={s.label}
               title={item?.title ?? s.defaultTitle}
               content={item?.content ?? s.defaultContent}
               icon={s.icon}
@@ -271,19 +398,35 @@ function PresentationView({
           );
         })}
 
-        {/* Financial summary */}
+        {/* ── Core Features (05) ───────────────────────────────────── */}
+        <FeaturedFeaturesPresentation fitur={featuredFitur} chapter="05" />
+
+        {/* ── Financial (07) ──────────────────────────────────────── */}
         {config.showFinancial && (
-          <FinancialPresentation showSponsor={config.showSponsor} hideAmounts={config.hideAmounts} />
+          <FinancialPresentation
+            showSponsor={config.showSponsor}
+            hideAmounts={config.hideAmounts}
+            chapter="07"
+          />
         )}
 
-        {/* Featured features */}
-        <FeaturedFeaturesPresentation fitur={featuredFitur} />
-
-        {/* Footer */}
-        <div className="py-12 text-center space-y-2">
-          <div className="w-8 h-0.5 bg-primary/30 mx-auto" />
-          <p className="text-xs text-muted-foreground mt-4">AINA — Sistem Portal Internal</p>
-          <p className="text-[10px] text-muted-foreground/50">Dokumen ini bersifat konfidensial untuk keperluan presentasi investor</p>
+        {/* ── Footer ─────────────────────────────────────────────── */}
+        <div className="py-16 space-y-4" data-testid="present-footer">
+          <div className="h-px bg-gradient-to-r from-transparent via-border to-transparent" />
+          <div className="pt-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <div className="h-8 w-8 rounded-xl bg-primary/10 flex items-center justify-center">
+                <span className="text-primary font-black text-sm">A</span>
+              </div>
+              <div>
+                <p className="text-sm font-bold">AINA Portal</p>
+                <p className="text-xs text-muted-foreground">Internal Management System</p>
+              </div>
+            </div>
+            <p className="text-[10px] text-muted-foreground/50 max-w-xs text-right">
+              Dokumen ini bersifat konfidensial dan hanya untuk keperluan presentasi kepada investor dan pemangku kepentingan.
+            </p>
+          </div>
         </div>
       </div>
     </div>
@@ -292,8 +435,11 @@ function PresentationView({
 
 // ─── Content Edit Dialog ──────────────────────────────────────────────────────
 
-function ContentEditDialog({ item, onClose, onSave }: {
-  item: InvestorContent; onClose: () => void; onSave: (data: any) => void;
+function ContentEditDialog({ item, sectionMeta, onClose, onSave }: {
+  item: InvestorContent;
+  sectionMeta?: typeof SECTIONS[number];
+  onClose: () => void;
+  onSave: (data: any) => void;
 }) {
   const [title, setTitle] = useState(item.title);
   const [content, setContent] = useState(item.content);
@@ -304,13 +450,22 @@ function ContentEditDialog({ item, onClose, onSave }: {
         <Input value={title} onChange={(e) => setTitle(e.target.value)} data-testid="input-investor-title" />
       </div>
       <div className="space-y-1.5">
-        <Label>Konten</Label>
-        <p className="text-xs text-muted-foreground">Gunakan • untuk poin-poin. Tekan Enter untuk baris baru.</p>
-        <Textarea value={content} onChange={(e) => setContent(e.target.value)} rows={8} className="font-mono text-sm" data-testid="input-investor-content" />
+        <Label>Narasi / Konten</Label>
+        <p className="text-xs text-muted-foreground">Untuk poin-poin, gunakan • di awal baris. Tekan Enter untuk baris baru.</p>
+        <Textarea
+          value={content}
+          onChange={(e) => setContent(e.target.value)}
+          rows={9}
+          className="font-mono text-sm resize-none"
+          placeholder={sectionMeta?.defaultContent}
+          data-testid="input-investor-content"
+        />
       </div>
       <DialogFooter>
         <Button variant="outline" onClick={onClose}>Batal</Button>
-        <Button onClick={() => onSave({ title, content })} data-testid="button-save-investor">Simpan</Button>
+        <Button onClick={() => onSave({ title, content })} data-testid="button-save-investor">
+          <Save className="h-3.5 w-3.5 mr-1.5" /> Simpan
+        </Button>
       </DialogFooter>
     </div>
   );
@@ -319,8 +474,7 @@ function ContentEditDialog({ item, onClose, onSave }: {
 // ─── Admin Panel ──────────────────────────────────────────────────────────────
 
 function AdminPanel({
-  contents, allFitur, config, onConfigChange, onSaveConfig,
-  isSavingConfig,
+  contents, allFitur, config, onConfigChange, onSaveConfig, isSavingConfig,
 }: {
   contents: InvestorContent[];
   allFitur: FiturTerbaru[];
@@ -333,14 +487,23 @@ function AdminPanel({
   const [editingItem, setEditingItem] = useState<InvestorContent | null>(null);
 
   const updateContent = useMutation({
-    mutationFn: ({ key, data }: { key: string; data: any }) => apiRequest("PUT", `/api/investor-content/${key}`, data),
-    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ["/api/investor-content"] }); setEditingItem(null); toast({ title: "Konten diperbarui" }); },
+    mutationFn: ({ key, data }: { key: string; data: any }) =>
+      apiRequest("PUT", `/api/investor-content/${key}`, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/investor-content"] });
+      setEditingItem(null);
+      toast({ title: "Konten diperbarui" });
+    },
     onError: (e: any) => toast({ title: "Gagal", description: e.message, variant: "destructive" }),
   });
 
   const toggleVisibility = useMutation({
-    mutationFn: ({ id, isVisible }: { id: number; isVisible: boolean }) => apiRequest("PATCH", `/api/investor-content/${id}/visibility`, { isVisible }),
-    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ["/api/investor-content"] }); toast({ title: "Visibilitas diperbarui" }); },
+    mutationFn: ({ id, isVisible }: { id: number; isVisible: boolean }) =>
+      apiRequest("PATCH", `/api/investor-content/${id}/visibility`, { isVisible }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/investor-content"] });
+      toast({ title: "Visibilitas diperbarui" });
+    },
     onError: (e: any) => toast({ title: "Gagal", description: e.message, variant: "destructive" }),
   });
 
@@ -358,14 +521,22 @@ function AdminPanel({
     <div className="space-y-4">
       <Tabs defaultValue="content">
         <TabsList className="h-9 w-full">
-          <TabsTrigger value="content" className="text-xs flex-1 gap-1.5"><LayoutList className="h-3.5 w-3.5" /> Konten</TabsTrigger>
-          <TabsTrigger value="features" className="text-xs flex-1 gap-1.5"><Sparkles className="h-3.5 w-3.5" /> Fitur</TabsTrigger>
-          <TabsTrigger value="settings" className="text-xs flex-1 gap-1.5"><Settings2 className="h-3.5 w-3.5" /> Pengaturan</TabsTrigger>
+          <TabsTrigger value="content" className="text-xs flex-1 gap-1.5">
+            <LayoutList className="h-3.5 w-3.5" /> Narasi
+          </TabsTrigger>
+          <TabsTrigger value="features" className="text-xs flex-1 gap-1.5">
+            <Sparkles className="h-3.5 w-3.5" /> Fitur
+          </TabsTrigger>
+          <TabsTrigger value="settings" className="text-xs flex-1 gap-1.5">
+            <Settings2 className="h-3.5 w-3.5" /> Pengaturan
+          </TabsTrigger>
         </TabsList>
 
-        {/* ── Content Tab ── */}
+        {/* ── Narrative Content Tab ── */}
         <TabsContent value="content" className="mt-4 space-y-3">
-          <p className="text-xs text-muted-foreground">Kelola teks yang tampil di setiap seksi presentasi.</p>
+          <p className="text-xs text-muted-foreground pb-1">
+            Kelola teks di setiap seksi presentasi. Urutan narasi: Tentang → Masalah → Mengapa Penting → Solusi → Fitur → Progress → Keuangan → Roadmap
+          </p>
           {SECTIONS.map((s) => {
             const item = getItem(s.key);
             const Icon = s.icon;
@@ -377,22 +548,26 @@ function AdminPanel({
                 <CardContent className="p-4">
                   <div className="flex items-start justify-between gap-3">
                     <div className="flex items-start gap-3 flex-1 min-w-0">
-                      <div className="h-7 w-7 rounded-md bg-muted flex items-center justify-center shrink-0 mt-0.5">
-                        <Icon className="h-3.5 w-3.5 text-muted-foreground" />
+                      <div className="flex flex-col items-center gap-1 shrink-0 pt-0.5">
+                        <span className="text-[9px] font-black text-muted-foreground/40 tabular-nums">{s.chapter}</span>
+                        <div className="h-6 w-6 rounded-md bg-muted flex items-center justify-center">
+                          <Icon className="h-3 w-3 text-muted-foreground" />
+                        </div>
                       </div>
                       <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2">
-                          <p className="text-sm font-medium">{title}</p>
-                          {!isVisible && <Badge variant="secondary" className="text-[9px]">Tersembunyi</Badge>}
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <p className="text-sm font-semibold">{title}</p>
+                          <Badge variant="secondary" className="text-[9px] px-1.5">{s.label}</Badge>
+                          {!isVisible && <Badge variant="outline" className="text-[9px] border-border">Tersembunyi</Badge>}
                         </div>
-                        <p className="text-xs text-muted-foreground mt-0.5 line-clamp-2">{content}</p>
+                        <p className="text-xs text-muted-foreground mt-1 line-clamp-2">{content}</p>
                       </div>
                     </div>
                     <div className="flex items-center gap-1 shrink-0">
                       {item && (
                         <>
                           <Button
-                            variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-primary"
+                            variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-foreground"
                             title={isVisible ? "Sembunyikan" : "Tampilkan"}
                             onClick={() => toggleVisibility.mutate({ id: item.id, isVisible: !isVisible })}
                             data-testid={`button-toggle-${s.key}`}
@@ -400,7 +575,7 @@ function AdminPanel({
                             {isVisible ? <Eye className="h-3.5 w-3.5" /> : <EyeOff className="h-3.5 w-3.5" />}
                           </Button>
                           <Button
-                            variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-primary"
+                            variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-foreground"
                             onClick={() => setEditingItem(item)}
                             data-testid={`button-edit-${s.key}`}
                           >
@@ -410,8 +585,11 @@ function AdminPanel({
                       )}
                       {!item && (
                         <Button
-                          variant="ghost" size="sm" className="text-xs text-primary h-7"
-                          onClick={() => updateContent.mutate({ key: s.key, data: { title: s.defaultTitle, content: s.defaultContent, order: SECTIONS.indexOf(s) + 1 } })}
+                          variant="ghost" size="sm" className="text-xs text-primary h-7 px-2"
+                          onClick={() => updateContent.mutate({
+                            key: s.key,
+                            data: { title: s.defaultTitle, content: s.defaultContent, order: SECTIONS.indexOf(s) + 1 },
+                          })}
                           data-testid={`button-init-${s.key}`}
                         >
                           Inisialisasi
@@ -427,32 +605,43 @@ function AdminPanel({
 
         {/* ── Feature Picker Tab ── */}
         <TabsContent value="features" className="mt-4 space-y-3">
-          <div className="flex items-center justify-between">
-            <p className="text-xs text-muted-foreground">Pilih fitur yang ditampilkan kepada investor. Jika tidak ada yang dipilih, semua fitur bertanda "investor visible" akan tampil.</p>
-          </div>
+          <p className="text-xs text-muted-foreground">
+            Pilih fitur yang ditampilkan kepada investor. Jika tidak ada yang dipilih, semua fitur bertanda <em>investor visible</em> akan tampil otomatis.
+          </p>
           {allFitur.length === 0 ? (
-            <Card><CardContent className="p-6 text-center text-sm text-muted-foreground">Belum ada data fitur. Tambahkan di halaman Fitur Terbaru.</CardContent></Card>
+            <Card>
+              <CardContent className="p-6 text-center text-sm text-muted-foreground">
+                Belum ada data fitur. Tambahkan di halaman Fitur Terbaru.
+              </CardContent>
+            </Card>
           ) : (
             <div className="space-y-2">
               {allFitur.map((f) => {
                 const selected = config.featuredFiturIds.includes(f.id);
-                const statusColor: Record<string, string> = { completed: "text-green-600", in_progress: "text-blue-600", planned: "text-amber-600", on_hold: "text-muted-foreground" };
+                const statusColor: Record<string, string> = {
+                  completed: "text-emerald-600", in_progress: "text-blue-600",
+                  planned: "text-amber-600", on_hold: "text-muted-foreground",
+                };
                 return (
                   <button
                     key={f.id}
                     onClick={() => toggleFitur(f.id)}
-                    className={`w-full text-left flex items-center gap-3 p-3 rounded-lg border transition-all ${selected ? "border-primary/50 bg-primary/[0.04]" : "border-muted hover:border-border hover:bg-muted/40"}`}
+                    className={`w-full text-left flex items-center gap-3 p-3 rounded-xl border transition-all ${selected ? "border-primary/40 bg-primary/[0.04]" : "border-border hover:bg-muted/30"}`}
                     data-testid={`button-toggle-fitur-${f.id}`}
                   >
                     <div className={`h-4 w-4 rounded border-2 flex items-center justify-center shrink-0 transition-colors ${selected ? "border-primary bg-primary" : "border-muted-foreground/30"}`}>
-                      {selected && <X className="h-2.5 w-2.5 text-primary-foreground" style={{ transform: "rotate(45deg)" }} />}
+                      {selected && <CheckCheck className="h-2.5 w-2.5 text-primary-foreground" />}
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2">
                         <p className="text-sm font-medium truncate">{f.name}</p>
-                        {f.isInvestorVisible && <Badge variant="outline" className="text-[9px] border-green-500/30 text-green-600">investor visible</Badge>}
+                        {f.isInvestorVisible && (
+                          <Badge variant="outline" className="text-[9px] border-emerald-500/30 text-emerald-600 shrink-0">visible</Badge>
+                        )}
                       </div>
-                      <p className="text-xs text-muted-foreground">{f.category} · <span className={`capitalize ${statusColor[f.status] ?? ""}`}>{f.status.replace("_", " ")}</span></p>
+                      <p className={`text-xs text-muted-foreground mt-0.5 ${statusColor[f.status] ?? ""}`}>
+                        {f.category} · {f.status.replace("_", " ")}
+                      </p>
                     </div>
                   </button>
                 );
@@ -461,16 +650,27 @@ function AdminPanel({
           )}
           <div className="flex items-center justify-between pt-2 border-t">
             <p className="text-xs text-muted-foreground">
-              {config.featuredFiturIds.length > 0 ? `${config.featuredFiturIds.length} fitur dipilih` : "Otomatis: fitur investor-visible"}
+              {config.featuredFiturIds.length > 0
+                ? `${config.featuredFiturIds.length} fitur dipilih secara manual`
+                : "Otomatis: tampilkan yang investor-visible"}
             </p>
             {config.featuredFiturIds.length > 0 && (
-              <Button variant="ghost" size="sm" className="text-xs h-7 text-muted-foreground" onClick={() => onConfigChange({ ...config, featuredFiturIds: [] })}>
-                Reset pilihan
+              <Button
+                variant="ghost" size="sm" className="text-xs h-7 text-muted-foreground"
+                onClick={() => onConfigChange({ ...config, featuredFiturIds: [] })}
+              >
+                Reset
               </Button>
             )}
           </div>
-          <Button className="w-full gap-2 h-9" onClick={onSaveConfig} disabled={isSavingConfig} data-testid="button-save-fitur-config">
-            <Save className="h-3.5 w-3.5" /> {isSavingConfig ? "Menyimpan..." : "Simpan Pilihan Fitur"}
+          <Button
+            className="w-full gap-2 h-9"
+            onClick={onSaveConfig}
+            disabled={isSavingConfig}
+            data-testid="button-save-fitur-config"
+          >
+            <Save className="h-3.5 w-3.5" />
+            {isSavingConfig ? "Menyimpan..." : "Simpan Pilihan Fitur"}
           </Button>
         </TabsContent>
 
@@ -479,40 +679,42 @@ function AdminPanel({
           <p className="text-xs text-muted-foreground">Kendalikan informasi apa yang muncul di presentasi investor.</p>
 
           <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm flex items-center gap-2"><Wallet className="h-4 w-4 text-primary" /> Ringkasan Keuangan</CardTitle>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-sm flex items-center gap-2">
+                <Wallet className="h-4 w-4 text-primary" /> Seksi Keuangan
+              </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-3">
+            <CardContent className="space-y-4">
               {[
                 {
                   key: "showFinancial",
-                  label: "Tampilkan seksi keuangan",
-                  description: "Menampilkan ringkasan saldo, pemasukan, dan sponsor di presentasi",
+                  label: "Tampilkan ringkasan keuangan",
+                  description: "Saldo, total pemasukan, total pengeluaran",
                 },
                 {
                   key: "showSponsor",
-                  label: "Tampilkan detail sponsor",
-                  description: "Nama sponsor dan progress bar pendanaan",
+                  label: "Tampilkan daftar sponsor",
+                  description: "Nama dan progress pendanaan dari setiap sponsor",
                 },
                 {
                   key: "hideAmounts",
-                  label: "Sembunyikan nominal (jumlah uang)",
-                  description: "Tampilkan progress % saja, tanpa angka rupiah",
+                  label: "Sembunyikan nominal rupiah",
+                  description: "Tampilkan persentase saja, tanpa angka aktual",
                 },
               ].map(({ key, label, description }) => {
                 const val = config[key as keyof InvestorConfig] as boolean;
                 return (
-                  <div key={key} className="flex items-start justify-between gap-3">
-                    <div>
+                  <div key={key} className="flex items-start justify-between gap-4">
+                    <div className="flex-1">
                       <p className="text-sm font-medium">{label}</p>
-                      <p className="text-xs text-muted-foreground">{description}</p>
+                      <p className="text-xs text-muted-foreground mt-0.5">{description}</p>
                     </div>
                     <button
                       onClick={() => onConfigChange({ ...config, [key]: !val })}
                       className={`h-6 w-11 rounded-full transition-colors shrink-0 mt-0.5 relative ${val ? "bg-primary" : "bg-muted"}`}
                       data-testid={`toggle-${key}`}
                     >
-                      <span className={`absolute top-0.5 h-5 w-5 rounded-full bg-white shadow transition-transform ${val ? "translate-x-5" : "translate-x-0.5"}`} />
+                      <span className={`absolute top-0.5 h-5 w-5 rounded-full bg-white shadow-sm transition-transform ${val ? "translate-x-5" : "translate-x-0.5"}`} />
                     </button>
                   </div>
                 );
@@ -520,14 +722,20 @@ function AdminPanel({
             </CardContent>
           </Card>
 
-          <div className="rounded-lg border border-amber-500/20 bg-amber-500/5 p-3.5">
-            <p className="text-xs text-amber-700 dark:text-amber-400">
-              <strong>Catatan keamanan:</strong> Investor Mode tidak pernah menampilkan transaksi individual, catatan internal, data anggota/relasi, atau informasi sensitif lainnya. Hanya ringkasan agregat yang tampil.
+          <div className="rounded-xl border border-amber-500/20 bg-amber-500/5 p-4">
+            <p className="text-xs text-amber-700 dark:text-amber-400 leading-relaxed">
+              <strong>Keamanan data:</strong> Investor Mode tidak pernah menampilkan transaksi individual, catatan internal, data anggota & relasi, atau log sistem. Hanya ringkasan agregat yang ditampilkan.
             </p>
           </div>
 
-          <Button className="w-full gap-2 h-9" onClick={onSaveConfig} disabled={isSavingConfig} data-testid="button-save-settings">
-            <Save className="h-3.5 w-3.5" /> {isSavingConfig ? "Menyimpan..." : "Simpan Pengaturan"}
+          <Button
+            className="w-full gap-2 h-9"
+            onClick={onSaveConfig}
+            disabled={isSavingConfig}
+            data-testid="button-save-settings"
+          >
+            <Save className="h-3.5 w-3.5" />
+            {isSavingConfig ? "Menyimpan..." : "Simpan Pengaturan"}
           </Button>
         </TabsContent>
       </Tabs>
@@ -535,10 +743,13 @@ function AdminPanel({
       {/* Edit content dialog */}
       <Dialog open={!!editingItem} onOpenChange={(v) => !v && setEditingItem(null)}>
         <DialogContent className="max-w-lg">
-          <DialogHeader><DialogTitle>Edit Konten Seksi</DialogTitle></DialogHeader>
+          <DialogHeader>
+            <DialogTitle>Edit Konten Seksi</DialogTitle>
+          </DialogHeader>
           {editingItem && (
             <ContentEditDialog
               item={editingItem}
+              sectionMeta={SECTIONS.find((s) => s.key === editingItem.key)}
               onClose={() => setEditingItem(null)}
               onSave={(data) => updateContent.mutate({ key: editingItem.key, data })}
             />
@@ -560,7 +771,6 @@ export default function InvestorModePage() {
   const { data: contents = [] } = useQuery<InvestorContent[]>({ queryKey: ["/api/investor-content"] });
   const { data: allFitur = [] } = useQuery<FiturTerbaru[]>({ queryKey: ["/api/fitur"] });
 
-  // Load config from investorContent
   useEffect(() => {
     const configEntry = contents.find((c) => c.key === "_config");
     if (configEntry?.content) {
@@ -572,20 +782,22 @@ export default function InvestorModePage() {
   }, [contents]);
 
   const saveConfig = useMutation({
-    mutationFn: () => apiRequest("PUT", "/api/investor-content/_config", {
-      title: "Featured Config",
-      content: JSON.stringify(localConfig),
-      isVisible: false,
-      order: 99,
-    }),
+    mutationFn: () =>
+      apiRequest("PUT", "/api/investor-content/_config", {
+        title: "Featured Config",
+        content: JSON.stringify(localConfig),
+        isVisible: false,
+        order: 99,
+      }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/investor-content"] });
       toast({ title: "Pengaturan disimpan" });
     },
-    onError: (e: any) => toast({ title: "Gagal menyimpan", description: e.message, variant: "destructive" }),
+    onError: (e: any) =>
+      toast({ title: "Gagal menyimpan", description: e.message, variant: "destructive" }),
   });
 
-  // Non-admin: only show presentation
+  // Non-admin: full-screen presentation only
   if (!isAdmin) {
     return (
       <PresentationView
@@ -597,10 +809,13 @@ export default function InvestorModePage() {
     );
   }
 
-  // Admin: show control panel + presentation dialog
+  // Admin: control panel + presentation dialog
   return (
     <div className="space-y-5 animate-fade-in">
-      <PageHeader title="Investor Mode" description="Kelola presentasi untuk investor dan pemangku kepentingan">
+      <PageHeader
+        title="Investor Mode"
+        description="Kelola presentasi pitch-deck untuk investor dan pemangku kepentingan"
+      >
         <Button
           className="gap-2"
           onClick={() => setPresentationOpen(true)}
@@ -617,26 +832,27 @@ export default function InvestorModePage() {
           <Settings2 className="h-4 w-4 text-primary" />
         </div>
         <div>
-          <p className="text-sm font-medium">Panel Kontrol Admin</p>
-          <p className="text-xs text-muted-foreground mt-0.5">
-            Atur konten, pilih fitur yang ditampilkan, dan kendalikan visibilitas informasi keuangan. Klik "Lihat Presentasi" untuk melihat tampilan investor sesungguhnya.
+          <p className="text-sm font-semibold">Panel Kontrol Admin</p>
+          <p className="text-xs text-muted-foreground mt-0.5 leading-relaxed">
+            Atur narasi di setiap seksi, pilih fitur yang ditampilkan, dan kendalikan data keuangan. Klik <strong>Lihat Presentasi</strong> untuk melihat tampilan investor sesungguhnya — terstruktur seperti pitch deck.
           </p>
         </div>
       </div>
 
-      {/* Security summary */}
+      {/* Privacy guard summary */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         {[
-          { label: "Transaksi individual", shown: false },
-          { label: "Catatan rapat internal", shown: false },
-          { label: "Data anggota & relasi", shown: false },
-          { label: "Log audit sistem", shown: false },
+          { label: "Transaksi individual" },
+          { label: "Catatan rapat internal" },
+          { label: "Data anggota & relasi" },
+          { label: "Log audit sistem" },
         ].map((item) => (
-          <div key={item.label} className={`flex items-center gap-2 p-2.5 rounded-lg border text-xs ${item.shown ? "border-green-500/30 bg-green-500/5" : "border-border bg-muted/30"}`}>
-            <div className={`h-1.5 w-1.5 rounded-full shrink-0 ${item.shown ? "bg-green-500" : "bg-muted-foreground/40"}`} />
-            <span className={item.shown ? "text-green-700" : "text-muted-foreground line-through"}>
-              {item.label}
-            </span>
+          <div
+            key={item.label}
+            className="flex items-center gap-2 p-2.5 rounded-lg border bg-muted/20 text-xs"
+          >
+            <div className="h-1.5 w-1.5 rounded-full shrink-0 bg-muted-foreground/30" />
+            <span className="text-muted-foreground line-through">{item.label}</span>
           </div>
         ))}
       </div>
@@ -651,9 +867,12 @@ export default function InvestorModePage() {
         isSavingConfig={saveConfig.isPending}
       />
 
-      {/* Presentation Dialog */}
+      {/* Presentation Dialog — full screen */}
       <Dialog open={presentationOpen} onOpenChange={setPresentationOpen}>
-        <DialogContent className="max-w-none w-screen h-screen p-0 m-0 rounded-none overflow-y-auto [&>button:last-child]:hidden" data-testid="dialog-presentation">
+        <DialogContent
+          className="max-w-none w-screen h-screen p-0 m-0 rounded-none overflow-y-auto [&>button:last-child]:hidden"
+          data-testid="dialog-presentation"
+        >
           <PresentationView
             contents={contents.filter((c) => c.key !== "_config")}
             config={localConfig}

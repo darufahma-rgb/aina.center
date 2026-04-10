@@ -1,0 +1,120 @@
+Now build the “AI Report Assistant” feature inside AINA Portal using the OpenAI API.
+
+Important technical direction:
+- Use OpenAI API as the LLM provider
+- Prefer the Responses API architecture
+- Start with a model that is cost-efficient and strong for structured rewriting/summarization, such as gpt-4o-mini
+- Keep the integration modular so the model can be swapped later if needed
+- Never expose the API key in the frontend
+- Store the OpenAI API key securely in environment variables
+
+Goal:
+Help admin turn messy raw notes into clean, structured, and usable reports.
+
+This feature should become one of the most useful tools in the system.
+
+==================================================
+MAIN FUNCTION
+==================================================
+
+User can paste raw text (messy notes), and AI will transform it into structured output.
+
+==================================================
+INPUT
+==================================================
+
+- textarea input
+- user pastes raw notes (meeting notes, updates, ideas, etc.)
+
+==================================================
+OUTPUT MODES
+==================================================
+
+Create multiple selectable output modes:
+
+1. Notulensi Mode
+Output structure:
+- Judul
+- Tanggal
+- Peserta
+- Ringkasan
+- Keputusan
+- Tindak Lanjut
+
+2. Internal Report Mode
+Output structure:
+- Fokus Update
+- Perkembangan Utama
+- Kendala
+- Insight
+- Next Step
+
+3. Investor Summary Mode
+Output structure:
+- Highlight Utama
+- Progress Penting
+- Dampak Strategis
+- Arah Selanjutnya
+
+4. Short Summary Mode
+Output:
+- concise bullet summary
+
+==================================================
+OPENAI INTEGRATION REQUIREMENTS
+==================================================
+
+Build the backend integration cleanly.
+
+Requirements:
+- create a dedicated backend service/module for OpenAI calls
+- use environment variable for OPENAI_API_KEY
+- create reusable prompt templates for each output mode
+- keep the OpenAI prompt logic centralized and easy to edit later
+- return structured text output
+- handle loading, timeout, and error states gracefully
+- add basic request validation before sending to OpenAI
+- log failures safely without exposing secrets
+
+==================================================
+QUALITY RULES
+==================================================
+
+The AI must:
+- reorganize and rewrite based only on the input text
+- not fabricate fake decisions, fake names, fake dates, or fake facts
+- preserve meaning while improving structure and clarity
+- be especially careful in Investor Summary mode so the output sounds clear, strategic, and professional without inventing claims
+
+==================================================
+UX REQUIREMENTS
+==================================================
+
+- user can edit AI output before saving
+- copy button
+- save result into the relevant module (for example Notulensi)
+- clear loading state
+- clear error state
+- simple and practical interface
+
+Add a visible UI reminder:
+“Review AI-generated output before saving.”
+
+==================================================
+ADMIN-FIRST ACCESS
+==================================================
+
+This feature is primarily for Admin use.
+Regular users do not need full access to this tool unless enabled later.
+
+==================================================
+GOAL RESULT
+==================================================
+
+This feature should:
+- save time
+- improve report quality
+- make internal data cleaner
+- help convert internal notes into investor-ready summaries
+
+This is a core intelligence feature for AINA Portal, not a gimmick.

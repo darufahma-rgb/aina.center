@@ -1,0 +1,97 @@
+Now improve and strengthen the Investor Mode in AINA Portal.
+
+Current state:
+Investor Mode already exists but is still too data-oriented and not strong enough as a storytelling and presentation tool.
+
+Goal:
+Turn Investor Mode into a clean, persuasive, presentation-ready experience that clearly communicates AINA’s value, progress, and potential.
+
+Key principle:
+Investor Mode is NOT a dashboard.
+It is a narrative layer.
+
+==================================================
+STRUCTURE TO IMPLEMENT
+==================================================
+
+Organize Investor Mode into clear sections:
+
+1. AINA Overview
+- What is AINA
+- One clear, strong explanation
+- Make it easy to understand in under 10 seconds
+
+2. Problem
+- What problem AINA solves
+- Focus on real pain points
+- Keep it simple and relatable
+
+3. Why It Matters
+- Why this problem is important
+- Why now is the right time
+
+4. Solution (AINA)
+- How AINA solves the problem
+- Explain clearly, not technically
+
+5. Core Features
+- Show key features from database (filtered by isInvestorVisible)
+- Display in clean cards with short explanations
+
+6. Progress / Milestones
+- Show real progress
+- Use data from features, modules, or manual milestone input
+- Timeline or list format
+
+7. Financial Summary
+- ONLY show aggregated data
+- total income
+- total expenses
+- available balance
+- no raw transaction details
+
+8. Roadmap
+- What is coming next
+- short and directional, not too detailed
+
+==================================================
+ADMIN CONTROL
+==================================================
+
+Admin must be able to:
+- control which features appear (isInvestorVisible already exists)
+- add/edit custom investor summaries
+- edit milestone descriptions
+- update roadmap content
+- override raw data with better narrative text
+
+==================================================
+UX REQUIREMENTS
+==================================================
+
+- clean layout
+- minimal UI
+- presentation-friendly
+- easy to scroll during live pitch
+- readable in 1–2 minutes
+- mobile friendly
+
+==================================================
+IMPORTANT RULES
+==================================================
+
+- do NOT expose raw internal data
+- do NOT show internal notes or sensitive fields
+- do NOT show full finance transaction lists
+- always prioritize clarity over completeness
+
+==================================================
+RESULT
+==================================================
+
+Investor Mode should feel like:
+- a polished pitch deck inside the product
+- a clear story, not a data dump
+- something the founder can open during a live presentation
+
+Make it visually calm, structured, and persuasive.
