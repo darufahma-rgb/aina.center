@@ -193,42 +193,42 @@
     border: 1px solid rgba(139,92,246,0.16);
   }
 
-  /* ── Sidebar orbit glow ───────────────────────────────────────────── */
-  .sidebar-glow {
-    animation: sidebar-orbit-glow 4s ease-in-out infinite;
+  /* ── Sidebar spinning-comet border ───────────────────────────────── */
+  @property --glow-angle {
+    syntax: '<angle>';
+    initial-value: 0deg;
+    inherits: false;
   }
 
-  @keyframes sidebar-orbit-glow {
-    0% {
-      box-shadow:
-        0 0 0 1.5px rgba(139,92,246,0.65),
-        0 -12px 28px rgba(139,92,246,0.50),
-        0 0  45px rgba(139,92,246,0.12);
-    }
-    25% {
-      box-shadow:
-        0 0 0 1.5px rgba(168,85,247,0.75),
-        12px 0 28px rgba(168,85,247,0.55),
-        0 0  50px rgba(168,85,247,0.14);
-    }
-    50% {
-      box-shadow:
-        0 0 0 1.5px rgba(124,58,237,0.65),
-        0  12px 28px rgba(124,58,237,0.50),
-        0 0  45px rgba(124,58,237,0.12);
-    }
-    75% {
-      box-shadow:
-        0 0 0 1.5px rgba(139,92,246,0.75),
-        -12px 0 28px rgba(139,92,246,0.55),
-        0 0  50px rgba(139,92,246,0.14);
-    }
-    100% {
-      box-shadow:
-        0 0 0 1.5px rgba(139,92,246,0.65),
-        0 -12px 28px rgba(139,92,246,0.50),
-        0 0  45px rgba(139,92,246,0.12);
-    }
+  @keyframes border-orbit {
+    to { --glow-angle: 360deg; }
+  }
+
+  .sidebar-orbit {
+    padding: 1.5px;
+    background: conic-gradient(
+      from var(--glow-angle),
+      rgba(139,92,246,0.08) 0deg,
+      rgba(139,92,246,0.08) 285deg,
+      rgba(139,92,246,0.25) 300deg,
+      rgba(168,85,247,0.60) 315deg,
+      rgba(192,132,252,1.0) 330deg,
+      rgba(216,180,254,1.0) 337deg,
+      rgba(192,132,252,1.0) 344deg,
+      rgba(168,85,247,0.55) 352deg,
+      rgba(139,92,246,0.15) 358deg,
+      rgba(139,92,246,0.08) 360deg
+    );
+    animation: border-orbit 3.5s linear infinite;
+  }
+
+  .sidebar-orbit-inner {
+    background: #ffffff;
+    border-radius: 22.5px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
   }
 
   /* ── Animate ──────────────────────────────────────────────────────── */

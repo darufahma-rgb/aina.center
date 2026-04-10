@@ -177,16 +177,17 @@ function Sidebar({
 
       {/* ── Icon rail — floating pill, always visible ─────────────── */}
       <div
-        className="sidebar-glow fixed z-50 flex flex-col items-center py-4 gap-1"
+        className="sidebar-orbit fixed z-50"
         style={{
           left: 12,
           top: 12,
-          bottom: 12,
           width: RAIL_WIDTH,
           height: "calc(100vh - 24px)",
-          borderRadius: 24,
-          background: "#ffffff",
+          borderRadius: 25.5,
         }}
+      >
+      <div
+        className="sidebar-orbit-inner flex flex-col items-center py-4 gap-1"
       >
         {/* Logo button — toggles full panel */}
         <button
@@ -230,25 +231,25 @@ function Sidebar({
         >
           {initials}
         </button>
-      </div>
+      </div>{/* /sidebar-orbit-inner */}
+      </div>{/* /sidebar-orbit */}
 
       {/* ── Full floating panel — slides over icon rail ───────────── */}
       <div
         className={cn(
-          "sidebar-glow fixed z-50 flex flex-col transition-all duration-300 ease-[cubic-bezier(0.32,0.72,0,1)]",
+          "sidebar-orbit fixed z-50 transition-all duration-300 ease-[cubic-bezier(0.32,0.72,0,1)]",
           open ? "translate-x-0 opacity-100" : "-translate-x-full opacity-0 pointer-events-none",
         )}
         style={{
           left: 0,
           top: 0,
-          bottom: 0,
           width: 268,
           margin: "10px",
           height: "calc(100vh - 20px)",
-          borderRadius: 24,
-          background: "#ffffff",
+          borderRadius: 25.5,
         }}
       >
+      <div className="sidebar-orbit-inner flex-col overflow-hidden">
         {/* Header */}
         <div className="flex items-center justify-between px-5 py-4 shrink-0">
           <div className="flex items-center gap-2.5">
@@ -331,7 +332,8 @@ function Sidebar({
             </button>
           </div>
         </div>
-      </div>
+      </div>{/* /sidebar-orbit-inner */}
+      </div>{/* /sidebar-orbit */}
     </>
   );
 }
