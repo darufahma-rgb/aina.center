@@ -57,37 +57,24 @@ export default function Login() {
           }}
         />
 
-        {/* ── AIGYPT Logo (floating + glowing) ── */}
-        <div className="relative z-10 flex-1 flex flex-col items-center justify-center" style={{ paddingTop: "env(safe-area-inset-top, 0px)" }}>
-          <div className="logo-float">
-            <img
-              src="/login-logo.png"
-              alt="AINA Centre"
-              className="object-contain"
-              style={{ height: 160, width: 160 }}
-            />
-          </div>
-          <p
-            className="mt-5 text-[11px] font-semibold tracking-[0.28em] uppercase"
-            style={{ color: "rgba(200,170,255,0.75)" }}
-          >
-            AINA Centre
-          </p>
-        </div>
-
-        {/* ── Form card at bottom ── */}
+        {/* ── Logo + Form — centered together ── */}
         <div
-          className="relative z-10 px-6 w-full"
-          style={{ paddingBottom: "max(28px, env(safe-area-inset-bottom, 28px))" }}
+          className="relative z-10 flex flex-col items-center justify-center flex-1 px-6 w-full"
+          style={{
+            paddingTop: "env(safe-area-inset-top, 0px)",
+            paddingBottom: "max(28px, env(safe-area-inset-bottom, 28px))",
+          }}
         >
-          <h1
-            className="text-center text-[26px] font-bold text-white mb-5"
-            style={{ letterSpacing: "-0.02em" }}
-          >
-            Masuk
-          </h1>
+          {/* Logo */}
+          <img
+            src="/login-logo.png"
+            alt="AINA Centre"
+            className="object-contain mb-8"
+            style={{ height: 160, width: 160 }}
+          />
 
-          <form onSubmit={handleSubmit} className="space-y-3">
+          {/* Form */}
+          <form onSubmit={handleSubmit} className="space-y-3 w-full">
             {/* Username */}
             <div
               className="flex items-center gap-3 h-[52px] px-4 rounded-2xl"
