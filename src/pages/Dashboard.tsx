@@ -311,8 +311,8 @@ function formatRp(n: number) {
 }
 
 function statusColor(status: string) {
-  if (status === "completed") return "text-green-500";
-  if (status === "in_progress") return "text-amber-500";
+  if (status === "completed") return "text-violet-600";
+  if (status === "in_progress") return "text-primary";
   return "text-muted-foreground";
 }
 

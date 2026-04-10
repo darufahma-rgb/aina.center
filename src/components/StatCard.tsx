@@ -10,22 +10,26 @@ interface StatCardProps {
   trendUp?: boolean;
   className?: string;
   gradient?: boolean;
-  color?: "purple" | "violet" | "blue" | "green" | "amber" | "rose";
+  color?: "primary" | "bright" | "mid" | "deep" | "purple" | "violet" | "blue" | "green" | "amber" | "rose";
 }
 
-const colorMap = {
-  purple: { orb: "bg-purple-100",  text: "text-purple-600",  glow: "rgba(124,58,237,0.18)"  },
-  violet: { orb: "bg-violet-100",  text: "text-violet-600",  glow: "rgba(139,92,246,0.18)"  },
-  blue:   { orb: "bg-blue-100",    text: "text-blue-600",    glow: "rgba(59,130,246,0.18)"   },
-  green:  { orb: "bg-emerald-100", text: "text-emerald-600", glow: "rgba(16,185,129,0.18)"   },
-  amber:  { orb: "bg-amber-100",   text: "text-amber-600",   glow: "rgba(245,158,11,0.18)"   },
-  rose:   { orb: "bg-rose-100",    text: "text-rose-600",    glow: "rgba(244,63,94,0.18)"    },
+const colorMap: Record<string, { orb: string; text: string; glow: string }> = {
+  primary: { orb: "bg-primary/10", text: "text-primary",        glow: "rgba(124,58,237,0.16)" },
+  bright:  { orb: "bg-violet-100", text: "text-violet-600",     glow: "rgba(139,92,246,0.16)" },
+  mid:     { orb: "bg-purple-100", text: "text-purple-600",     glow: "rgba(109,40,217,0.16)" },
+  deep:    { orb: "bg-purple-100", text: "text-purple-800",     glow: "rgba(88,28,135,0.16)"  },
+  purple:  { orb: "bg-primary/10", text: "text-primary",        glow: "rgba(124,58,237,0.16)" },
+  violet:  { orb: "bg-violet-100", text: "text-violet-600",     glow: "rgba(139,92,246,0.16)" },
+  blue:    { orb: "bg-primary/10", text: "text-primary",        glow: "rgba(124,58,237,0.16)" },
+  green:   { orb: "bg-violet-100", text: "text-violet-600",     glow: "rgba(139,92,246,0.16)" },
+  amber:   { orb: "bg-purple-100", text: "text-purple-600",     glow: "rgba(109,40,217,0.16)" },
+  rose:    { orb: "bg-purple-100", text: "text-purple-800",     glow: "rgba(88,28,135,0.16)"  },
 };
 
 export function StatCard({
-  title, value, subtitle, icon: Icon, trend, trendUp, className, gradient, color = "purple",
+  title, value, subtitle, icon: Icon, trend, trendUp, className, gradient, color = "primary",
 }: StatCardProps) {
-  const c = colorMap[color];
+  const c = colorMap[color] ?? colorMap.primary;
 
   if (gradient) {
     return (
@@ -36,7 +40,6 @@ export function StatCard({
           boxShadow: "0 6px 20px rgba(124,58,237,0.38), 0 2px 6px rgba(124,58,237,0.22)",
         }}
       >
-        {/* Highlight orb */}
         <div
           className="absolute inset-0 pointer-events-none opacity-20"
           style={{ backgroundImage: "radial-gradient(circle at 80% 20%, white 0%, transparent 55%)" }}
@@ -58,10 +61,10 @@ export function StatCard({
 
   return (
     <div
-      className={cn("bg-card rounded-xl p-5 transition-all duration-200", className)}
-      style={{ boxShadow: "var(--shadow-neo-sm)" }}
-      onMouseEnter={(e) => { (e.currentTarget as HTMLDivElement).style.boxShadow = "var(--shadow-neo-md)"; }}
-      onMouseLeave={(e) => { (e.currentTarget as HTMLDivElement).style.boxShadow = "var(--shadow-neo-sm)"; }}
+      className={cn("bg-white rounded-xl p-5 border border-border transition-all duration-200", className)}
+      style={{ boxShadow: "var(--shadow-neo-xs)" }}
+      onMouseEnter={(e) => { (e.currentTarget as HTMLDivElement).style.boxShadow = "var(--shadow-neo-sm)"; }}
+      onMouseLeave={(e) => { (e.currentTarget as HTMLDivElement).style.boxShadow = "var(--shadow-neo-xs)"; }}
     >
       <div className="flex items-start justify-between">
         <div className="space-y-1.5 flex-1 min-w-0 mr-3">
@@ -72,7 +75,9 @@ export function StatCard({
             <span
               className={cn(
                 "inline-flex items-center gap-1 text-xs font-semibold px-2 py-0.5 rounded-full",
-                trendUp ? "bg-emerald-50 text-emerald-700" : "bg-rose-50 text-rose-700",
+                trendUp
+                  ? "bg-primary/10 text-primary"
+                  : "bg-purple-100 text-purple-700",
               )}
             >
               {trendUp ? "↑" : "↓"} {trend}

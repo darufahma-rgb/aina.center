@@ -18,9 +18,9 @@ import type { Relasi } from "../../shared/schema";
 
 const STATUS_LABELS: Record<string, string> = { active: "Aktif", inactive: "Nonaktif", prospect: "Prospek" };
 const STATUS_COLORS: Record<string, string> = {
-  active: "bg-green-500/10 text-green-700 border-green-500/30",
+  active:   "bg-primary/10 text-primary border-primary/20",
   inactive: "bg-muted text-muted-foreground border-border",
-  prospect: "bg-amber-500/10 text-amber-700 border-amber-500/30",
+  prospect: "bg-purple-100 text-purple-600 border-purple-200",
 };
 
 function ContactBadge({ contact }: { contact: string }) {
@@ -156,8 +156,8 @@ export default function RelasiPage() {
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         {[
           { label: "Total", value: stats.total, icon: Users, color: "text-primary" },
-          { label: "Aktif", value: stats.active, icon: Handshake, color: "text-green-600" },
-          { label: "Prospek", value: stats.prospect, icon: Building2, color: "text-amber-600" },
+          { label: "Aktif", value: stats.active, icon: Handshake, color: "text-primary" },
+          { label: "Prospek", value: stats.prospect, icon: Building2, color: "text-purple-600" },
           { label: "Nonaktif", value: stats.inactive, icon: Users, color: "text-muted-foreground" },
         ].map((s) => (
           <Card key={s.label} data-testid={`stat-relasi-${s.label.toLowerCase()}`}>

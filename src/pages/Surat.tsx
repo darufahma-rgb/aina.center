@@ -18,9 +18,9 @@ import type { Surat } from "../../shared/schema";
 
 const STATUS_LABEL: Record<string, string> = { draft: "Draft", sent: "Terkirim", received: "Diterima", archived: "Diarsipkan" };
 const STATUS_COLOR: Record<string, string> = {
-  draft: "bg-muted text-muted-foreground border-border",
-  sent: "bg-blue-500/10 text-blue-700 border-blue-500/30",
-  received: "bg-green-500/10 text-green-700 border-green-500/30",
+  draft:    "bg-muted text-muted-foreground border-border",
+  sent:     "bg-primary/10 text-primary border-primary/20",
+  received: "bg-violet-100 text-violet-700 border-violet-200",
   archived: "bg-secondary text-secondary-foreground border-border",
 };
 
@@ -156,8 +156,8 @@ export default function SuratPage() {
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         {[
           { label: "Total", value: stats.total, icon: FileText, color: "text-primary" },
-          { label: "Masuk", value: stats.masuk, icon: ArrowDownLeft, color: "text-green-600" },
-          { label: "Keluar", value: stats.keluar, icon: ArrowUpRight, color: "text-blue-600" },
+          { label: "Masuk", value: stats.masuk, icon: ArrowDownLeft, color: "text-violet-600" },
+          { label: "Keluar", value: stats.keluar, icon: ArrowUpRight, color: "text-primary" },
           { label: "Diarsipkan", value: stats.archived, icon: Archive, color: "text-muted-foreground" },
         ].map((s) => (
           <Card key={s.label} data-testid={`stat-surat-${s.label.toLowerCase()}`}>
@@ -242,8 +242,8 @@ export default function SuratPage() {
               <Card key={item.id} className="hover:shadow-sm transition-shadow" data-testid={`card-surat-${item.id}`}>
                 <CardContent className="p-4">
                   <div className="flex items-center gap-4">
-                    <div className={`h-9 w-9 rounded-lg flex items-center justify-center shrink-0 ${isMasuk ? "bg-green-500/10" : "bg-blue-500/10"}`}>
-                      {isMasuk ? <ArrowDownLeft className="h-4 w-4 text-green-600" /> : <ArrowUpRight className="h-4 w-4 text-blue-600" />}
+                    <div className={`h-9 w-9 rounded-lg flex items-center justify-center shrink-0 ${isMasuk ? "bg-violet-100" : "bg-primary/10"}`}>
+                      {isMasuk ? <ArrowDownLeft className="h-4 w-4 text-violet-600" /> : <ArrowUpRight className="h-4 w-4 text-primary" />}
                     </div>
 
                     <div className="flex-1 min-w-0">

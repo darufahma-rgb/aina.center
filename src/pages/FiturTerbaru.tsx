@@ -18,14 +18,14 @@ import { Switch } from "@/components/ui/switch";
 import type { FiturTerbaru } from "../../shared/schema";
 
 const statusColors: Record<string, string> = {
-  planned: "bg-muted text-muted-foreground",
-  in_progress: "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400",
-  completed: "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400",
-  on_hold: "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400",
+  planned:     "bg-muted text-muted-foreground border border-border",
+  in_progress: "bg-primary/10 text-primary border border-primary/20",
+  completed:   "bg-violet-100 text-violet-700 border border-violet-200",
+  on_hold:     "bg-purple-100 text-purple-800 border border-purple-200",
 };
 
 const impactColors: Record<string, string> = {
-  low: "text-muted-foreground", medium: "text-amber-500", high: "text-red-500",
+  low: "text-muted-foreground", medium: "text-purple-500", high: "text-primary",
 };
 
 function FiturForm({ initial, onClose, onSave, isAdmin }: { initial?: Partial<FiturTerbaru>; onClose: () => void; onSave: (data: any) => void; isAdmin: boolean }) {

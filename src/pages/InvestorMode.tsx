@@ -146,10 +146,10 @@ function FeaturedFeaturesPresentation({ fitur, chapter }: { fitur: FiturTerbaru[
   if (fitur.length === 0) return null;
 
   const statusColor: Record<string, string> = {
-    completed: "text-emerald-600 bg-emerald-500/10 border-emerald-500/20",
-    in_progress: "text-blue-600 bg-blue-500/10 border-blue-500/20",
-    planned: "text-amber-600 bg-amber-500/10 border-amber-500/20",
-    on_hold: "text-muted-foreground bg-muted border-border",
+    completed:   "text-violet-700 bg-violet-100 border-violet-200",
+    in_progress: "text-primary bg-primary/10 border-primary/20",
+    planned:     "text-purple-600 bg-purple-100 border-purple-200",
+    on_hold:     "text-muted-foreground bg-muted border-border",
   };
   const statusLabel: Record<string, string> = {
     completed: "Selesai", in_progress: "Berjalan", planned: "Direncanakan", on_hold: "Tertunda",
@@ -225,7 +225,7 @@ function FinancialPresentation({
       label: "Total Pemasukan",
       value: val(income),
       sub: "akumulasi sejak berdiri",
-      color: "text-blue-600",
+      color: "text-violet-600",
       icon: TrendingUp,
     },
     {
@@ -619,8 +619,8 @@ function AdminPanel({
               {allFitur.map((f) => {
                 const selected = config.featuredFiturIds.includes(f.id);
                 const statusColor: Record<string, string> = {
-                  completed: "text-emerald-600", in_progress: "text-blue-600",
-                  planned: "text-amber-600", on_hold: "text-muted-foreground",
+                  completed: "text-violet-700", in_progress: "text-primary",
+                  planned: "text-purple-600", on_hold: "text-muted-foreground",
                 };
                 return (
                   <button

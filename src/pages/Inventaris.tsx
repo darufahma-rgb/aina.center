@@ -18,9 +18,9 @@ import type { Inventaris } from "../../shared/schema";
 
 const CONDITION_LABEL: Record<string, string> = { baik: "Baik", perlu_perbaikan: "Perlu Perbaikan", rusak: "Rusak" };
 const CONDITION_COLOR: Record<string, string> = {
-  baik: "bg-green-500/10 text-green-700 border-green-500/30",
-  perlu_perbaikan: "bg-amber-500/10 text-amber-700 border-amber-500/30",
-  rusak: "bg-destructive/10 text-destructive border-destructive/30",
+  baik:            "bg-primary/10 text-primary border-primary/20",
+  perlu_perbaikan: "bg-purple-100 text-purple-600 border-purple-200",
+  rusak:           "bg-purple-200 text-purple-900 border-purple-300",
 };
 const CONDITION_ICON: Record<string, any> = { baik: CheckCircle, perlu_perbaikan: Wrench, rusak: AlertTriangle };
 
@@ -151,8 +151,8 @@ export default function InventarisPage() {
         {[
           { label: "Jenis Barang", value: stats.total, icon: Package, color: "text-primary" },
           { label: "Total Unit", value: stats.totalUnits, icon: Boxes, color: "text-primary" },
-          { label: "Kondisi Baik", value: stats.baik, icon: CheckCircle, color: "text-green-600" },
-          { label: "Perlu Perhatian", value: needsAttention, icon: AlertTriangle, color: needsAttention > 0 ? "text-amber-600" : "text-muted-foreground" },
+          { label: "Kondisi Baik", value: stats.baik, icon: CheckCircle, color: "text-primary" },
+          { label: "Perlu Perhatian", value: needsAttention, icon: AlertTriangle, color: needsAttention > 0 ? "text-purple-600" : "text-muted-foreground" },
         ].map((s) => (
           <Card key={s.label} data-testid={`stat-inventaris-${s.label.toLowerCase().replace(/ /g, "-")}`}>
             <CardContent className="p-4 flex items-center gap-3">

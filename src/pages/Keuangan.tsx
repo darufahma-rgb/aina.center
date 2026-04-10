@@ -61,23 +61,23 @@ function SummaryCards({ items, sponsors }: { items: Keuangan[]; sponsors: Sponso
       <Card className="col-span-2 lg:col-span-1">
         <CardContent className="p-4">
           <div className="flex items-center gap-2 mb-2">
-            <div className="h-7 w-7 rounded-md bg-green-500/10 flex items-center justify-center">
-              <TrendingUp className="h-3.5 w-3.5 text-green-600" />
+            <div className="h-7 w-7 rounded-md bg-violet-100 flex items-center justify-center">
+              <TrendingUp className="h-3.5 w-3.5 text-violet-600" />
             </div>
             <span className="text-xs text-muted-foreground">Dana Masuk</span>
           </div>
-          <p className="text-xl font-bold text-green-600" data-testid="stat-total-income">{formatRp(totalIncome)}</p>
+          <p className="text-xl font-bold text-violet-600" data-testid="stat-total-income">{formatRp(totalIncome)}</p>
         </CardContent>
       </Card>
       <Card>
         <CardContent className="p-4">
           <div className="flex items-center gap-2 mb-2">
-            <div className="h-7 w-7 rounded-md bg-red-500/10 flex items-center justify-center">
-              <TrendingDown className="h-3.5 w-3.5 text-red-500" />
+            <div className="h-7 w-7 rounded-md bg-purple-100 flex items-center justify-center">
+              <TrendingDown className="h-3.5 w-3.5 text-purple-700" />
             </div>
             <span className="text-xs text-muted-foreground">Dana Keluar</span>
           </div>
-          <p className="text-xl font-bold text-red-500" data-testid="stat-total-expense">{formatRp(totalExpense)}</p>
+          <p className="text-xl font-bold text-purple-700" data-testid="stat-total-expense">{formatRp(totalExpense)}</p>
         </CardContent>
       </Card>
       <Card className={balance >= 0 ? "border-primary/30 bg-primary/[0.02]" : "border-destructive/30"}>
@@ -94,23 +94,23 @@ function SummaryCards({ items, sponsors }: { items: Keuangan[]; sponsors: Sponso
       <Card>
         <CardContent className="p-4">
           <div className="flex items-center gap-2 mb-2">
-            <div className="h-7 w-7 rounded-md bg-amber-500/10 flex items-center justify-center">
-              <Target className="h-3.5 w-3.5 text-amber-600" />
+            <div className="h-7 w-7 rounded-md bg-purple-100 flex items-center justify-center">
+              <Target className="h-3.5 w-3.5 text-purple-600" />
             </div>
             <span className="text-xs text-muted-foreground">Dijanjikan</span>
           </div>
-          <p className="text-xl font-bold text-amber-600" data-testid="stat-pledged">{formatRp(totalPledged)}</p>
+          <p className="text-xl font-bold text-purple-600" data-testid="stat-pledged">{formatRp(totalPledged)}</p>
         </CardContent>
       </Card>
       <Card>
         <CardContent className="p-4">
           <div className="flex items-center gap-2 mb-2">
-            <div className="h-7 w-7 rounded-md bg-blue-500/10 flex items-center justify-center">
-              <CheckCircle2 className="h-3.5 w-3.5 text-blue-600" />
+            <div className="h-7 w-7 rounded-md bg-primary/10 flex items-center justify-center">
+              <CheckCircle2 className="h-3.5 w-3.5 text-primary" />
             </div>
             <span className="text-xs text-muted-foreground">Diterima Sponsor</span>
           </div>
-          <p className="text-xl font-bold text-blue-600" data-testid="stat-received">{formatRp(totalReceived)}</p>
+          <p className="text-xl font-bold text-primary" data-testid="stat-received">{formatRp(totalReceived)}</p>
         </CardContent>
       </Card>
     </div>
@@ -158,12 +158,12 @@ function TrendChart({ items }: { items: Keuangan[] }) {
             <div key={m.label} className="flex-1 flex flex-col items-center gap-1">
               <div className="flex items-end gap-0.5 w-full h-24">
                 <div
-                  className="flex-1 bg-green-500/70 rounded-t-sm transition-all"
+                  className="flex-1 bg-violet-500/70 rounded-t-sm transition-all"
                   style={{ height: `${(m.income / maxVal) * 100}%` }}
                   title={`Masuk: ${formatRp(m.income)}`}
                 />
                 <div
-                  className="flex-1 bg-red-400/70 rounded-t-sm transition-all"
+                  className="flex-1 bg-purple-300/70 rounded-t-sm transition-all"
                   style={{ height: `${(m.expense / maxVal) * 100}%` }}
                   title={`Keluar: ${formatRp(m.expense)}`}
                 />
@@ -173,8 +173,8 @@ function TrendChart({ items }: { items: Keuangan[] }) {
           ))}
         </div>
         <div className="flex items-center gap-4 mt-3 text-xs text-muted-foreground">
-          <span className="flex items-center gap-1.5"><span className="h-2 w-2 rounded-sm bg-green-500/70 inline-block" /> Masuk</span>
-          <span className="flex items-center gap-1.5"><span className="h-2 w-2 rounded-sm bg-red-400/70 inline-block" /> Keluar</span>
+          <span className="flex items-center gap-1.5"><span className="h-2 w-2 rounded-sm bg-violet-500/70 inline-block" /> Masuk</span>
+          <span className="flex items-center gap-1.5"><span className="h-2 w-2 rounded-sm bg-purple-300/70 inline-block" /> Keluar</span>
         </div>
       </CardContent>
     </Card>
@@ -401,10 +401,10 @@ function TransactionRow({ item, isAdmin, onEdit, onDelete }: {
   return (
     <div className="flex items-start justify-between gap-4 p-4 hover:bg-muted/40 transition-colors" data-testid={`row-keuangan-${item.id}`}>
       <div className="flex items-start gap-3 flex-1 min-w-0">
-        <div className={`h-8 w-8 rounded-full flex items-center justify-center shrink-0 mt-0.5 ${isIncome ? "bg-green-500/10" : "bg-red-500/10"}`}>
+        <div className={`h-8 w-8 rounded-full flex items-center justify-center shrink-0 mt-0.5 ${isIncome ? "bg-violet-100" : "bg-purple-100"}`}>
           {isIncome
-            ? <ArrowUpRight className="h-4 w-4 text-green-600" />
-            : <ArrowDownRight className="h-4 w-4 text-red-500" />}
+            ? <ArrowUpRight className="h-4 w-4 text-violet-600" />
+            : <ArrowDownRight className="h-4 w-4 text-purple-700" />}
         </div>
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 flex-wrap">
@@ -432,7 +432,7 @@ function TransactionRow({ item, isAdmin, onEdit, onDelete }: {
         </div>
       </div>
       <div className="flex items-start gap-2 shrink-0">
-        <p className={`text-sm font-bold ${isIncome ? "text-green-600" : "text-red-500"}`}>
+        <p className={`text-sm font-bold ${isIncome ? "text-violet-600" : "text-purple-700"}`}>
           {isIncome ? "+" : "-"}{formatRp(Number(item.amount))}
         </p>
         {isAdmin && (
@@ -530,7 +530,7 @@ export default function KeuanganPage() {
         {isAdmin && (
           <div className="flex gap-2">
             <Button size="sm" variant="outline" className="gap-1.5" onClick={() => setExpenseDialog(true)} data-testid="button-add-expense">
-              <TrendingDown className="h-3.5 w-3.5 text-red-500" /> Pengeluaran
+              <TrendingDown className="h-3.5 w-3.5 text-purple-700" /> Pengeluaran
             </Button>
             <Button size="sm" className="gap-1.5" onClick={() => setIncomeDialog(true)} data-testid="button-add-income">
               <Plus className="h-3.5 w-3.5" /> Pemasukan
@@ -557,7 +557,7 @@ export default function KeuanganPage() {
               <CardHeader className="pb-2">
                 <div className="flex items-center justify-between">
                   <CardTitle className="text-sm flex items-center gap-2">
-                    <TrendingUp className="h-4 w-4 text-green-600" /> Pemasukan Terbaru
+                    <TrendingUp className="h-4 w-4 text-violet-600" /> Pemasukan Terbaru
                   </CardTitle>
                 </div>
               </CardHeader>
@@ -572,7 +572,7 @@ export default function KeuanganPage() {
             <Card>
               <CardHeader className="pb-2">
                 <CardTitle className="text-sm flex items-center gap-2">
-                  <TrendingDown className="h-4 w-4 text-red-500" /> Pengeluaran Terbaru
+                  <TrendingDown className="h-4 w-4 text-purple-700" /> Pengeluaran Terbaru
                 </CardTitle>
               </CardHeader>
               <CardContent className="p-0">

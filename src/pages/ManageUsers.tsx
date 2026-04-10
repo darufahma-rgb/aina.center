@@ -107,11 +107,11 @@ function RoleBadge({ role }: { role: string }) {
 
 function StatusBadge({ isActive }: { isActive: boolean }) {
   return isActive ? (
-    <Badge variant="outline" className="gap-1 text-[10px] border-green-500/40 text-green-600">
+    <Badge variant="outline" className="gap-1 text-[10px] border-primary/40 text-primary">
       <UserCheck className="h-2.5 w-2.5" /> Aktif
     </Badge>
   ) : (
-    <Badge variant="outline" className="gap-1 text-[10px] border-red-400/40 text-red-500">
+    <Badge variant="outline" className="gap-1 text-[10px] border-muted-foreground/30 text-muted-foreground">
       <UserX className="h-2.5 w-2.5" /> Nonaktif
     </Badge>
   );
@@ -212,8 +212,8 @@ export default function ManageUsersPage() {
         </Card>
         <Card>
           <CardContent className="p-4 flex items-center gap-3">
-            <div className="h-9 w-9 rounded-lg bg-green-500/10 flex items-center justify-center shrink-0">
-              <UserCheck className="h-4 w-4 text-green-600" />
+            <div className="h-9 w-9 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+              <UserCheck className="h-4 w-4 text-primary" />
             </div>
             <div>
               <p className="text-2xl font-bold" data-testid="stat-active-users">{stats.active}</p>
@@ -303,7 +303,7 @@ export default function ManageUsersPage() {
                           <DropdownMenuSeparator />
                           {u.isActive ? (
                             <DropdownMenuItem
-                              className="gap-2 text-orange-600 focus:text-orange-600"
+                              className="gap-2 text-muted-foreground focus:text-foreground"
                               onClick={() => setConfirmAction({
                                 type: "status",
                                 user: u,
@@ -316,7 +316,7 @@ export default function ManageUsersPage() {
                             </DropdownMenuItem>
                           ) : (
                             <DropdownMenuItem
-                              className="gap-2 text-green-600 focus:text-green-600"
+                              className="gap-2 text-primary focus:text-primary"
                               onClick={() => setConfirmAction({
                                 type: "status",
                                 user: u,
@@ -405,7 +405,7 @@ export default function ManageUsersPage() {
               onClick={handleConfirm}
               className={
                 confirmAction?.type === "status" && !confirmAction.newValue
-                  ? "bg-orange-600 hover:bg-orange-700"
+                  ? "bg-purple-700 hover:bg-purple-800"
                   : ""
               }
               data-testid="button-confirm-action"

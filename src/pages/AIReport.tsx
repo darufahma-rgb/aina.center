@@ -52,7 +52,7 @@ const MODES: {
     label: "Notulensi Rapat",
     icon: FileText,
     description: "Catatan rapat → notulensi terstruktur",
-    color: "text-blue-600",
+    color: "text-primary",
     saveLabel: "Simpan ke Notulensi",
     saveModule: "notulensi",
   },
@@ -61,7 +61,7 @@ const MODES: {
     label: "Laporan Progress",
     icon: TrendingUp,
     description: "Update internal → laporan kemajuan",
-    color: "text-green-600",
+    color: "text-violet-600",
     saveLabel: "Simpan sebagai Laporan",
     saveModule: "progress",
   },
@@ -502,7 +502,7 @@ Contoh:
                     onClick={handleCopy}
                     data-testid="button-copy"
                   >
-                    {copied ? <Check className="h-3 w-3 text-green-600" /> : <Copy className="h-3 w-3" />}
+                    {copied ? <Check className="h-3 w-3 text-primary" /> : <Copy className="h-3 w-3" />}
                     {copied ? "Disalin!" : "Salin Semua"}
                   </Button>
                   <Button
@@ -613,7 +613,7 @@ Contoh:
                         <div className="flex items-center gap-1.5 mt-0.5">
                           <Badge variant="secondary" className="text-[9px] px-1 py-0 h-4 capitalize">{mc?.label ?? r.mode}</Badge>
                           {r.savedToModule && (
-                            <Badge variant="outline" className="text-[9px] px-1 py-0 h-4 text-green-600 border-green-600/30">
+                            <Badge variant="outline" className="text-[9px] px-1 py-0 h-4 text-primary border-primary/30">
                               → {r.savedToModule}
                             </Badge>
                           )}
