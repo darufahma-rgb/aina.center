@@ -4,6 +4,7 @@ import {
   LayoutDashboard, FileText, Wallet, CalendarDays,
   Sparkles, Mail, Package, Users, Handshake, Presentation,
   Wand2, UserCog, Menu, MoreHorizontal, LogOut, ChevronLeft, ChevronRight, X,
+  Bell,
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -76,7 +77,7 @@ function RailLink({ item }: { item: { title: string; url: string; icon: any; exa
         "h-10 w-10 rounded-xl flex items-center justify-center transition-all duration-200 shrink-0",
         active
           ? "nav-active-pill text-white"
-          : "text-purple-300/40 hover:text-purple-200/70 hover:bg-white/[0.06]",
+          : "text-white/35 hover:text-white/65 hover:bg-white/[0.08]",
       )}
     >
       <item.icon className="h-[18px] w-[18px]" />
@@ -95,7 +96,7 @@ function PanelLink({ item }: { item: { title: string; url: string; icon: any; ex
         "flex items-center gap-3 px-3 h-9 rounded-xl text-[13px] font-medium transition-all duration-200 w-full",
         active
           ? "nav-active-pill text-white font-semibold"
-          : "text-purple-200/50 hover:text-purple-100/80 hover:bg-white/[0.05]",
+          : "text-white/40 hover:text-white/75 hover:bg-white/[0.06]",
       )}
     >
       <item.icon className="h-[15px] w-[15px] shrink-0" />
@@ -126,26 +127,23 @@ function DesktopSidebar({
   return (
     <div
       className="fixed left-0 top-0 bottom-0 flex z-30 transition-all duration-300"
-      style={{ boxShadow: "1px 0 0 rgba(255,255,255,0.04)" }}
     >
       {/* ── Icon rail ───────────────────────────────────────────────── */}
       <div
-        className="w-14 flex flex-col items-center pt-4 pb-3 shrink-0"
+        className="w-[60px] flex flex-col items-center pt-4 pb-3 shrink-0"
         style={{
-          background: "rgba(8,8,10,0.90)",
-          backdropFilter: "blur(28px) saturate(140%)",
-          WebkitBackdropFilter: "blur(28px) saturate(140%)",
-          borderRight: "1px solid rgba(255,255,255,0.05)",
+          background: "hsl(240,14%,10%)",
+          borderRight: "1px solid rgba(255,255,255,0.06)",
         }}
       >
         <img
           src="/logo.png"
           alt="AINA"
-          className="h-10 w-10 object-contain mb-5 shrink-0"
-          style={{ filter: "drop-shadow(0 0 12px rgba(180,140,255,0.80))" }}
+          className="h-9 w-9 object-contain mb-5 shrink-0"
+          style={{ filter: "drop-shadow(0 0 10px rgba(180,140,255,0.70))" }}
         />
 
-        <div className="flex flex-col items-center gap-1 flex-1 w-full px-2">
+        <div className="flex flex-col items-center gap-1.5 flex-1 w-full px-2">
           {allItems.map((item) => (
             <RailLink key={item.url} item={item} />
           ))}
@@ -165,12 +163,10 @@ function DesktopSidebar({
       {/* ── Nav panel ───────────────────────────────────────────────── */}
       {expanded && (
         <div
-          className="w-[216px] flex flex-col overflow-hidden"
+          className="w-[210px] flex flex-col overflow-hidden"
           style={{
-            background: "rgba(8,8,10,0.88)",
-            backdropFilter: "blur(32px) saturate(160%)",
-            WebkitBackdropFilter: "blur(32px) saturate(160%)",
-            borderRight: "1px solid rgba(255,255,255,0.05)",
+            background: "hsl(240,14%,12%)",
+            borderRight: "1px solid rgba(255,255,255,0.06)",
           }}
         >
           <div className="px-4 pt-5 pb-4 flex items-center justify-between shrink-0">
@@ -190,14 +186,14 @@ function DesktopSidebar({
             </button>
           </div>
 
-          <div className="mx-4 mb-3 border-t" style={{ borderColor: "rgba(255,255,255,0.05)" }} />
+          <div className="mx-4 mb-3 border-t" style={{ borderColor: "rgba(255,255,255,0.06)" }} />
 
           <div className="flex-1 overflow-y-auto px-2 pb-2 space-y-1">
             {NAV_SECTIONS.map((section) => (
               <div key={section.label}>
                 <p
                   className="text-[9px] uppercase tracking-[0.20em] font-bold px-3 pt-3 pb-1"
-                  style={{ color: "rgba(180,160,220,0.32)" }}
+                  style={{ color: "rgba(180,160,220,0.28)" }}
                 >
                   {section.label}
                 </p>
@@ -215,7 +211,7 @@ function DesktopSidebar({
                 <div>
                   <p
                     className="text-[9px] uppercase tracking-[0.20em] font-bold px-3 pt-2 pb-1"
-                    style={{ color: "rgba(180,160,220,0.32)" }}
+                    style={{ color: "rgba(180,160,220,0.28)" }}
                   >
                     {ADMIN_SECTION.label}
                   </p>
@@ -230,14 +226,14 @@ function DesktopSidebar({
           </div>
 
           {/* User footer */}
-          <div className="p-3 border-t shrink-0" style={{ borderColor: "rgba(255,255,255,0.05)" }}>
+          <div className="p-3 border-t shrink-0" style={{ borderColor: "rgba(255,255,255,0.06)" }}>
             <div
               className="flex items-center gap-2.5 px-2 py-2 rounded-xl"
-              style={{ background: "rgba(139,92,246,0.12)", border: "1px solid rgba(139,92,246,0.18)" }}
+              style={{ background: "rgba(139,92,246,0.10)", border: "1px solid rgba(139,92,246,0.18)" }}
             >
               <div
                 className="h-8 w-8 rounded-full flex items-center justify-center shrink-0 text-white text-[10px] font-bold"
-                style={{ background: "var(--gradient-primary)", boxShadow: "var(--shadow-neo-primary)" }}
+                style={{ background: "var(--gradient-primary)" }}
               >
                 {initials}
               </div>
@@ -247,7 +243,7 @@ function DesktopSidebar({
                   className="text-[9px] px-1.5 py-0 h-4 border-none mt-0.5"
                   style={isAdmin
                     ? { background: "rgba(139,92,246,0.30)", color: "#d8b4fe" }
-                    : { background: "rgba(255,255,255,0.07)", color: "rgba(200,180,255,0.65)" }}
+                    : { background: "rgba(255,255,255,0.08)", color: "rgba(200,180,255,0.60)" }}
                 >
                   {isAdmin ? "Admin" : "User"}
                 </Badge>
@@ -274,7 +270,7 @@ function DesktopSidebar({
           style={{
             background: "hsl(265,60%,28%)",
             border: "1px solid rgba(139,92,246,0.35)",
-            boxShadow: "0 2px 10px rgba(0,0,0,0.50)",
+            boxShadow: "0 2px 10px rgba(0,0,0,0.30)",
           }}
           title="Buka panel"
         >
@@ -302,11 +298,9 @@ function MobileBottomNav({ onMoreClick }: { onMoreClick: () => void }) {
       className="fixed bottom-0 left-0 right-0 z-40 flex items-stretch"
       style={{
         height: "60px",
-        background: "rgba(8,8,10,0.90)",
-        backdropFilter: "blur(28px) saturate(160%)",
-        WebkitBackdropFilter: "blur(28px) saturate(160%)",
+        background: "hsl(240,14%,10%)",
         borderTop: "1px solid rgba(255,255,255,0.06)",
-        boxShadow: "0 -4px 30px rgba(0,0,0,0.50)",
+        boxShadow: "0 -4px 20px rgba(0,0,0,0.12)",
         paddingBottom: "env(safe-area-inset-bottom)",
       }}
     >
@@ -319,19 +313,13 @@ function MobileBottomNav({ onMoreClick }: { onMoreClick: () => void }) {
             className="flex-1 flex flex-col items-center justify-center gap-0.5 transition-all duration-150"
           >
             <item.icon
-              className={cn("h-5 w-5 transition-all duration-200", active ? "text-purple-400" : "text-purple-300/30")}
+              className={cn("h-5 w-5 transition-all duration-200", active ? "text-purple-400" : "text-white/30")}
             />
             <span
-              className={cn("text-[10px] font-semibold transition-all duration-200", active ? "text-purple-300" : "text-purple-300/30")}
+              className={cn("text-[10px] font-semibold transition-all duration-200", active ? "text-purple-300" : "text-white/30")}
             >
               {item.title}
             </span>
-            {active && (
-              <div
-                className="absolute bottom-1 w-4 h-0.5 rounded-full"
-                style={{ background: "var(--gradient-primary)" }}
-              />
-            )}
           </Link>
         );
       })}
@@ -339,8 +327,8 @@ function MobileBottomNav({ onMoreClick }: { onMoreClick: () => void }) {
         className="flex-1 flex flex-col items-center justify-center gap-0.5"
         onClick={onMoreClick}
       >
-        <MoreHorizontal className="h-5 w-5 text-purple-300/30" />
-        <span className="text-[10px] font-semibold text-purple-300/30">Lainnya</span>
+        <MoreHorizontal className="h-5 w-5 text-white/30" />
+        <span className="text-[10px] font-semibold text-white/30">Lainnya</span>
       </button>
     </nav>
   );
@@ -370,11 +358,8 @@ function MobileNavSheet({
         side="left"
         className="w-[280px] p-0 border-r-0"
         style={{
-          background: "rgba(8,8,10,0.94)",
-          backdropFilter: "blur(40px) saturate(160%)",
-          WebkitBackdropFilter: "blur(40px) saturate(160%)",
+          background: "hsl(240,14%,10%)",
           borderRight: "1px solid rgba(255,255,255,0.06)",
-          boxShadow: "8px 0 40px rgba(0,0,0,0.60)",
         }}
       >
         <SheetTitle className="sr-only">Navigasi</SheetTitle>
@@ -384,8 +369,8 @@ function MobileNavSheet({
               <img
                 src="/logo.png"
                 alt="AINA"
-                className="h-10 w-10 object-contain shrink-0"
-                style={{ filter: "drop-shadow(0 0 12px rgba(180,140,255,0.80))" }}
+                className="h-9 w-9 object-contain shrink-0"
+                style={{ filter: "drop-shadow(0 0 10px rgba(180,140,255,0.70))" }}
               />
               <div>
                 <h1 className="font-bold text-[14px] text-white leading-tight tracking-tight">AINA Centre</h1>
@@ -403,14 +388,14 @@ function MobileNavSheet({
             </button>
           </div>
 
-          <div className="mx-4 border-t" style={{ borderColor: "rgba(255,255,255,0.05)" }} />
+          <div className="mx-4 border-t" style={{ borderColor: "rgba(255,255,255,0.06)" }} />
 
           <div className="flex-1 overflow-y-auto px-2 py-2 space-y-0.5">
             {allSections.map((section) => (
               <div key={section.label}>
                 <p
                   className="text-[9px] uppercase tracking-[0.20em] font-bold px-3 pt-3 pb-1"
-                  style={{ color: "rgba(180,160,220,0.32)" }}
+                  style={{ color: "rgba(180,160,220,0.28)" }}
                 >
                   {section.label}
                 </p>
@@ -423,14 +408,14 @@ function MobileNavSheet({
             ))}
           </div>
 
-          <div className="p-4 border-t shrink-0" style={{ borderColor: "rgba(255,255,255,0.05)" }}>
+          <div className="p-4 border-t shrink-0" style={{ borderColor: "rgba(255,255,255,0.06)" }}>
             <div
               className="flex items-center gap-3 px-2 py-2 rounded-xl"
-              style={{ background: "rgba(139,92,246,0.12)", border: "1px solid rgba(139,92,246,0.18)" }}
+              style={{ background: "rgba(139,92,246,0.10)", border: "1px solid rgba(139,92,246,0.18)" }}
             >
               <div
                 className="h-9 w-9 rounded-full flex items-center justify-center text-white text-[11px] font-bold shrink-0"
-                style={{ background: "var(--gradient-primary)", boxShadow: "var(--shadow-neo-primary)" }}
+                style={{ background: "var(--gradient-primary)" }}
               >
                 {initials}
               </div>
@@ -460,67 +445,6 @@ function MobileNavSheet({
   );
 }
 
-// ─── Floating aurora orbs ─────────────────────────────────────────────────────
-
-function AuroraOrbs() {
-  return (
-    <div className="fixed inset-0 overflow-hidden pointer-events-none z-0" aria-hidden>
-      {/* Top-right primary orb */}
-      <div
-        className="orb-float-1 absolute rounded-full"
-        style={{
-          width: 700,
-          height: 700,
-          top: "-18%",
-          right: "-12%",
-          background: "radial-gradient(circle at 40% 40%, hsl(265,83%,55%) 0%, hsl(285,75%,45%) 35%, transparent 70%)",
-          filter: "blur(90px)",
-          opacity: 0.18,
-        }}
-      />
-      {/* Bottom-left secondary orb */}
-      <div
-        className="orb-float-2 absolute rounded-full"
-        style={{
-          width: 600,
-          height: 600,
-          bottom: "-20%",
-          left: "-10%",
-          background: "radial-gradient(circle at 60% 60%, hsl(255,80%,60%) 0%, hsl(245,70%,45%) 40%, transparent 70%)",
-          filter: "blur(80px)",
-          opacity: 0.15,
-        }}
-      />
-      {/* Center accent orb */}
-      <div
-        className="orb-float-3 absolute rounded-full"
-        style={{
-          width: 450,
-          height: 450,
-          top: "30%",
-          left: "40%",
-          background: "radial-gradient(circle at 50% 50%, hsl(280,90%,65%) 0%, hsl(265,80%,50%) 40%, transparent 70%)",
-          filter: "blur(100px)",
-          opacity: 0.10,
-        }}
-      />
-      {/* Top-left subtle orb */}
-      <div
-        className="orb-float-4 absolute rounded-full"
-        style={{
-          width: 350,
-          height: 350,
-          top: "5%",
-          left: "15%",
-          background: "radial-gradient(circle at 50% 50%, hsl(245,90%,60%) 0%, transparent 70%)",
-          filter: "blur(70px)",
-          opacity: 0.10,
-        }}
-      />
-    </div>
-  );
-}
-
 // ─── Portal Layout ─────────────────────────────────────────────────────────────
 
 interface PortalLayoutProps {
@@ -535,7 +459,7 @@ export function PortalLayout({ children }: PortalLayoutProps) {
   const { toast } = useToast();
 
   const initials = user?.username?.slice(0, 2).toUpperCase() ?? "??";
-  const sidebarWidth = isMobile ? 0 : sidebarExpanded ? 272 : 56;
+  const sidebarWidth = isMobile ? 0 : sidebarExpanded ? 270 : 60;
 
   const handleLogout = async () => {
     try {
@@ -547,8 +471,6 @@ export function PortalLayout({ children }: PortalLayoutProps) {
 
   return (
     <div className="min-h-screen bg-background relative">
-      {/* Floating aurora orbs — always visible */}
-      <AuroraOrbs />
 
       {/* Desktop sidebar */}
       {!isMobile && (
@@ -563,44 +485,33 @@ export function PortalLayout({ children }: PortalLayoutProps) {
 
       {/* Content wrapper */}
       <div
-        className="flex flex-col min-h-screen transition-all duration-300 relative z-10"
+        className="flex flex-col min-h-screen transition-all duration-300"
         style={{ marginLeft: sidebarWidth }}
       >
-        {/* Frosted glass header */}
-        <header className="h-14 flex items-center justify-between px-4 shrink-0 sticky top-0 z-20 glass-header">
+        {/* Top header — light frosted */}
+        <header className="h-14 flex items-center justify-between px-5 shrink-0 sticky top-0 z-20 glass-header">
           {isMobile ? (
             <>
               <div className="flex items-center gap-2.5">
                 <button
                   onClick={() => setMobileMenuOpen(true)}
-                  className="h-9 w-9 rounded-xl flex items-center justify-center transition-colors"
-                  style={{ color: "rgba(200,180,255,0.55)" }}
+                  className="h-9 w-9 rounded-xl flex items-center justify-center transition-colors text-foreground/60 hover:text-foreground hover:bg-black/[0.05]"
                   data-testid="button-mobile-menu"
                 >
                   <Menu className="h-5 w-5" />
                 </button>
                 <div className="flex items-center gap-2">
-                  <img
-                    src="/logo.png"
-                    alt="AINA"
-                    className="h-7 w-7 object-contain"
-                    style={{ filter: "drop-shadow(0 0 8px rgba(180,140,255,0.75))" }}
-                  />
-                  <span className="font-bold text-sm text-white tracking-tight">AINA Centre</span>
+                  <img src="/logo.png" alt="AINA" className="h-7 w-7 object-contain" />
+                  <span className="font-bold text-sm tracking-tight text-foreground">AINA Centre</span>
                 </div>
               </div>
               <div className="flex items-center gap-2">
-                <Badge
-                  className="text-[10px] px-2 py-0.5 rounded-full font-semibold border-none"
-                  style={isAdmin
-                    ? { background: "linear-gradient(135deg, hsl(265,83%,57%), hsl(285,75%,50%))", color: "white" }
-                    : { background: "rgba(255,255,255,0.08)", color: "rgba(200,180,255,0.65)" }}
-                >
-                  {isAdmin ? "Admin" : "User"}
-                </Badge>
+                <button className="h-8 w-8 rounded-xl flex items-center justify-center text-foreground/50 hover:bg-black/[0.05] transition-colors">
+                  <Bell className="h-4 w-4" />
+                </button>
                 <div
-                  className="h-8 w-8 rounded-full flex items-center justify-center text-white text-[11px] font-bold shrink-0"
-                  style={{ background: "var(--gradient-primary)", boxShadow: "var(--shadow-neo-primary)" }}
+                  className="h-8 w-8 rounded-full flex items-center justify-center text-white text-[10px] font-bold"
+                  style={{ background: "var(--gradient-primary)" }}
                 >
                   {initials}
                 </div>
@@ -608,32 +519,29 @@ export function PortalLayout({ children }: PortalLayoutProps) {
             </>
           ) : (
             <>
-              <div className="flex items-center gap-2">
-                {!sidebarExpanded && (
-                  <button
-                    onClick={() => setSidebarExpanded(true)}
-                    className="h-8 w-8 rounded-lg flex items-center justify-center transition-colors hover:bg-white/[0.07]"
-                    style={{ color: "rgba(200,180,255,0.55)" }}
-                  >
-                    <Menu className="h-4 w-4" />
-                  </button>
-                )}
-              </div>
+              {/* Left: page context */}
               <div className="flex items-center gap-3">
-                <Badge
-                  className="text-xs px-2.5 py-0.5 rounded-full font-semibold border-none"
-                  style={isAdmin
-                    ? { background: "linear-gradient(135deg, hsl(265,83%,57%), hsl(285,75%,50%))", color: "white", boxShadow: "0 2px 10px rgba(124,58,237,0.35)" }
-                    : { background: "rgba(255,255,255,0.08)", color: "rgba(200,180,255,0.65)" }}
-                >
-                  {isAdmin ? "Admin" : "User"}
-                </Badge>
-                <div
-                  className="h-8 w-8 rounded-full flex items-center justify-center text-white text-[11px] font-bold cursor-default"
-                  style={{ background: "var(--gradient-primary)", boxShadow: "var(--shadow-neo-primary)" }}
-                  title={user?.username}
-                >
-                  {initials}
+                <div>
+                  <p className="text-[11px] font-medium text-muted-foreground">AINA Centre Management</p>
+                </div>
+              </div>
+
+              {/* Right: user actions */}
+              <div className="flex items-center gap-2">
+                <button className="h-8 w-8 rounded-xl flex items-center justify-center text-foreground/45 hover:bg-black/[0.05] transition-colors">
+                  <Bell className="h-4 w-4" />
+                </button>
+                <div className="flex items-center gap-2.5 pl-2 border-l border-border">
+                  <div
+                    className="h-8 w-8 rounded-full flex items-center justify-center text-white text-[10px] font-bold shrink-0"
+                    style={{ background: "var(--gradient-primary)" }}
+                  >
+                    {initials}
+                  </div>
+                  <div>
+                    <p className="text-[12px] font-semibold text-foreground leading-tight">{user?.username}</p>
+                    <p className="text-[10px] text-muted-foreground">{isAdmin ? "Admin" : "User"}</p>
+                  </div>
                 </div>
               </div>
             </>
@@ -641,22 +549,24 @@ export function PortalLayout({ children }: PortalLayoutProps) {
         </header>
 
         {/* Page content */}
-        <main className={cn("flex-1 overflow-auto p-4 md:p-6 animate-fade-in", isMobile && "pb-20")}>
+        <main className="flex-1 p-5 pb-20 md:pb-6">
           {children}
         </main>
       </div>
 
-      {/* Mobile bottom nav */}
-      {isMobile && <MobileBottomNav onMoreClick={() => setMobileMenuOpen(true)} />}
-
-      {/* Mobile full nav sheet */}
-      <MobileNavSheet
-        open={mobileMenuOpen}
-        onClose={() => setMobileMenuOpen(false)}
-        user={user}
-        isAdmin={isAdmin}
-        onLogout={handleLogout}
-      />
+      {/* Mobile nav */}
+      {isMobile && (
+        <>
+          <MobileBottomNav onMoreClick={() => setMobileMenuOpen(true)} />
+          <MobileNavSheet
+            open={mobileMenuOpen}
+            onClose={() => setMobileMenuOpen(false)}
+            user={user}
+            isAdmin={isAdmin}
+            onLogout={handleLogout}
+          />
+        </>
+      )}
     </div>
   );
 }

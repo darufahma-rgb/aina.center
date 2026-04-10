@@ -30,107 +30,91 @@ export default function Login() {
   };
 
   return (
-    <div
-      className="min-h-screen flex items-center justify-center px-4 relative overflow-hidden"
-      style={{ background: "hsl(0,0%,5%)" }}
-    >
-      {/* Aurora floating orbs */}
+    <div className="min-h-screen flex bg-background">
+      {/* ── Left panel — branding ── */}
       <div
-        className="orb-float-1 absolute rounded-full pointer-events-none"
-        style={{
-          width: 650,
-          height: 650,
-          top: "-20%",
-          right: "-15%",
-          background: "radial-gradient(circle at 40% 40%, hsl(265,83%,55%) 0%, hsl(285,75%,45%) 35%, transparent 68%)",
-          filter: "blur(85px)",
-          opacity: 0.22,
-        }}
-      />
-      <div
-        className="orb-float-2 absolute rounded-full pointer-events-none"
-        style={{
-          width: 550,
-          height: 550,
-          bottom: "-18%",
-          left: "-12%",
-          background: "radial-gradient(circle at 60% 60%, hsl(255,80%,60%) 0%, hsl(245,70%,45%) 40%, transparent 68%)",
-          filter: "blur(80px)",
-          opacity: 0.18,
-        }}
-      />
-      <div
-        className="orb-float-3 absolute rounded-full pointer-events-none"
-        style={{
-          width: 380,
-          height: 380,
-          top: "50%",
-          left: "50%",
-          transform: "translate(-50%, -50%)",
-          background: "radial-gradient(circle at 50% 50%, hsl(280,90%,65%) 0%, transparent 70%)",
-          filter: "blur(100px)",
-          opacity: 0.10,
-        }}
-      />
+        className="hidden lg:flex flex-col justify-between w-[44%] p-10 relative overflow-hidden"
+        style={{ background: "linear-gradient(145deg, hsl(265,83%,30%) 0%, hsl(240,60%,14%) 100%)" }}
+      >
+        {/* Subtle grid overlay */}
+        <div
+          className="absolute inset-0 pointer-events-none opacity-[0.06]"
+          style={{
+            backgroundImage: "linear-gradient(rgba(255,255,255,0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.5) 1px, transparent 1px)",
+            backgroundSize: "48px 48px",
+          }}
+        />
+        {/* Glow orb */}
+        <div
+          className="absolute rounded-full pointer-events-none"
+          style={{
+            width: 500,
+            height: 500,
+            top: "-10%",
+            right: "-20%",
+            background: "radial-gradient(circle, hsl(265,83%,57%) 0%, transparent 70%)",
+            filter: "blur(80px)",
+            opacity: 0.35,
+          }}
+        />
 
-      {/* Subtle dot grid */}
-      <div
-        className="absolute inset-0 pointer-events-none"
-        style={{
-          backgroundImage: "radial-gradient(circle, rgba(139,92,246,0.18) 1px, transparent 1px)",
-          backgroundSize: "32px 32px",
-          opacity: 0.4,
-          maskImage: "radial-gradient(ellipse 80% 80% at 50% 50%, black 30%, transparent 100%)",
-          WebkitMaskImage: "radial-gradient(ellipse 80% 80% at 50% 50%, black 30%, transparent 100%)",
-        }}
-      />
-
-      {/* Form container */}
-      <div className="relative w-full max-w-sm animate-scale-in z-10">
-        {/* Logo + brand */}
-        <div className="flex flex-col items-center mb-8">
+        {/* Logo */}
+        <div className="relative z-10 flex items-center gap-3">
           <img
             src="/logo.png"
-            alt="AINA Centre Management"
-            className="h-24 w-24 object-contain mb-5"
-            style={{
-              filter: "drop-shadow(0 0 22px rgba(180,140,255,0.90)) drop-shadow(0 0 8px rgba(124,58,237,0.65))",
-            }}
+            alt="AINA"
+            className="h-10 w-10 object-contain"
+            style={{ filter: "drop-shadow(0 0 12px rgba(180,140,255,0.80))" }}
           />
-          <h1 className="font-bold text-[26px] text-white tracking-tight">AINA Centre</h1>
-          <p className="text-sm mt-1.5 font-medium tracking-[0.22em] uppercase" style={{ color: "rgba(200,180,255,0.45)" }}>
-            Management Portal
+          <div>
+            <p className="font-bold text-white text-sm tracking-tight">AINA Centre</p>
+            <p className="text-[10px] font-semibold tracking-[0.20em] uppercase text-white/40">Management</p>
+          </div>
+        </div>
+
+        {/* Center text */}
+        <div className="relative z-10">
+          <h1 className="text-4xl font-bold text-white leading-tight mb-4">
+            Portal Internal<br />AINA Centre
+          </h1>
+          <p className="text-base text-white/55 leading-relaxed max-w-xs">
+            Kelola keuangan, notulensi, agenda, anggota, dan laporan organisasi dalam satu platform terpadu.
           </p>
         </div>
 
-        {/* Glass card */}
-        <div
-          className="rounded-2xl p-7"
-          style={{
-            background: "rgba(255,255,255,0.04)",
-            border: "1px solid rgba(255,255,255,0.08)",
-            backdropFilter: "blur(28px) saturate(160%)",
-            WebkitBackdropFilter: "blur(28px) saturate(160%)",
-            boxShadow: "0 28px 70px rgba(0,0,0,0.55), 0 0 0 1px rgba(139,92,246,0.10), inset 0 1px 0 rgba(255,255,255,0.07)",
-          }}
-        >
-          <div className="mb-6">
-            <h2 className="text-[17px] font-bold text-white tracking-tight">Masuk ke Portal</h2>
-            <p className="text-sm mt-1" style={{ color: "rgba(200,180,255,0.50)" }}>
-              Masukkan kredensial akun Anda
-            </p>
+        {/* Bottom */}
+        <p className="relative z-10 text-[11px] text-white/30">
+          AINA Centre Management — Sistem Portal Internal
+        </p>
+      </div>
+
+      {/* ── Right panel — login form ── */}
+      <div className="flex-1 flex items-center justify-center px-6 py-10">
+        <div className="w-full max-w-sm animate-scale-in">
+          {/* Mobile logo */}
+          <div className="flex flex-col items-center mb-8 lg:hidden">
+            <img
+              src="/logo.png"
+              alt="AINA"
+              className="h-16 w-16 object-contain mb-4"
+              style={{ filter: "drop-shadow(0 0 14px rgba(139,92,246,0.55))" }}
+            />
+            <h1 className="font-bold text-xl text-foreground tracking-tight">AINA Centre</h1>
+            <p className="text-xs mt-1 font-medium tracking-[0.18em] uppercase text-muted-foreground">Management Portal</p>
+          </div>
+
+          <div className="mb-8">
+            <h2 className="text-2xl font-bold text-foreground tracking-tight">Masuk ke Portal</h2>
+            <p className="text-sm mt-1.5 text-muted-foreground">Masukkan kredensial akun Anda</p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-1.5">
-              <Label htmlFor="username" className="text-[13px] font-medium" style={{ color: "rgba(220,200,255,0.75)" }}>
+              <Label htmlFor="username" className="text-[13px] font-medium text-foreground">
                 Username
               </Label>
               <div className="relative">
-                <User
-                  className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 pointer-events-none"
-                  style={{ color: "rgba(200,180,255,0.40)" }}
-                />
+                <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
                 <input
                   id="username"
                   data-testid="input-username"
@@ -139,24 +123,17 @@ export default function Login() {
                   onChange={(e) => setUsername(e.target.value)}
                   autoComplete="username"
                   disabled={submitting}
-                  className="flex h-11 w-full rounded-xl pl-9 pr-3 py-2 text-sm text-white placeholder:text-purple-300/25 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-500/60 disabled:opacity-50 transition-all duration-200"
-                  style={{
-                    background: "rgba(255,255,255,0.05)",
-                    border: "1px solid rgba(139,92,246,0.20)",
-                  }}
+                  className="flex h-11 w-full rounded-xl pl-9 pr-3 py-2 text-sm bg-card border border-border text-foreground placeholder:text-muted-foreground/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:border-primary/40 disabled:opacity-50 transition-all duration-200"
                 />
               </div>
             </div>
 
             <div className="space-y-1.5">
-              <Label htmlFor="password" className="text-[13px] font-medium" style={{ color: "rgba(220,200,255,0.75)" }}>
+              <Label htmlFor="password" className="text-[13px] font-medium text-foreground">
                 Password
               </Label>
               <div className="relative">
-                <Lock
-                  className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 pointer-events-none"
-                  style={{ color: "rgba(200,180,255,0.40)" }}
-                />
+                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
                 <input
                   id="password"
                   data-testid="input-password"
@@ -166,11 +143,7 @@ export default function Login() {
                   onChange={(e) => setPassword(e.target.value)}
                   autoComplete="current-password"
                   disabled={submitting}
-                  className="flex h-11 w-full rounded-xl pl-9 pr-3 py-2 text-sm text-white placeholder:text-purple-300/25 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-500/60 disabled:opacity-50 transition-all duration-200"
-                  style={{
-                    background: "rgba(255,255,255,0.05)",
-                    border: "1px solid rgba(139,92,246,0.20)",
-                  }}
+                  className="flex h-11 w-full rounded-xl pl-9 pr-3 py-2 text-sm bg-card border border-border text-foreground placeholder:text-muted-foreground/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:border-primary/40 disabled:opacity-50 transition-all duration-200"
                 />
               </div>
             </div>
@@ -186,17 +159,13 @@ export default function Login() {
                   : "linear-gradient(135deg, hsl(265,83%,57%) 0%, hsl(285,75%,50%) 100%)",
                 boxShadow: submitting || !username || !password
                   ? "none"
-                  : "0 4px 20px rgba(124,58,237,0.45), 0 1px 0 rgba(255,255,255,0.12) inset",
+                  : "0 4px 18px rgba(124,58,237,0.35)",
               }}
             >
               {submitting ? "Masuk..." : "Masuk"}
             </button>
           </form>
         </div>
-
-        <p className="text-center text-xs mt-5" style={{ color: "rgba(180,160,220,0.35)" }}>
-          AINA Centre Management — Sistem Portal Internal
-        </p>
       </div>
     </div>
   );

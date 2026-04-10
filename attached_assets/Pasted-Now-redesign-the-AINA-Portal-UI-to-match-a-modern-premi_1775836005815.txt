@@ -1,0 +1,176 @@
+Now redesign the AINA Portal UI to match a modern, premium SaaS dashboard style inspired by a clean workspace interface.
+
+IMPORTANT:
+Do not copy exact branding or content.
+But replicate the layout structure, spacing, visual hierarchy, and component style.
+
+==================================================
+MAIN DESIGN GOAL
+==================================================
+
+Transform the current UI into a highly polished, modern dashboard with:
+
+- soft rounded cards
+- clean spacing
+- floating panels
+- strong visual hierarchy
+- minimal but elegant interface
+
+The UI should feel:
+- premium
+- modern
+- calm
+- intelligent
+- founder-level product
+
+==================================================
+COLOR SYSTEM
+==================================================
+
+Primary color:
+- Replace all green accents with a PURPLE theme
+
+Suggested palette:
+- Primary: #7C3AED (purple)
+- Light accent: #EDE9FE
+- Dark accent: #4C1D95
+
+Keep:
+- white background
+- soft gray layers
+- subtle shadows
+
+==================================================
+LAYOUT STRUCTURE
+==================================================
+
+1. TOP BAR (Floating Control Bar)
+
+Create a rounded top bar:
+- full-width but centered
+- slightly floating
+- contains:
+  - date / timeline
+  - small avatars (team activity)
+  - quick actions
+
+2. MAIN HEADER
+
+Replace "WORKSPACE" with:
+
+AINA Dashboard
+
+Include:
+- big title
+- small subtitle (optional)
+- summary stats next to it
+
+Example stats:
+- Total Notulensi
+- Active Agenda
+- Features Built
+- Team Members
+
+==================================================
+CARD GRID SYSTEM
+==================================================
+
+Redesign all modules using card layout:
+
+- rounded-xl or rounded-2xl
+- soft shadow
+- padding: 16–24px
+- spacing between cards consistent
+
+Apply this to:
+- Notulensi
+- Fitur Terbaru
+- Anggota
+- Relasi
+
+==================================================
+AGENDA / TASK SECTION
+==================================================
+
+Create a task-style section like the reference:
+
+- horizontal cards
+- highlight active card in PURPLE (not green)
+- include:
+  - title
+  - date/time
+  - status
+  - assigned person
+
+==================================================
+RIGHT FLOATING PANEL
+==================================================
+
+Add a floating right-side panel:
+
+- slightly overlapping the main layout
+- darker background (dark mode feel)
+- rounded corners
+
+Use this panel for:
+- AI Report Assistant quick access
+- Insight summary
+- Quick notes
+
+This panel should feel like:
+a smart assistant area
+
+==================================================
+AI REPORT ASSISTANT INTEGRATION
+==================================================
+
+Inside the right panel:
+- show "AI Report Assistant"
+- include:
+  - quick summary preview
+  - button to open full AI page
+  - badge: "GPT-4o mini · Active"
+
+==================================================
+INSIGHT INTEGRATION
+==================================================
+
+Keep Insight Layer at the top:
+
+- use colored cards:
+  - purple for highlight
+  - amber / red / gray for states
+
+Make insights visually clean and clickable.
+
+==================================================
+UX DETAILS
+==================================================
+
+- smooth spacing between sections
+- no clutter
+- consistent padding
+- hover effects on cards
+- subtle animations (if possible)
+- readable typography
+
+==================================================
+IMPORTANT RULES
+==================================================
+
+- Do not break existing functionality
+- Do not remove modules
+- Only upgrade UI and layout
+- Keep all current data bindings intact
+- Keep it responsive (desktop-first)
+
+==================================================
+FINAL RESULT
+==================================================
+
+The UI should feel like:
+- a premium SaaS dashboard
+- a modern control center
+- a clean and intelligent workspace
+
+AINA should look like a serious, high-level product.

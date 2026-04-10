@@ -61,11 +61,8 @@ export function StatCard({
 
   return (
     <div
-      className={cn("rounded-xl p-5 border border-border transition-all duration-200", className)}
+      className={cn("rounded-xl p-5 bg-card border border-border transition-all duration-200", className)}
       style={{
-        background: "rgba(255,255,255,0.04)",
-        backdropFilter: "blur(16px)",
-        WebkitBackdropFilter: "blur(16px)",
         boxShadow: "var(--shadow-neo-xs)",
       }}
       onMouseEnter={(e) => {
