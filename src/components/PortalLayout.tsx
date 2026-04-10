@@ -108,6 +108,16 @@ function NavItem({
 
 // ─── Sidebar component ────────────────────────────────────────────────────────
 
+function useIsMobile() {
+  const [is, setIs] = useState(() => typeof window !== "undefined" && window.innerWidth < 1024);
+  useEffect(() => {
+    const h = () => setIs(window.innerWidth < 1024);
+    window.addEventListener("resize", h);
+    return () => window.removeEventListener("resize", h);
+  }, []);
+  return is;
+}
+
 function Sidebar({
   user,
   isAdmin,
@@ -125,6 +135,8 @@ function Sidebar({
 }) {
   const displayName = user?.displayName || user?.username || "??";
   const initials = displayName.slice(0, 2).toUpperCase();
+
+  const isMobile = useIsMobile();
 
   const [helpDismissed, setHelpDismissed] = useState<boolean>(() => {
     try { return localStorage.getItem("helpCardDismissed") === "true"; }
@@ -153,7 +165,16 @@ function Sidebar({
           "lg:translate-x-0",
           mobileOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0",
         )}
-        style={{
+        style={isMobile ? {
+          left: 0,
+          top: 0,
+          bottom: 0,
+          width: SIDEBAR_W,
+          height: "100dvh",
+          borderRadius: "0 24px 24px 0",
+          background: ACCENT,
+          border: "none",
+        } : {
           left: SIDEBAR_MARGIN,
           top: SIDEBAR_MARGIN,
           bottom: SIDEBAR_MARGIN,
@@ -444,7 +465,7 @@ export function PortalLayout({ children }: PortalLayoutProps) {
       <AIChatWidget />
 
       {/* ── Mobile bottom nav ────────────────────────────────────────── */}
-      <BottomNav sidebarOpen={mobileOpen} onSidebarClose={() => setMobileOpen(false)} />
+      <BottomNav />
     </div>
   );
 }
