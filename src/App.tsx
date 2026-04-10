@@ -1,10 +1,13 @@
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { RoleProvider } from "@/contexts/RoleContext";
+import { AuthProvider } from "@/contexts/AuthContext";
+import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { PortalLayout } from "@/components/PortalLayout";
+import { queryClient } from "@/lib/queryClient";
+import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import Notulensi from "./pages/Notulensi";
 import FiturTerbaru from "./pages/FiturTerbaru";
@@ -17,30 +20,29 @@ import Inventaris from "./pages/Inventaris";
 import InvestorMode from "./pages/InvestorMode";
 import NotFound from "./pages/NotFound";
 
-const queryClient = new QueryClient();
-
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <Toaster />
       <Sonner />
-      <RoleProvider>
-        <BrowserRouter>
+      <BrowserRouter>
+        <AuthProvider>
           <Routes>
-            <Route element={<PortalLayout><Dashboard /></PortalLayout>} path="/" />
-            <Route element={<PortalLayout><Notulensi /></PortalLayout>} path="/notulensi" />
-            <Route element={<PortalLayout><FiturTerbaru /></PortalLayout>} path="/fitur" />
-            <Route element={<PortalLayout><Keuangan /></PortalLayout>} path="/keuangan" />
-            <Route element={<PortalLayout><Agenda /></PortalLayout>} path="/agenda" />
-            <Route element={<PortalLayout><Anggota /></PortalLayout>} path="/anggota" />
-            <Route element={<PortalLayout><Relasi /></PortalLayout>} path="/relasi" />
-            <Route element={<PortalLayout><Surat /></PortalLayout>} path="/surat" />
-            <Route element={<PortalLayout><Inventaris /></PortalLayout>} path="/inventaris" />
-            <Route element={<PortalLayout><InvestorMode /></PortalLayout>} path="/investor" />
+            <Route path="/login" element={<Login />} />
+            <Route path="/" element={<ProtectedRoute><PortalLayout><Dashboard /></PortalLayout></ProtectedRoute>} />
+            <Route path="/notulensi" element={<ProtectedRoute><PortalLayout><Notulensi /></PortalLayout></ProtectedRoute>} />
+            <Route path="/fitur" element={<ProtectedRoute><PortalLayout><FiturTerbaru /></PortalLayout></ProtectedRoute>} />
+            <Route path="/keuangan" element={<ProtectedRoute><PortalLayout><Keuangan /></PortalLayout></ProtectedRoute>} />
+            <Route path="/agenda" element={<ProtectedRoute><PortalLayout><Agenda /></PortalLayout></ProtectedRoute>} />
+            <Route path="/anggota" element={<ProtectedRoute><PortalLayout><Anggota /></PortalLayout></ProtectedRoute>} />
+            <Route path="/relasi" element={<ProtectedRoute><PortalLayout><Relasi /></PortalLayout></ProtectedRoute>} />
+            <Route path="/surat" element={<ProtectedRoute><PortalLayout><Surat /></PortalLayout></ProtectedRoute>} />
+            <Route path="/inventaris" element={<ProtectedRoute><PortalLayout><Inventaris /></PortalLayout></ProtectedRoute>} />
+            <Route path="/investor" element={<ProtectedRoute><PortalLayout><InvestorMode /></PortalLayout></ProtectedRoute>} />
             <Route path="*" element={<NotFound />} />
           </Routes>
-        </BrowserRouter>
-      </RoleProvider>
+        </AuthProvider>
+      </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
 );

@@ -10,9 +10,10 @@ import {
   Package,
   Presentation,
   Bot,
+  LogOut,
 } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
-import { useRole } from "@/contexts/RoleContext";
+import { useAuth } from "@/contexts/AuthContext";
 import {
   Sidebar,
   SidebarContent,
@@ -26,8 +27,9 @@ import {
   SidebarFooter,
   useSidebar,
 } from "@/components/ui/sidebar";
-import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { useToast } from "@/hooks/use-toast";
 
 const navSections = [
   {
@@ -70,7 +72,18 @@ const navSections = [
 export function AppSidebar() {
   const { state } = useSidebar();
   const collapsed = state === "collapsed";
-  const { role, setRole, isAdmin } = useRole();
+  const { user, isAdmin, logout } = useAuth();
+  const { toast } = useToast();
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+    } catch {
+      toast({ title: "Gagal logout", variant: "destructive" });
+    }
+  };
+
+  const initials = user?.username?.slice(0, 2).toUpperCase() ?? "??";
 
   return (
     <Sidebar collapsible="icon" className="border-r-0">
@@ -134,21 +147,44 @@ export function AppSidebar() {
         )}
       </SidebarContent>
 
-      {!collapsed && (
-        <SidebarFooter className="p-4 border-t border-sidebar-border">
-          <div className="flex items-center justify-between">
-            <span className="text-sidebar-muted text-xs">Admin Mode</span>
-            <Switch
-              checked={isAdmin}
-              onCheckedChange={(checked) => setRole(checked ? "admin" : "user")}
-              className="data-[state=checked]:bg-sidebar-primary"
-            />
+      <SidebarFooter className="p-3 border-t border-sidebar-border">
+        {!collapsed ? (
+          <div className="space-y-2">
+            <div className="flex items-center gap-2 px-1">
+              <div className="h-7 w-7 rounded-full gradient-primary flex items-center justify-center shrink-0">
+                <span className="text-white text-[10px] font-bold">{initials}</span>
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-sidebar-primary-foreground text-xs font-medium truncate">{user?.username}</p>
+                <Badge variant={isAdmin ? "default" : "secondary"} className="text-[9px] px-1 py-0 h-4">
+                  {isAdmin ? "Admin" : "User"}
+                </Badge>
+              </div>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-7 w-7 text-sidebar-muted hover:text-sidebar-primary-foreground"
+                onClick={handleLogout}
+                data-testid="button-logout"
+                title="Logout"
+              >
+                <LogOut className="h-3.5 w-3.5" />
+              </Button>
+            </div>
           </div>
-          <p className="text-sidebar-muted text-[10px] mt-1">
-            Viewing as: <span className="text-sidebar-primary-foreground font-medium">{isAdmin ? "Admin" : "User"}</span>
-          </p>
-        </SidebarFooter>
-      )}
+        ) : (
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-9 w-9 text-sidebar-muted hover:text-sidebar-primary-foreground mx-auto"
+            onClick={handleLogout}
+            data-testid="button-logout-collapsed"
+            title="Logout"
+          >
+            <LogOut className="h-4 w-4" />
+          </Button>
+        )}
+      </SidebarFooter>
     </Sidebar>
   );
 }

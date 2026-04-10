@@ -1,7 +1,7 @@
 import { ReactNode } from "react";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
-import { useRole } from "@/contexts/RoleContext";
+import { useAuth } from "@/contexts/AuthContext";
 import { Badge } from "@/components/ui/badge";
 
 interface PortalLayoutProps {
@@ -9,7 +9,8 @@ interface PortalLayoutProps {
 }
 
 export function PortalLayout({ children }: PortalLayoutProps) {
-  const { isAdmin } = useRole();
+  const { user, isAdmin } = useAuth();
+  const initials = user?.username?.slice(0, 2).toUpperCase() ?? "??";
 
   return (
     <SidebarProvider>
@@ -24,8 +25,8 @@ export function PortalLayout({ children }: PortalLayoutProps) {
               <Badge variant={isAdmin ? "default" : "secondary"} className="text-xs">
                 {isAdmin ? "Admin" : "User"}
               </Badge>
-              <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center">
-                <span className="text-xs font-medium text-primary">FA</span>
+              <div className="h-8 w-8 rounded-full gradient-primary flex items-center justify-center">
+                <span className="text-xs font-medium text-white">{initials}</span>
               </div>
             </div>
           </header>
