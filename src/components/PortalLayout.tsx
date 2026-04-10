@@ -167,14 +167,12 @@ function Sidebar({
         )}
         style={isMobile ? {
           left: mobileOpen ? 12 : -(SIDEBAR_W + 20),
-          top: "50%",
-          transform: "translateY(-50%)",
-          height: "80dvh",
+          top: "6%",
+          bottom: "6%",
           width: SIDEBAR_W,
           borderRadius: 24,
           background: ACCENT,
           border: "none",
-          overflowY: "auto",
           transition: "left 0.3s cubic-bezier(0.32,0.72,0,1)",
         } : {
           left: SIDEBAR_MARGIN,
