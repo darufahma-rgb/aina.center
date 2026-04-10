@@ -29,180 +29,106 @@ export default function Login() {
     }
   };
 
-  const formContent = (mobile = false) => (
-    <form onSubmit={handleSubmit} className="space-y-3.5">
-      <div className="space-y-1.5">
-        <Label
-          htmlFor={mobile ? "username-m" : "username"}
-          className={mobile ? "text-[13px] font-semibold text-white/80" : "text-[13px] font-medium text-foreground"}
-        >
-          Username
-        </Label>
-        <div className="relative">
-          <User className={`absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 pointer-events-none ${mobile ? "text-white/40" : "text-muted-foreground"}`} />
-          <input
-            id={mobile ? "username-m" : "username"}
-            data-testid="input-username"
-            placeholder="Username"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            autoComplete="username"
-            disabled={submitting}
-            className={mobile
-              ? "flex h-12 w-full rounded-2xl pl-9 pr-3 py-2 text-[14px] font-medium text-white placeholder:text-white/30 focus-visible:outline-none focus-visible:ring-2 disabled:opacity-50 transition-all duration-200"
-              : "flex h-11 w-full rounded-xl pl-9 pr-3 py-2 text-sm bg-card border border-border text-foreground placeholder:text-muted-foreground/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:border-primary/40 disabled:opacity-50 transition-all duration-200"
-            }
-            style={mobile ? {
-              background: "rgba(255,255,255,0.10)",
-              border: "1px solid rgba(255,255,255,0.16)",
-              focusRing: "none",
-            } : undefined}
-          />
-        </div>
-      </div>
-
-      <div className="space-y-1.5">
-        <Label
-          htmlFor={mobile ? "password-m" : "password"}
-          className={mobile ? "text-[13px] font-semibold text-white/80" : "text-[13px] font-medium text-foreground"}
-        >
-          Password
-        </Label>
-        <div className="relative">
-          <Lock className={`absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 pointer-events-none ${mobile ? "text-white/40" : "text-muted-foreground"}`} />
-          <input
-            id={mobile ? "password-m" : "password"}
-            data-testid="input-password"
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            autoComplete="current-password"
-            disabled={submitting}
-            className={mobile
-              ? "flex h-12 w-full rounded-2xl pl-9 pr-3 py-2 text-[14px] font-medium text-white placeholder:text-white/30 focus-visible:outline-none focus-visible:ring-2 disabled:opacity-50 transition-all duration-200"
-              : "flex h-11 w-full rounded-xl pl-9 pr-3 py-2 text-sm bg-card border border-border text-foreground placeholder:text-muted-foreground/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:border-primary/40 disabled:opacity-50 transition-all duration-200"
-            }
-            style={mobile ? {
-              background: "rgba(255,255,255,0.10)",
-              border: "1px solid rgba(255,255,255,0.16)",
-            } : undefined}
-          />
-        </div>
-      </div>
-
-      <button
-        type="submit"
-        data-testid="button-login"
-        disabled={submitting || !username || !password}
-        className={`w-full font-semibold transition-all duration-200 disabled:cursor-not-allowed active:scale-[0.98] ${mobile ? "h-13 rounded-2xl text-[15px] mt-1" : "h-11 rounded-xl text-sm mt-2 disabled:opacity-40"}`}
-        style={mobile ? {
-          height: 52,
-          background: submitting || !username || !password
-            ? "rgba(255,255,255,0.15)"
-            : "rgba(255,255,255,0.95)",
-          color: submitting || !username || !password ? "rgba(255,255,255,0.4)" : "#3E0FA3",
-          boxShadow: submitting || !username || !password ? "none" : "0 4px 20px rgba(0,0,0,0.25)",
-          fontWeight: 700,
-        } : {
-          background: submitting || !username || !password ? "rgba(28,28,28,0.35)" : "#1C1C1C",
-          color: submitting || !username || !password ? "#aaa" : "#A78BFA",
-          boxShadow: submitting || !username || !password ? "none" : "0 4px 18px rgba(0,0,0,0.18)",
-        }}
-      >
-        {submitting ? "Masuk..." : "Masuk"}
-      </button>
-    </form>
-  );
-
   return (
     <>
-      {/* ══════════════════════════════════════════════════
+      {/* ════════════════════════════════════════
           MOBILE layout  (< lg)
-      ══════════════════════════════════════════════════ */}
+      ════════════════════════════════════════ */}
       <div
-        className="lg:hidden fixed inset-0 flex flex-col overflow-hidden"
-        style={{
-          backgroundImage: "url(/wallpaper-login.png)",
-          backgroundSize: "cover",
-          backgroundPosition: "center center",
-        }}
+        className="lg:hidden min-h-screen bg-white flex flex-col px-6"
+        style={{ paddingTop: "env(safe-area-inset-top, 0px)" }}
       >
-        {/* Full gradient overlay */}
-        <div
-          className="absolute inset-0 login-panel-overlay"
-          style={{
-            background: "linear-gradient(to bottom, rgba(10,3,30,0.72) 0%, rgba(10,3,30,0.40) 38%, rgba(10,3,30,0.82) 72%, rgba(10,3,30,0.97) 100%)",
-          }}
-        />
-
-        {/* ── Top: logo + brand ── */}
-        <div className="relative z-10 flex items-center gap-3 px-6 pt-14 login-logo-enter">
+        {/* Logo */}
+        <div className="flex flex-col items-center pt-16 pb-10">
           <div
-            className="h-10 w-10 rounded-2xl flex items-center justify-center shrink-0"
-            style={{ background: "rgba(255,255,255,0.13)", backdropFilter: "blur(10px)", border: "1px solid rgba(255,255,255,0.20)" }}
+            className="h-16 w-16 rounded-2xl flex items-center justify-center mb-4"
+            style={{ background: "#3E0FA3" }}
           >
-            <img src="/logo.png" alt="AINA" className="h-6 w-6 object-contain" />
+            <img
+              src="/logo.png"
+              alt="AINA"
+              className="h-9 w-9 object-contain"
+              style={{ filter: "brightness(0) invert(1)" }}
+            />
           </div>
-          <div>
-            <p className="font-bold text-white text-[15px] tracking-tight leading-none">AINA Centre</p>
-            <p className="text-[10px] font-medium tracking-[0.22em] uppercase mt-0.5" style={{ color: "rgba(255,255,255,0.40)" }}>Management</p>
-          </div>
-        </div>
-
-        {/* ── Middle: headline ── */}
-        <div className="relative z-10 flex-1 flex flex-col justify-center px-6 pb-8">
+          <h1 className="text-[20px] font-bold text-[#1A1A1A] tracking-tight">AINA Centre</h1>
           <p
-            className="text-[10px] font-bold tracking-[0.30em] uppercase mb-4 login-label-enter"
-            style={{ color: "rgba(167,139,250,0.90)" }}
+            className="text-[11px] font-semibold tracking-[0.20em] uppercase mt-1"
+            style={{ color: "#3E0FA3" }}
           >
-            Portal Internal
-          </p>
-          <h1
-            className="text-[32px] leading-[1.10] font-black text-white mb-4 login-h1-enter"
-            style={{ letterSpacing: "-0.025em" }}
-          >
-            Satu tempat<br />
-            untuk semua<br />
-            urusan organisasi.
-          </h1>
-          <p
-            className="text-[13px] leading-[1.7] login-desc-enter"
-            style={{ color: "rgba(255,255,255,0.50)", maxWidth: 280 }}
-          >
-            Kelola keuangan, notulensi, agenda, dan anggota AINA Centre secara terpadu.
+            Management Portal
           </p>
         </div>
 
-        {/* ── Bottom: form card ── */}
-        <div
-          className="relative z-10 px-5 pb-10 login-footer-enter"
-          style={{ paddingBottom: "max(40px, env(safe-area-inset-bottom, 40px))" }}
-        >
-          {/* Thin divider line */}
-          <div
-            className="w-full mb-5"
-            style={{ height: 1, background: "rgba(255,255,255,0.10)" }}
-          />
-
-          <p
-            className="text-[17px] font-bold text-white mb-5 leading-tight"
-            style={{ letterSpacing: "-0.01em" }}
-          >
-            Masuk ke Portal
+        {/* Form */}
+        <div className="flex-1">
+          <p className="text-[22px] font-bold text-[#1A1A1A] mb-1" style={{ letterSpacing: "-0.01em" }}>
+            Masuk
+          </p>
+          <p className="text-[13px] mb-6" style={{ color: "#999" }}>
+            Masukkan kredensial akun Anda.
           </p>
 
-          {formContent(true)}
+          <form onSubmit={handleSubmit} className="space-y-3">
+            <div className="relative">
+              <User className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 pointer-events-none" style={{ color: "#bbb" }} />
+              <input
+                id="username-m"
+                data-testid="input-username"
+                placeholder="Username"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                autoComplete="username"
+                disabled={submitting}
+                className="flex h-12 w-full rounded-2xl pl-10 pr-4 text-[14px] text-[#1A1A1A] placeholder:text-[#ccc] focus:outline-none disabled:opacity-50 transition-all"
+                style={{ background: "#F4F4F6", border: "1.5px solid transparent" }}
+                onFocus={(e) => (e.target.style.borderColor = "#3E0FA360")}
+                onBlur={(e) => (e.target.style.borderColor = "transparent")}
+              />
+            </div>
 
-          <p className="text-center text-[11px] mt-4" style={{ color: "rgba(255,255,255,0.25)" }}>
-            AINA Centre Management · Portal Internal
-          </p>
+            <div className="relative">
+              <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 pointer-events-none" style={{ color: "#bbb" }} />
+              <input
+                id="password-m"
+                data-testid="input-password"
+                type="password"
+                placeholder="Password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                autoComplete="current-password"
+                disabled={submitting}
+                className="flex h-12 w-full rounded-2xl pl-10 pr-4 text-[14px] text-[#1A1A1A] placeholder:text-[#ccc] focus:outline-none disabled:opacity-50 transition-all"
+                style={{ background: "#F4F4F6", border: "1.5px solid transparent" }}
+                onFocus={(e) => (e.target.style.borderColor = "#3E0FA360")}
+                onBlur={(e) => (e.target.style.borderColor = "transparent")}
+              />
+            </div>
+
+            <button
+              type="submit"
+              data-testid="button-login"
+              disabled={submitting || !username || !password}
+              className="w-full h-12 rounded-2xl text-[15px] font-bold text-white transition-all active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed"
+              style={{
+                background: "#3E0FA3",
+                boxShadow: "0 4px 16px rgba(62,15,163,0.25)",
+                marginTop: 4,
+              }}
+            >
+              {submitting ? "Masuk..." : "Masuk"}
+            </button>
+          </form>
         </div>
+
+        <p className="text-center text-[11px] pb-8" style={{ color: "#ddd" }}>
+          AINA Centre · Portal Internal
+        </p>
       </div>
 
-      {/* ══════════════════════════════════════════════════
+      {/* ════════════════════════════════════════
           DESKTOP layout  (lg+)  — untouched
-      ══════════════════════════════════════════════════ */}
+      ════════════════════════════════════════ */}
       <div className="hidden lg:flex min-h-screen bg-background">
         {/* Left panel — wallpaper */}
         <div
@@ -276,7 +202,58 @@ export default function Login() {
                 Masukkan kredensial akun Anda untuk melanjutkan.
               </p>
             </div>
-            {formContent(false)}
+
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div className="space-y-1.5">
+                <Label htmlFor="username" className="text-[13px] font-medium text-foreground">
+                  Username
+                </Label>
+                <div className="relative">
+                  <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+                  <input
+                    id="username"
+                    placeholder="Username"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                    autoComplete="username"
+                    disabled={submitting}
+                    className="flex h-11 w-full rounded-xl pl-9 pr-3 py-2 text-sm bg-card border border-border text-foreground placeholder:text-muted-foreground/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:border-primary/40 disabled:opacity-50 transition-all duration-200"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-1.5">
+                <Label htmlFor="password" className="text-[13px] font-medium text-foreground">
+                  Password
+                </Label>
+                <div className="relative">
+                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+                  <input
+                    id="password"
+                    type="password"
+                    placeholder="Password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    autoComplete="current-password"
+                    disabled={submitting}
+                    className="flex h-11 w-full rounded-xl pl-9 pr-3 py-2 text-sm bg-card border border-border text-foreground placeholder:text-muted-foreground/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:border-primary/40 disabled:opacity-50 transition-all duration-200"
+                  />
+                </div>
+              </div>
+
+              <button
+                type="submit"
+                disabled={submitting || !username || !password}
+                className="w-full h-11 rounded-xl font-semibold text-sm transition-all duration-200 mt-2 disabled:opacity-40 disabled:cursor-not-allowed active:scale-[0.98]"
+                style={{
+                  background: submitting || !username || !password ? "rgba(28,28,28,0.35)" : "#1C1C1C",
+                  color: submitting || !username || !password ? "#aaa" : "#A78BFA",
+                  boxShadow: submitting || !username || !password ? "none" : "0 4px 18px rgba(0,0,0,0.18)",
+                }}
+              >
+                {submitting ? "Masuk..." : "Masuk"}
+              </button>
+            </form>
           </div>
         </div>
       </div>
