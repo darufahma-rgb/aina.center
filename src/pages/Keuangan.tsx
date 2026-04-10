@@ -65,17 +65,17 @@ function SummaryCards({ items, sponsors }: { items: Keuangan[]; sponsors: Sponso
   ];
 
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 sm:gap-3">
+    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-1.5 sm:gap-3">
       {cards.map((c, i) => (
         <Card key={i} className={`${i === 0 ? "col-span-2 sm:col-span-1" : ""} ${c.extra} min-w-0`}>
-          <CardContent className="p-3 sm:p-4">
-            <div className="flex items-center gap-1.5 mb-2 min-w-0">
-              <div className={`h-6 w-6 sm:h-7 sm:w-7 rounded-md ${c.bg} flex items-center justify-center shrink-0`}>
-                {c.icon}
+          <CardContent className="p-2 sm:p-4">
+            <div className="flex items-center gap-1 sm:gap-1.5 mb-1 sm:mb-2 min-w-0">
+              <div className={`h-5 w-5 sm:h-7 sm:w-7 rounded-md ${c.bg} flex items-center justify-center shrink-0`}>
+                <span className="scale-75 sm:scale-100">{c.icon}</span>
               </div>
-              <span className="text-[10px] sm:text-xs text-muted-foreground truncate">{c.label}</span>
+              <span className="text-[9px] sm:text-xs text-muted-foreground truncate">{c.label}</span>
             </div>
-            <p className="text-base sm:text-xl font-bold truncate" style={{ color: "inherit" }}>
+            <p className="text-sm sm:text-xl font-bold truncate" style={{ color: "inherit" }}>
               <span className={c.color} data-testid={c.testid}>{formatRp(c.value)}</span>
             </p>
           </CardContent>
@@ -493,8 +493,8 @@ export default function KeuanganPage() {
   });
 
   return (
-    <div className="space-y-6 animate-fade-in">
-      <PageHeader title="Keuangan & Sponsor" description="Financial management and sponsorship tracking">
+    <div className="space-y-3 sm:space-y-6 animate-fade-in">
+      <PageHeader title="Keuangan & Sponsor" description="">
         {isAdmin && (
           <div className="flex gap-2">
             <Button size="sm" variant="outline" className="gap-1.5" onClick={() => setExpenseDialog(true)} data-testid="button-add-expense">
@@ -511,11 +511,11 @@ export default function KeuanganPage() {
 
       <Tabs defaultValue="overview">
         <div className="overflow-x-auto -mx-1 px-1 pb-0.5">
-          <TabsList className="h-9 w-max min-w-full">
-            <TabsTrigger value="overview" className="text-xs whitespace-nowrap">Overview</TabsTrigger>
-            <TabsTrigger value="income" className="text-xs whitespace-nowrap">Pemasukan ({income.length})</TabsTrigger>
-            <TabsTrigger value="expense" className="text-xs whitespace-nowrap">Pengeluaran ({expenses.length})</TabsTrigger>
-            <TabsTrigger value="sponsor" className="text-xs whitespace-nowrap">Sponsor ({sponsors.length})</TabsTrigger>
+          <TabsList className="h-8 w-max min-w-full">
+            <TabsTrigger value="overview" className="text-[11px] whitespace-nowrap px-2.5">Overview</TabsTrigger>
+            <TabsTrigger value="income" className="text-[11px] whitespace-nowrap px-2.5">Masuk ({income.length})</TabsTrigger>
+            <TabsTrigger value="expense" className="text-[11px] whitespace-nowrap px-2.5">Keluar ({expenses.length})</TabsTrigger>
+            <TabsTrigger value="sponsor" className="text-[11px] whitespace-nowrap px-2.5">Sponsor ({sponsors.length})</TabsTrigger>
           </TabsList>
         </div>
 

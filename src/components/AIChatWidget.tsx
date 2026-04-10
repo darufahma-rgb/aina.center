@@ -35,11 +35,20 @@ export default function AIChatWidget() {
     }
   }, [open]);
 
+  // Listen for open/close commands from BottomNav
   useEffect(() => {
-    const handler = () => setOpen(true);
-    window.addEventListener("openAIChat", handler);
-    return () => window.removeEventListener("openAIChat", handler);
+    const handler = (e: Event) => {
+      const shouldOpen = (e as CustomEvent<boolean>).detail;
+      setOpen(shouldOpen);
+    };
+    window.addEventListener("setAIChatOpen", handler as EventListener);
+    return () => window.removeEventListener("setAIChatOpen", handler as EventListener);
   }, []);
+
+  // Notify BottomNav when state changes (e.g., closed via X inside widget)
+  useEffect(() => {
+    window.dispatchEvent(new CustomEvent("aiChatStateChange", { detail: open }));
+  }, [open]);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
