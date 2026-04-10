@@ -35,11 +35,11 @@ export default function Login() {
           MOBILE layout  (< lg)
       ════════════════════════════════════════ */}
       <div
-        className="lg:hidden min-h-screen bg-white flex flex-col px-6"
+        className="lg:hidden min-h-screen bg-white flex flex-col items-center justify-center px-6"
         style={{ paddingTop: "env(safe-area-inset-top, 0px)" }}
       >
         {/* Logo */}
-        <div className="flex flex-col items-center pt-16 pb-10">
+        <div className="flex flex-col items-center pb-10">
           <div
             className="h-16 w-16 rounded-2xl flex items-center justify-center mb-4"
             style={{ background: "#3E0FA3" }}
@@ -61,7 +61,7 @@ export default function Login() {
         </div>
 
         {/* Form */}
-        <div className="flex-1">
+        <div className="w-full">
           <p className="text-[22px] font-bold text-[#1A1A1A] mb-1" style={{ letterSpacing: "-0.01em" }}>
             Masuk
           </p>
@@ -121,9 +121,6 @@ export default function Login() {
           </form>
         </div>
 
-        <p className="text-center text-[11px] pb-8" style={{ color: "#ddd" }}>
-          AINA Centre · Portal Internal
-        </p>
       </div>
 
       {/* ════════════════════════════════════════
