@@ -151,27 +151,27 @@ function ProgressCard({
 }) {
   const inner = (
     <div
-      className="flex-1 rounded-2xl p-4 flex flex-col gap-3 transition-all duration-150 hover:-translate-y-0.5 cursor-pointer"
+      className="flex-1 rounded-2xl p-2.5 sm:p-4 flex flex-col gap-2 sm:gap-3 transition-all duration-150 hover:-translate-y-0.5 cursor-pointer h-full"
       style={{ background: "rgba(0,0,0,0.04)", border: "1px solid rgba(0,0,0,0.10)" }}
     >
-      <div>
-        <p className="text-[10px] font-bold uppercase tracking-widest text-[#999]">{sublabel}</p>
-        <p className="text-[14px] font-bold text-[#1A1A1A] mt-0.5">{label}</p>
+      <div className="min-w-0">
+        <p className="text-[8px] sm:text-[10px] font-bold uppercase tracking-wider text-[#999] leading-tight line-clamp-2">{sublabel}</p>
+        <p className="text-[11px] sm:text-[14px] font-bold text-[#1A1A1A] mt-0.5 truncate">{label}</p>
       </div>
-      <div className="flex items-center justify-between">
-        <div className="relative flex items-center justify-center">
-          <ProgressRing pct={pct} color={color} />
-          <span className="absolute text-[12px] font-bold text-[#1A1A1A]">
+      <div className="flex items-center justify-between gap-1">
+        <div className="relative flex items-center justify-center shrink-0">
+          <ProgressRing pct={pct} color={color} size={40} stroke={4} />
+          <span className="absolute text-[9px] font-bold text-[#1A1A1A]">
             {pct}%
           </span>
         </div>
-        <div className="text-right">
-          <p className="text-2xl font-black text-[#1A1A1A]">{value}</p>
+        <div className="text-right min-w-0">
+          <p className="text-lg sm:text-2xl font-black text-[#1A1A1A]">{value}</p>
         </div>
       </div>
     </div>
   );
-  return link ? <Link to={link} className="flex-1">{inner}</Link> : <div className="flex-1">{inner}</div>;
+  return link ? <Link to={link} className="flex-1 min-w-0">{inner}</Link> : <div className="flex-1 min-w-0">{inner}</div>;
 }
 
 // ─── Agenda card (dark) ───────────────────────────────────────────────────────
