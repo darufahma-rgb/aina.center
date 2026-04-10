@@ -36,6 +36,12 @@ export default function AIChatWidget() {
   }, [open]);
 
   useEffect(() => {
+    const handler = () => setOpen(true);
+    window.addEventListener("openAIChat", handler);
+    return () => window.removeEventListener("openAIChat", handler);
+  }, []);
+
+  useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, loading]);
 
@@ -78,11 +84,11 @@ export default function AIChatWidget() {
 
   return (
     <>
-      {/* ── Floating bubble ────────────────────────────────────── */}
+      {/* ── Floating bubble (desktop only) ─────────────────────── */}
       <button
         onClick={() => setOpen(v => !v)}
         className={cn(
-          "fixed bottom-6 right-6 z-50 h-14 w-14 rounded-full shadow-2xl flex items-center justify-center transition-all duration-300",
+          "hidden lg:flex fixed bottom-6 right-6 z-50 h-14 w-14 rounded-full shadow-2xl items-center justify-center transition-all duration-300",
           open ? "scale-90 opacity-80" : "scale-100 hover:scale-110",
         )}
         style={{ background: "linear-gradient(135deg, #3E0FA3, #7C3AED)" }}
@@ -100,13 +106,13 @@ export default function AIChatWidget() {
       {/* ── Chat panel ─────────────────────────────────────────── */}
       <div
         className={cn(
-          "fixed bottom-24 right-6 z-50 flex flex-col rounded-3xl shadow-2xl overflow-hidden transition-all duration-300 origin-bottom-right",
+          "fixed z-50 flex flex-col rounded-3xl shadow-2xl overflow-hidden transition-all duration-300 origin-bottom-right",
+          "bottom-[88px] left-3 right-3 lg:bottom-24 lg:left-auto lg:right-6 lg:w-[360px]",
           open
             ? "opacity-100 scale-100 pointer-events-auto"
             : "opacity-0 scale-90 pointer-events-none",
         )}
         style={{
-          width: 360,
           height: 520,
           background: "#ffffff",
           border: "1px solid rgba(0,0,0,0.08)",

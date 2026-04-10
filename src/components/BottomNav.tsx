@@ -1,17 +1,21 @@
 import { Link, useLocation } from "react-router-dom";
-import { LayoutDashboard, CalendarDays, Wallet, FileText, Users } from "lucide-react";
+import { LayoutDashboard, CalendarDays, Wallet, FileText, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const NAV_ITEMS = [
-  { icon: LayoutDashboard, label: "Beranda",   url: "/"          },
-  { icon: CalendarDays,   label: "Agenda",    url: "/agenda"    },
-  { icon: Wallet,         label: "Keuangan",  url: "/keuangan"  },
-  { icon: FileText,       label: "Notulensi", url: "/notulensi" },
-  { icon: Users,          label: "Anggota",   url: "/anggota"   },
+  { icon: LayoutDashboard, label: "Beranda",   url: "/"          , ai: false },
+  { icon: CalendarDays,   label: "Agenda",    url: "/agenda"    , ai: false },
+  { icon: Wallet,         label: "Keuangan",  url: "/keuangan"  , ai: false },
+  { icon: FileText,       label: "Notulensi", url: "/notulensi" , ai: false },
+  { icon: Sparkles,       label: "AI Asisten",url: ""           , ai: true  },
 ];
 
 export function BottomNav() {
   const { pathname } = useLocation();
+
+  function handleAI() {
+    window.dispatchEvent(new CustomEvent("openAIChat"));
+  }
 
   return (
     <nav
@@ -26,8 +30,22 @@ export function BottomNav() {
           boxShadow: "0 4px 24px rgba(0,0,0,0.13), 0 1px 4px rgba(0,0,0,0.06)",
         }}
       >
-        {NAV_ITEMS.map(({ icon: Icon, label, url }) => {
-          const active = url === "/" ? pathname === "/" : pathname.startsWith(url);
+        {NAV_ITEMS.map(({ icon: Icon, label, url, ai }) => {
+          const active = !ai && (url === "/" ? pathname === "/" : pathname.startsWith(url));
+
+          if (ai) {
+            return (
+              <button
+                key="ai"
+                onClick={handleAI}
+                className="flex flex-col items-center gap-[3px] py-2 px-3 rounded-xl transition-all min-w-0 relative text-[#3E0FA3]"
+              >
+                <Icon className="h-[22px] w-[22px] shrink-0 mt-1 text-[#3E0FA3]" />
+                <span className="text-[9px] font-bold tracking-wide text-[#3E0FA3]">{label}</span>
+              </button>
+            );
+          }
+
           return (
             <Link
               key={url}
