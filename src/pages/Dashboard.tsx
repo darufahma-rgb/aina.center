@@ -1,9 +1,10 @@
+import { useState, useEffect } from "react";
 import {
   FileText, CalendarDays, Users, TrendingUp,
   CheckCircle2, AlertCircle, Sparkles, Clock,
   ArrowRight, MoreHorizontal, Wallet, Download,
   Package, Mail, Handshake, Zap, PauseCircle,
-  ListTodo, PlayCircle, Target,
+  ListTodo, PlayCircle, Target, Globe,
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useQuery } from "@tanstack/react-query";
@@ -80,6 +81,45 @@ function getGreeting() {
   if (h < 15) return "Selamat siang";
   if (h < 18) return "Selamat sore";
   return "Selamat malam";
+}
+
+// ─── World clock ───────────────────────────────────────────────────────────────
+
+function WorldClock() {
+  const [now, setNow] = useState(new Date());
+  useEffect(() => {
+    const id = setInterval(() => setNow(new Date()), 1000);
+    return () => clearInterval(id);
+  }, []);
+
+  const fmtTime = (tz: string) =>
+    now.toLocaleTimeString("id-ID", { timeZone: tz, hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: false });
+  const fmtDate = (tz: string) =>
+    now.toLocaleDateString("id-ID", { timeZone: tz, weekday: "short", day: "numeric", month: "short" });
+
+  const cities = [
+    { city: "Jakarta", country: "Indonesia", flag: "🇮🇩", tz: "Asia/Jakarta", label: "WIB" },
+    { city: "Kairo",   country: "Mesir",     flag: "🇪🇬", tz: "Africa/Cairo",  label: "EET" },
+  ];
+
+  return (
+    <div className="flex items-center gap-2 shrink-0">
+      <Globe className="h-3.5 w-3.5 text-[#3E0FA3] shrink-0" />
+      {cities.map(({ city, country, flag, tz, label }) => (
+        <div
+          key={tz}
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-black/[0.12] text-[12px]"
+          style={{ background: "#F8F9FB" }}
+        >
+          <span className="text-[13px]">{flag}</span>
+          <div className="flex flex-col leading-none">
+            <span className="font-bold text-[#1A1A1A] tabular-nums tracking-tight">{fmtTime(tz)}</span>
+            <span className="text-[9px] font-medium text-[#999] mt-[1px]">{city} · {label}</span>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
 }
 
 // ─── Progress ring ────────────────────────────────────────────────────────────
@@ -523,8 +563,9 @@ export default function Dashboard() {
           </h1>
         </div>
 
-        {/* Quick stats + PDF button */}
+        {/* World clock + Quick stats + PDF button */}
         <div className="flex flex-wrap items-center gap-2 shrink-0">
+          <WorldClock />
           <div className="flex items-center gap-2 px-3 py-1.5 rounded-full border border-black/[0.12] text-[12px] font-medium text-[#555]" style={{ background: "#F8F9FB" }}>
             <Users className="h-3.5 w-3.5 text-[#3E0FA3]" />
             {isLoading ? "—" : totalAnggota} Anggota

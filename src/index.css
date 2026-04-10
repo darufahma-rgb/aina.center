@@ -161,6 +161,42 @@
     from { opacity: 0; transform: scale(0.95); }
     to   { opacity: 1; transform: scale(1); }
   }
+
+  /* ── Login splash animations ──────────────────────────────────────── */
+  .login-logo-enter {
+    animation: login-logo-enter 0.7s cubic-bezier(0.22,1,0.36,1) both;
+  }
+  .login-label-enter {
+    animation: login-fade-up 0.7s cubic-bezier(0.22,1,0.36,1) 0.25s both;
+  }
+  .login-h1-enter {
+    animation: login-fade-up 0.75s cubic-bezier(0.22,1,0.36,1) 0.42s both;
+  }
+  .login-desc-enter {
+    animation: login-fade-up 0.7s cubic-bezier(0.22,1,0.36,1) 0.6s both;
+  }
+  .login-footer-enter {
+    animation: login-fade-up 0.6s cubic-bezier(0.22,1,0.36,1) 0.78s both;
+  }
+  .login-panel-overlay {
+    animation: login-overlay-in 1.1s ease-out both;
+  }
+  .login-form-enter {
+    animation: login-fade-up 0.65s cubic-bezier(0.22,1,0.36,1) 0.12s both;
+  }
+
+  @keyframes login-logo-enter {
+    from { opacity: 0; transform: scale(0.72) translateY(-8px); }
+    to   { opacity: 1; transform: scale(1) translateY(0); }
+  }
+  @keyframes login-fade-up {
+    from { opacity: 0; transform: translateY(22px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes login-overlay-in {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
 }
 
 /* ── Mobile ──────────────────────────────────────────────────────────── */

@@ -43,14 +43,14 @@ export default function Login() {
       >
         {/* Top fade — strong dark at top for text readability */}
         <div
-          className="absolute inset-0 pointer-events-none"
+          className="absolute inset-0 pointer-events-none login-panel-overlay"
           style={{
             background: "linear-gradient(to bottom, rgba(0,0,0,0.88) 0%, rgba(0,0,0,0.75) 30%, rgba(0,0,0,0.40) 55%, rgba(0,0,0,0.08) 100%)",
           }}
         />
 
         {/* Logo — top left */}
-        <div className="relative z-10 flex items-center gap-3 p-10">
+        <div className="relative z-10 flex items-center gap-3 p-10 login-logo-enter">
           <div
             className="h-9 w-9 rounded-xl flex items-center justify-center shrink-0"
             style={{ background: "rgba(255,255,255,0.12)", backdropFilter: "blur(8px)", border: "1px solid rgba(255,255,255,0.18)" }}
@@ -66,14 +66,14 @@ export default function Login() {
         {/* Main text — upper section, well above the dense wallpaper bottom */}
         <div className="relative z-10 px-10" style={{ marginTop: "10%" }}>
           <p
-            className="text-[11px] font-semibold tracking-[0.28em] uppercase mb-5"
+            className="text-[11px] font-semibold tracking-[0.28em] uppercase mb-5 login-label-enter"
             style={{ color: "rgba(167,139,250,0.95)" }}
           >
             Portal Internal
           </p>
 
           <h1
-            className="text-[40px] leading-[1.12] font-bold text-white mb-5"
+            className="text-[40px] leading-[1.12] font-bold text-white mb-5 login-h1-enter"
             style={{ letterSpacing: "-0.02em" }}
           >
             Satu tempat<br />
@@ -82,13 +82,13 @@ export default function Login() {
           </h1>
 
           <p
-            className="text-[15px] leading-[1.75] max-w-xs"
+            className="text-[15px] leading-[1.75] max-w-xs login-desc-enter"
             style={{ color: "rgba(255,255,255,0.60)", fontWeight: 400 }}
           >
             Kelola keuangan, notulensi, agenda, dan anggota AINA Centre dalam satu platform yang terpadu dan aman.
           </p>
 
-          <div className="mt-8 flex items-center gap-3">
+          <div className="mt-8 flex items-center gap-3 login-footer-enter">
             <div className="h-px max-w-[48px] w-12" style={{ background: "rgba(255,255,255,0.25)" }} />
             <p className="text-[11px] text-white/35 font-medium">AINA Centre Management</p>
           </div>
