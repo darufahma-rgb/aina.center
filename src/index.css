@@ -190,4 +190,36 @@
   .animate-fade-in  { animation: fade-in 0.35s ease-out both; }
   .animate-slide-in { animation: slide-in 0.3s ease-out both; }
   .animate-scale-in { animation: scale-in 0.3s ease-out both; }
+
+  /* ── Mobile / touch optimizations ────────────────────────────── */
+  .touch-target {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}
+
+/* ── Global mobile tweaks ───────────────────────────────────────── */
+@media (max-width: 767px) {
+  /* Smooth momentum scrolling */
+  * {
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Wider tap areas for small buttons */
+  button, a, [role="button"] {
+    touch-action: manipulation;
+  }
+
+  /* Prevent text selection on tap */
+  nav, button {
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+  }
+
+  /* Responsive dialog — full width on mobile */
+  [data-radix-dialog-content] {
+    max-width: calc(100vw - 2rem) !important;
+    max-height: 92dvh !important;
+    overflow-y: auto;
+  }
 }

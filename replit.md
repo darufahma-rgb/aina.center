@@ -1,6 +1,14 @@
 # AINA Portal
 
-A secure internal management portal for the AINA organization. Built as a fullstack React + Express application with PostgreSQL.
+A secure internal management portal for the AINA organization. Built as a fullstack React + Express application with PostgreSQL. Features a Cloud Dock purple design system, custom two-panel sidebar, and PWA support.
+
+## Design System
+
+**Theme**: Dark purple Cloud Dock — `--primary: 265 83% 57%`, sidebar `hsl(250,53%,7%)`  
+**Logo**: `public/logo.png` (AINA Centre Management brand icon)  
+**Layout**: Custom two-panel sidebar (56px icon rail + 216px collapsible nav panel); mobile bottom nav bar  
+**PWA**: `public/manifest.json` + full PWA meta tags in `index.html`  
+**UI Components**: shadcn/ui with neosoft layered shadow tokens (`shadow-neo-*`), purple gradient active pills (`.nav-active-pill`), glassmorphic header (`.glass-header`)
 
 ## Architecture
 
