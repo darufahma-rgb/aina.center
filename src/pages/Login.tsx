@@ -60,10 +60,7 @@ export default function Login() {
         {/* ── Logo + Form — centered together ── */}
         <div
           className="relative z-10 flex flex-col items-center justify-center flex-1 px-6 w-full"
-          style={{
-            paddingTop: "env(safe-area-inset-top, 0px)",
-            paddingBottom: "max(28px, env(safe-area-inset-bottom, 28px))",
-          }}
+          style={{ paddingTop: "env(safe-area-inset-top, 0px)" }}
         >
           {/* Logo */}
           <img
@@ -150,6 +147,20 @@ export default function Login() {
               {submitting ? "Masuk..." : "Login"}
             </button>
           </form>
+        </div>
+
+        {/* ── Footer keterangan ── */}
+        <div
+          className="relative z-10 px-6 text-center"
+          style={{ paddingBottom: "max(20px, env(safe-area-inset-bottom, 20px))" }}
+        >
+          <div className="h-px w-16 mx-auto mb-3" style={{ background: "rgba(255,255,255,0.15)" }} />
+          <p className="text-[10px] font-semibold tracking-[0.2em] uppercase mb-1" style={{ color: "rgba(200,170,255,0.6)" }}>
+            AINA Internal Center
+          </p>
+          <p className="text-[10px] leading-relaxed" style={{ color: "rgba(255,255,255,0.28)" }}>
+            Platform manajemen internal eksklusif untuk anggota dan pengurus AINA Centre. Akses terbatas hanya untuk pengguna terdaftar.
+          </p>
         </div>
       </div>
 
