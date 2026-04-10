@@ -3,13 +3,14 @@ import { Navigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { Lock, User } from "lucide-react";
+import { Lock, User, Eye, EyeOff } from "lucide-react";
 
 export default function Login() {
   const { user, login, isLoading } = useAuth();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const { toast } = useToast();
 
   if (!isLoading && user) {
@@ -35,43 +36,42 @@ export default function Login() {
           MOBILE layout  (< lg)
       ════════════════════════════════════════ */}
       <div
-        className="lg:hidden min-h-screen bg-white flex flex-col items-center justify-center px-6"
-        style={{ paddingTop: "env(safe-area-inset-top, 0px)" }}
+        className="lg:hidden min-h-screen flex flex-col items-center justify-center px-7"
+        style={{
+          background: "#EEEEE9",
+          paddingTop: "env(safe-area-inset-top, 0px)",
+          paddingBottom: "env(safe-area-inset-bottom, 0px)",
+        }}
       >
-        {/* Logo */}
-        <div className="flex flex-col items-center pb-10">
-          <div
-            className="h-16 w-16 rounded-2xl flex items-center justify-center mb-4"
-            style={{ background: "#3E0FA3" }}
-          >
-            <img
-              src="/logo.png"
-              alt="AINA"
-              className="h-9 w-9 object-contain"
-              style={{ filter: "brightness(0) invert(1)" }}
-            />
+        <div className="w-full max-w-[340px]">
+
+          {/* Logo + brand */}
+          <div className="flex flex-col items-center mb-8">
+            <div
+              className="h-[72px] w-[72px] rounded-full flex items-center justify-center mb-4 shadow-sm"
+              style={{ background: "#fff", border: "1.5px solid #E4E4DC" }}
+            >
+              <img src="/logo.png" alt="AINA" className="h-10 w-10 object-contain" />
+            </div>
+            <p className="text-[13px] font-medium" style={{ color: "#888" }}>AINA Centre</p>
           </div>
-          <h1 className="text-[20px] font-bold text-[#1A1A1A] tracking-tight">AINA Centre</h1>
-          <p
-            className="text-[11px] font-semibold tracking-[0.20em] uppercase mt-1"
-            style={{ color: "#3E0FA3" }}
+
+          {/* Title */}
+          <h1
+            className="text-center text-[28px] font-bold text-[#1A1A1A] mb-7"
+            style={{ letterSpacing: "-0.02em" }}
           >
-            Management Portal
-          </p>
-        </div>
+            Login
+          </h1>
 
-        {/* Form */}
-        <div className="w-full">
-          <p className="text-[22px] font-bold text-[#1A1A1A] mb-1" style={{ letterSpacing: "-0.01em" }}>
-            Masuk
-          </p>
-          <p className="text-[13px] mb-6" style={{ color: "#999" }}>
-            Masukkan kredensial akun Anda.
-          </p>
-
+          {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-3">
-            <div className="relative">
-              <User className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 pointer-events-none" style={{ color: "#bbb" }} />
+            {/* Username */}
+            <div
+              className="flex items-center gap-3 h-[52px] px-4 rounded-2xl bg-white"
+              style={{ border: "1.5px solid #E4E4DC" }}
+            >
+              <User className="h-4 w-4 shrink-0" style={{ color: "#C0C0B8" }} />
               <input
                 id="username-m"
                 data-testid="input-username"
@@ -80,47 +80,59 @@ export default function Login() {
                 onChange={(e) => setUsername(e.target.value)}
                 autoComplete="username"
                 disabled={submitting}
-                className="flex h-12 w-full rounded-2xl pl-10 pr-4 text-[14px] text-[#1A1A1A] placeholder:text-[#ccc] focus:outline-none disabled:opacity-50 transition-all"
-                style={{ background: "#F4F4F6", border: "1.5px solid transparent" }}
-                onFocus={(e) => (e.target.style.borderColor = "#3E0FA360")}
-                onBlur={(e) => (e.target.style.borderColor = "transparent")}
+                className="flex-1 bg-transparent text-[14px] text-[#1A1A1A] placeholder:text-[#C0C0B8] focus:outline-none disabled:opacity-50"
               />
             </div>
 
-            <div className="relative">
-              <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 pointer-events-none" style={{ color: "#bbb" }} />
+            {/* Password */}
+            <div
+              className="flex items-center gap-3 h-[52px] px-4 rounded-2xl bg-white"
+              style={{ border: "1.5px solid #E4E4DC" }}
+            >
+              <Lock className="h-4 w-4 shrink-0" style={{ color: "#C0C0B8" }} />
               <input
                 id="password-m"
                 data-testid="input-password"
-                type="password"
+                type={showPassword ? "text" : "password"}
                 placeholder="Password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 autoComplete="current-password"
                 disabled={submitting}
-                className="flex h-12 w-full rounded-2xl pl-10 pr-4 text-[14px] text-[#1A1A1A] placeholder:text-[#ccc] focus:outline-none disabled:opacity-50 transition-all"
-                style={{ background: "#F4F4F6", border: "1.5px solid transparent" }}
-                onFocus={(e) => (e.target.style.borderColor = "#3E0FA360")}
-                onBlur={(e) => (e.target.style.borderColor = "transparent")}
+                className="flex-1 bg-transparent text-[14px] text-[#1A1A1A] placeholder:text-[#C0C0B8] focus:outline-none disabled:opacity-50"
               />
+              <button
+                type="button"
+                onClick={() => setShowPassword((v) => !v)}
+                className="shrink-0 focus:outline-none"
+                tabIndex={-1}
+              >
+                {showPassword
+                  ? <EyeOff className="h-4 w-4" style={{ color: "#B0B0A8" }} />
+                  : <Eye className="h-4 w-4" style={{ color: "#B0B0A8" }} />
+                }
+              </button>
             </div>
 
+            {/* Submit */}
             <button
               type="submit"
               data-testid="button-login"
               disabled={submitting || !username || !password}
-              className="w-full h-12 rounded-2xl text-[15px] font-bold text-white transition-all active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed"
+              className="w-full font-bold text-white transition-all active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed"
               style={{
-                background: "#3E0FA3",
-                boxShadow: "0 4px 16px rgba(62,15,163,0.25)",
-                marginTop: 4,
+                height: 52,
+                borderRadius: 100,
+                background: "#1A1A1A",
+                fontSize: 15,
+                marginTop: 8,
+                letterSpacing: "-0.01em",
               }}
             >
-              {submitting ? "Masuk..." : "Masuk"}
+              {submitting ? "Masuk..." : "Login"}
             </button>
           </form>
         </div>
-
       </div>
 
       {/* ════════════════════════════════════════
