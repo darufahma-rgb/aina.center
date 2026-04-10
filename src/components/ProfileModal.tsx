@@ -13,7 +13,7 @@ interface ProfileModalProps {
 
 type Step = "profile" | "crop" | "view";
 
-const ACCENT = "#5B21B6";
+const ACCENT = "#3E0FA3";
 
 async function getCroppedImg(imageSrc: string, pixelCrop: Area): Promise<File> {
   return new Promise((resolve, reject) => {
@@ -248,7 +248,7 @@ export function ProfileModal({ open, onClose }: ProfileModalProps) {
             <div className="w-full flex gap-2">
               <button
                 onClick={() => { fileInputRef.current?.click(); }}
-                className="flex-1 h-9 rounded-xl text-[13px] font-semibold border border-[#5B21B6]/30 text-[#5B21B6] hover:bg-[#F5F3FF] transition-all flex items-center justify-center gap-1.5"
+                className="flex-1 h-9 rounded-xl text-[13px] font-semibold border border-[#3E0FA3]/30 text-[#3E0FA3] hover:bg-[#F5F3FF] transition-all flex items-center justify-center gap-1.5"
               >
                 <Camera className="h-3.5 w-3.5" /> Ganti Foto
               </button>

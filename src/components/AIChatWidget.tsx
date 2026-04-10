@@ -85,7 +85,7 @@ export default function AIChatWidget() {
           "fixed bottom-6 right-6 z-50 h-14 w-14 rounded-full shadow-2xl flex items-center justify-center transition-all duration-300",
           open ? "scale-90 opacity-80" : "scale-100 hover:scale-110",
         )}
-        style={{ background: "linear-gradient(135deg, #5B21B6, #7C3AED)" }}
+        style={{ background: "linear-gradient(135deg, #3E0FA3, #7C3AED)" }}
         aria-label="Buka asisten AINA"
       >
         {open
@@ -115,7 +115,7 @@ export default function AIChatWidget() {
         {/* Header */}
         <div
           className="flex items-center gap-3 px-4 py-3.5 shrink-0"
-          style={{ background: "linear-gradient(135deg, #1E0A3C, #5B21B6)" }}
+          style={{ background: "linear-gradient(135deg, #1E0A3C, #3E0FA3)" }}
         >
           <div className="h-9 w-9 rounded-full bg-white/15 flex items-center justify-center shrink-0">
             <Sparkles className="h-4.5 w-4.5 text-white" />
@@ -147,7 +147,7 @@ export default function AIChatWidget() {
                 className={cn(
                   "h-7 w-7 rounded-full flex items-center justify-center shrink-0 mb-0.5",
                   m.role === "assistant"
-                    ? "bg-gradient-to-br from-[#5B21B6] to-[#7C3AED]"
+                    ? "bg-gradient-to-br from-[#3E0FA3] to-[#7C3AED]"
                     : "bg-gradient-to-br from-[#1A1A1A] to-[#444]",
                 )}
               >
@@ -165,7 +165,7 @@ export default function AIChatWidget() {
                     ? "bg-[#F5F3FF] text-[#1A1A1A] rounded-bl-sm"
                     : "text-white rounded-br-sm",
                 )}
-                style={m.role === "user" ? { background: "linear-gradient(135deg, #5B21B6, #7C3AED)" } : undefined}
+                style={m.role === "user" ? { background: "linear-gradient(135deg, #3E0FA3, #7C3AED)" } : undefined}
               >
                 {m.content.split("\n").map((line, j) => (
                   <span key={j}>
@@ -180,11 +180,11 @@ export default function AIChatWidget() {
           {/* Loading indicator */}
           {loading && (
             <div className="flex gap-2.5 items-end">
-              <div className="h-7 w-7 rounded-full bg-gradient-to-br from-[#5B21B6] to-[#7C3AED] flex items-center justify-center shrink-0">
+              <div className="h-7 w-7 rounded-full bg-gradient-to-br from-[#3E0FA3] to-[#7C3AED] flex items-center justify-center shrink-0">
                 <Bot className="h-3.5 w-3.5 text-white" />
               </div>
               <div className="px-3.5 py-2.5 rounded-2xl rounded-bl-sm bg-[#F5F3FF]">
-                <Loader2 className="h-4 w-4 text-[#5B21B6] animate-spin" />
+                <Loader2 className="h-4 w-4 text-[#3E0FA3] animate-spin" />
               </div>
             </div>
           )}
@@ -198,7 +198,7 @@ export default function AIChatWidget() {
                   <button
                     key={q}
                     onClick={() => send(q)}
-                    className="text-[11px] font-medium px-3 py-1.5 rounded-full border border-[#5B21B6]/30 text-[#5B21B6] bg-[#F5F3FF] hover:bg-[#EDE9FE] transition-colors"
+                    className="text-[11px] font-medium px-3 py-1.5 rounded-full border border-[#3E0FA3]/30 text-[#3E0FA3] bg-[#F5F3FF] hover:bg-[#EDE9FE] transition-colors"
                   >
                     {q}
                   </button>
@@ -222,13 +222,13 @@ export default function AIChatWidget() {
             onKeyDown={handleKeyDown}
             placeholder="Ketik pertanyaan Anda..."
             disabled={loading}
-            className="flex-1 h-10 rounded-xl px-3.5 text-[13px] border border-black/[0.09] bg-[#FAFAFA] text-[#1A1A1A] placeholder:text-[#bbb] focus:outline-none focus:ring-2 focus:ring-[#5B21B6]/30 focus:border-[#5B21B6]/40 disabled:opacity-50 transition-all"
+            className="flex-1 h-10 rounded-xl px-3.5 text-[13px] border border-black/[0.09] bg-[#FAFAFA] text-[#1A1A1A] placeholder:text-[#bbb] focus:outline-none focus:ring-2 focus:ring-[#3E0FA3]/30 focus:border-[#3E0FA3]/40 disabled:opacity-50 transition-all"
           />
           <button
             onClick={() => send()}
             disabled={!input.trim() || loading}
             className="h-10 w-10 rounded-xl flex items-center justify-center transition-all disabled:opacity-40 hover:opacity-85 active:scale-95 shrink-0"
-            style={{ background: "linear-gradient(135deg, #5B21B6, #7C3AED)" }}
+            style={{ background: "linear-gradient(135deg, #3E0FA3, #7C3AED)" }}
           >
             <Send className="h-4 w-4 text-white" />
           </button>

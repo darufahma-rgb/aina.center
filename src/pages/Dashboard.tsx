@@ -84,7 +84,7 @@ function getGreeting() {
 
 // ─── Progress ring ────────────────────────────────────────────────────────────
 
-function ProgressRing({ pct, size = 56, stroke = 5, color = "#5B21B6" }: { pct: number; size?: number; stroke?: number; color?: string }) {
+function ProgressRing({ pct, size = 56, stroke = 5, color = "#3E0FA3" }: { pct: number; size?: number; stroke?: number; color?: string }) {
   const r = (size - stroke) / 2;
   const circ = 2 * Math.PI * r;
   const offset = circ - (pct / 100) * circ;
@@ -105,7 +105,7 @@ function ProgressRing({ pct, size = 56, stroke = 5, color = "#5B21B6" }: { pct: 
 // ─── Progress card ─────────────────────────────────────────────────────────────
 
 function ProgressCard({
-  label, sublabel, pct, value, color = "#5B21B6", link,
+  label, sublabel, pct, value, color = "#3E0FA3", link,
 }: {
   label: string; sublabel: string; pct: number; value: string | number; color?: string; link?: string;
 }) {
@@ -176,7 +176,7 @@ function NotulensiRow({ item, index }: { item: Notulensi; index: number }) {
       )}>
         <div
           className="h-9 w-9 rounded-xl flex items-center justify-center text-[10px] font-bold shrink-0"
-          style={{ background: "#5B21B6", color: "#ffffff" }}
+          style={{ background: "#3E0FA3", color: "#ffffff" }}
         >
           {String(index + 1).padStart(2, "0")}
         </div>
@@ -519,23 +519,23 @@ export default function Dashboard() {
           <p className="text-[12px] text-[#999] mb-0.5">{today}</p>
           <h1 className="text-2xl font-black text-[#1A1A1A] leading-tight">
             {getGreeting()},{" "}
-            <span style={{ color: "#5B21B6" }}>{displayName}</span>! 👋
+            <span style={{ color: "#3E0FA3" }}>{displayName}</span>! 👋
           </h1>
         </div>
 
         {/* Quick stats + PDF button */}
         <div className="flex flex-wrap items-center gap-2 shrink-0">
           <div className="flex items-center gap-2 px-3 py-1.5 rounded-full border border-black/[0.12] text-[12px] font-medium text-[#555]" style={{ background: "#F8F9FB" }}>
-            <Users className="h-3.5 w-3.5 text-[#5B21B6]" />
+            <Users className="h-3.5 w-3.5 text-[#3E0FA3]" />
             {isLoading ? "—" : totalAnggota} Anggota
           </div>
           <div className="flex items-center gap-2 px-3 py-1.5 rounded-full border border-black/[0.12] text-[12px] font-medium text-[#555]" style={{ background: "#F8F9FB" }}>
-            <CalendarDays className="h-3.5 w-3.5 text-[#5B21B6]" />
+            <CalendarDays className="h-3.5 w-3.5 text-[#3E0FA3]" />
             {isLoading ? "—" : data?.upcomingAgenda ?? 0} Agenda
           </div>
           {isAdmin && (
             <div className="flex items-center gap-2 px-3 py-1.5 rounded-full border border-black/[0.12] text-[12px] font-medium text-[#555]" style={{ background: "#F8F9FB" }}>
-              <Wallet className="h-3.5 w-3.5 text-[#5B21B6]" />
+              <Wallet className="h-3.5 w-3.5 text-[#3E0FA3]" />
               {isLoading ? "—" : formatRp(data?.saldoTersedia ?? 0)}
             </div>
           )}
@@ -543,7 +543,7 @@ export default function Dashboard() {
             onClick={handleExportPDF}
             disabled={isLoading || !data}
             className="flex items-center gap-1.5 px-3 h-8 rounded-xl text-[12px] font-semibold text-white transition-all hover:opacity-90 active:scale-95 disabled:opacity-40"
-            style={{ background: "#5B21B6" }}
+            style={{ background: "#3E0FA3" }}
             title="Download laporan PDF"
           >
             <Download className="h-3.5 w-3.5" />
@@ -565,7 +565,7 @@ export default function Dashboard() {
           ].map(({ icon: Icon, label, value, url }) => (
             <Link key={url} to={url}>
               <div className="rounded-2xl p-3.5 border border-black/[0.11] hover:shadow-md hover:-translate-y-0.5 transition-all cursor-pointer text-center" style={{ background: "#F8F9FB" }}>
-                <Icon className="h-5 w-5 mx-auto mb-1.5 text-[#5B21B6]" />
+                <Icon className="h-5 w-5 mx-auto mb-1.5 text-[#3E0FA3]" />
                 <p className="text-xl font-black text-[#1A1A1A]">{value}</p>
                 <p className="text-[10px] text-[#999] font-semibold uppercase tracking-wide mt-0.5">{label}</p>
               </div>
@@ -587,7 +587,7 @@ export default function Dashboard() {
               label="Penyelesaian"
               pct={completionPct}
               value={isLoading ? "—" : total}
-              color="#5B21B6"
+              color="#3E0FA3"
               link="/notulensi"
             />
             <ProgressCard
@@ -603,7 +603,7 @@ export default function Dashboard() {
               label="Progress"
               pct={fiturPct}
               value={isLoading ? "—" : completedFitur}
-              color="#5B21B6"
+              color="#3E0FA3"
               link="/fitur"
             />
           </div>
@@ -645,7 +645,7 @@ export default function Dashboard() {
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-[15px] font-bold text-[#1A1A1A]">Notulensi Terbaru</h3>
               <div className="flex items-center gap-3">
-                <span className="text-[11px] font-semibold px-2 py-0.5 rounded-full" style={{ background: "#5B21B6", color: "#ffffff" }}>
+                <span className="text-[11px] font-semibold px-2 py-0.5 rounded-full" style={{ background: "#3E0FA3", color: "#ffffff" }}>
                   {isLoading ? "—" : notulensi.length}
                 </span>
                 <Link to="/notulensi" className="text-[12px] text-[#999] hover:text-[#1A1A1A] transition-colors flex items-center gap-1">
@@ -690,9 +690,9 @@ export default function Dashboard() {
             </div>
 
             <div className="space-y-3">
-              <StatBar label="Notulensi" value={isLoading ? "—" : String(total)} pct={completionPct} color="#5B21B6" icon={FileText} />
+              <StatBar label="Notulensi" value={isLoading ? "—" : String(total)} pct={completionPct} color="#3E0FA3" icon={FileText} />
               <StatBar label="Agenda" value={isLoading ? "—" : String(data?.upcomingAgenda ?? 0)} pct={Math.min(100, (data?.upcomingAgenda ?? 0) * 20)} color="#1A1A1A" icon={CalendarDays} />
-              <StatBar label="Fitur Selesai" value={isLoading ? "—" : `${completedFitur}/${totalFitur}`} pct={fiturPct} color="#5B21B6" icon={Sparkles} />
+              <StatBar label="Fitur Selesai" value={isLoading ? "—" : `${completedFitur}/${totalFitur}`} pct={fiturPct} color="#3E0FA3" icon={Sparkles} />
             </div>
           </div>
 
@@ -704,7 +704,7 @@ export default function Dashboard() {
                 {agendaList.slice(0, 3).map((a) => (
                   <Link to="/agenda" key={a.id}>
                     <div className="flex items-start gap-3 py-2 rounded-xl hover:bg-black/[0.03] px-2 -mx-2 transition-all cursor-pointer">
-                      <div className="h-9 w-9 rounded-xl flex items-center justify-center shrink-0 text-[10px] font-bold text-white" style={{ background: "#5B21B6" }}>
+                      <div className="h-9 w-9 rounded-xl flex items-center justify-center shrink-0 text-[10px] font-bold text-white" style={{ background: "#3E0FA3" }}>
                         {formatDate(a.date).split(" ")[0]}
                       </div>
                       <div className="flex-1 min-w-0">
@@ -726,7 +726,7 @@ export default function Dashboard() {
             <div className="rounded-3xl p-5 border border-black/[0.11]" style={{ background: "#F8F9FB", boxShadow: "0 2px 12px rgba(0,0,0,0.07)" }}>
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-[15px] font-bold text-[#1A1A1A]">Keuangan</h3>
-                <Link to="/keuangan" className="text-[11px] font-semibold text-[#5B21B6] hover:opacity-80 transition-opacity">
+                <Link to="/keuangan" className="text-[11px] font-semibold text-[#3E0FA3] hover:opacity-80 transition-opacity">
                   Detail →
                 </Link>
               </div>
@@ -748,7 +748,7 @@ export default function Dashboard() {
                 </div>
                 <div className="flex items-center justify-between py-2">
                   <div className="flex items-center gap-2">
-                    <Wallet className="h-4 w-4 text-[#5B21B6]" />
+                    <Wallet className="h-4 w-4 text-[#3E0FA3]" />
                     <span className="text-[12px] font-semibold text-[#1A1A1A]">Saldo</span>
                   </div>
                   <span
@@ -812,7 +812,7 @@ function FiturCard({ f }: { f: any }) {
         <div className="flex items-center justify-between gap-2">
           <span
             className="text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider truncate max-w-[120px]"
-            style={{ background: "#5B21B615", color: "#5B21B6" }}
+            style={{ background: "#3E0FA315", color: "#3E0FA3" }}
           >
             {f.category}
           </span>
@@ -873,7 +873,7 @@ function FiturReviewSection({
           <div className="flex items-center gap-2 mb-1">
             <div
               className="h-7 w-7 rounded-xl flex items-center justify-center"
-              style={{ background: "#5B21B6" }}
+              style={{ background: "#3E0FA3" }}
             >
               <Sparkles className="h-3.5 w-3.5 text-white" />
             </div>
@@ -888,16 +888,16 @@ function FiturReviewSection({
           {/* Overall progress */}
           <div className="flex items-center gap-2 px-3 py-2 rounded-xl" style={{ background: "#F5F3FF" }}>
             <div className="relative">
-              <ProgressRing pct={overallPct} size={36} stroke={4} color="#5B21B6" />
+              <ProgressRing pct={overallPct} size={36} stroke={4} color="#3E0FA3" />
               <span
                 className="absolute inset-0 flex items-center justify-center text-[9px] font-bold"
-                style={{ color: "#5B21B6" }}
+                style={{ color: "#3E0FA3" }}
               >
                 {overallPct}%
               </span>
             </div>
             <div>
-              <p className="text-[11px] font-bold text-[#5B21B6]">Progress</p>
+              <p className="text-[11px] font-bold text-[#3E0FA3]">Progress</p>
               <p className="text-[10px] text-[#A78BFA]">{completedFitur}/{totalFitur} selesai</p>
             </div>
           </div>
@@ -915,7 +915,7 @@ function FiturReviewSection({
       {/* Status summary pills */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-5">
         {[
-          { label: "Total Fitur",    value: totalFitur,      color: "#5B21B6", bg: "#F5F3FF", icon: Zap },
+          { label: "Total Fitur",    value: totalFitur,      color: "#3E0FA3", bg: "#F5F3FF", icon: Zap },
           { label: "Selesai",        value: completedFitur,  color: "#16A34A", bg: "#F0FDF4", icon: CheckCircle2 },
           { label: "Sedang Berjalan",value: inProgressFitur, color: "#2563EB", bg: "#EFF6FF", icon: PlayCircle },
           { label: "Direncanakan",   value: planned,         color: "#6B7280", bg: "#F3F4F6", icon: ListTodo },
@@ -952,7 +952,7 @@ function FiturReviewSection({
         <div className="py-12 text-center">
           <Sparkles className="h-8 w-8 text-[#ddd] mx-auto mb-2" />
           <p className="text-[13px] text-[#bbb]">Belum ada fitur yang ditambahkan</p>
-          <Link to="/fitur" className="mt-3 inline-block text-[12px] font-semibold text-[#5B21B6] hover:opacity-80">
+          <Link to="/fitur" className="mt-3 inline-block text-[12px] font-semibold text-[#3E0FA3] hover:opacity-80">
             Tambah Fitur Pertama →
           </Link>
         </div>
@@ -975,9 +975,9 @@ function FiturReviewSection({
                 className="h-10 w-10 rounded-xl flex items-center justify-center"
                 style={{ background: "#F5F3FF" }}
               >
-                <ArrowRight className="h-5 w-5 text-[#5B21B6]" />
+                <ArrowRight className="h-5 w-5 text-[#3E0FA3]" />
               </div>
-              <p className="text-[12px] font-semibold text-[#5B21B6] text-center px-4">
+              <p className="text-[12px] font-semibold text-[#3E0FA3] text-center px-4">
                 Lihat Semua Fitur
               </p>
             </div>

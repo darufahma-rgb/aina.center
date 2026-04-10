@@ -67,7 +67,7 @@ export const ADMIN_SECTION = {
 
 const SIDEBAR_W      = 200;
 const SIDEBAR_MARGIN = 12;
-const ACCENT         = "#5B21B6";
+const ACCENT         = "#3E0FA3";
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -98,7 +98,7 @@ function NavItem({
       )}
     >
       <item.icon
-        className={cn("h-[17px] w-[17px] shrink-0 transition-colors", active ? "text-[#5B21B6]" : "text-white/50 group-hover:text-white")}
+        className={cn("h-[17px] w-[17px] shrink-0 transition-colors", active ? "text-[#3E0FA3]" : "text-white/50 group-hover:text-white")}
       />
       <span className="truncate">{item.title}</span>
     </Link>
@@ -148,7 +148,7 @@ function Sidebar({
       {/* Sidebar panel */}
       <aside
         className={cn(
-          "fixed top-0 bottom-0 z-50 flex flex-col transition-transform duration-300 ease-[cubic-bezier(0.32,0.72,0,1)]",
+          "sidebar-panel fixed top-0 bottom-0 z-50 flex flex-col transition-transform duration-300 ease-[cubic-bezier(0.32,0.72,0,1)]",
           "lg:translate-x-0",
           mobileOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0",
         )}
@@ -348,9 +348,8 @@ export function PortalLayout({ children }: PortalLayoutProps) {
 
       {/* ── Main content — white card ────────────────────────────────── */}
       <div
-        className="flex-1 flex flex-col min-h-screen transition-none"
+        className="flex-1 flex flex-col min-h-screen transition-none lg:ml-[224px]"
         style={{
-          marginLeft: `${contentLeft}px`,
           marginRight: SIDEBAR_MARGIN,
           marginTop: SIDEBAR_MARGIN,
           marginBottom: SIDEBAR_MARGIN,
