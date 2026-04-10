@@ -31,72 +31,74 @@ export default function Login() {
 
   return (
     <div className="min-h-screen flex bg-background">
-      {/* ── Left panel — branding ── */}
+      {/* ── Left panel — wallpaper ── */}
       <div
-        className="hidden lg:flex flex-col justify-between w-[44%] p-10 relative overflow-hidden"
-        style={{ background: "#1C1C1C" }}
+        className="hidden lg:flex flex-col justify-between w-[44%] relative overflow-hidden"
+        style={{
+          backgroundImage: "url(/wallpaper-login.png)",
+          backgroundSize: "cover",
+          backgroundPosition: "center bottom",
+          backgroundRepeat: "no-repeat",
+        }}
       >
-        {/* Lime glow orb top-right */}
+        {/* dark overlay for readability */}
         <div
-          className="absolute rounded-full pointer-events-none"
+          className="absolute inset-0 pointer-events-none"
           style={{
-            width: 420,
-            height: 420,
-            top: "-15%",
-            right: "-15%",
-            background: "radial-gradient(circle, #5B21B6 0%, transparent 70%)",
-            filter: "blur(90px)",
-            opacity: 0.25,
-          }}
-        />
-        {/* Lime glow orb bottom-left */}
-        <div
-          className="absolute rounded-full pointer-events-none"
-          style={{
-            width: 280,
-            height: 280,
-            bottom: "5%",
-            left: "-10%",
-            background: "radial-gradient(circle, #5B21B6 0%, transparent 70%)",
-            filter: "blur(70px)",
-            opacity: 0.15,
+            background: "linear-gradient(to bottom, rgba(0,0,0,0.72) 0%, rgba(0,0,0,0.35) 50%, rgba(0,0,0,0.15) 100%)",
           }}
         />
 
         {/* Logo */}
-        <div className="relative z-10 flex items-center gap-3">
+        <div className="relative z-10 flex items-center gap-3 p-10">
           <div
             className="h-9 w-9 rounded-xl flex items-center justify-center shrink-0"
-            style={{ background: "#5B21B6" }}
+            style={{ background: "rgba(255,255,255,0.12)", backdropFilter: "blur(8px)", border: "1px solid rgba(255,255,255,0.18)" }}
           >
             <img src="/logo.png" alt="AINA" className="h-5 w-5 object-contain" style={{ filter: "brightness(0) invert(1)" }} />
           </div>
           <div>
-            <p className="font-bold text-white text-sm tracking-tight">AINA Centre</p>
-            <p className="text-[10px] font-semibold tracking-[0.20em] uppercase text-white/35">Management</p>
+            <p className="font-semibold text-white text-sm tracking-tight">AINA Centre</p>
+            <p className="text-[10px] font-medium tracking-[0.22em] uppercase text-white/45">Management</p>
           </div>
         </div>
 
-        {/* Center text */}
-        <div className="relative z-10">
-          <h1 className="text-4xl font-black text-white leading-tight mb-4">
-            Portal Internal<br />
-            <span style={{ color: "#A78BFA" }}>AINA Centre</span>
-          </h1>
-          <p className="text-base text-white/45 leading-relaxed max-w-xs">
-            Kelola keuangan, notulensi, agenda, anggota, dan laporan organisasi dalam satu platform terpadu.
+        {/* Center — Medium-style editorial text */}
+        <div className="relative z-10 px-10 pb-14">
+          <p
+            className="text-[11px] font-semibold tracking-[0.28em] uppercase mb-5"
+            style={{ color: "rgba(167,139,250,0.9)" }}
+          >
+            Portal Internal
           </p>
-        </div>
 
-        {/* Bottom */}
-        <p className="relative z-10 text-[11px] text-white/25">
-          AINA Centre Management — Sistem Portal Internal
-        </p>
+          <h1
+            className="text-[40px] leading-[1.12] font-bold text-white mb-5"
+            style={{ letterSpacing: "-0.02em" }}
+          >
+            Satu tempat<br />
+            untuk semua<br />
+            urusan organisasi.
+          </h1>
+
+          <p
+            className="text-[15px] leading-[1.75] max-w-xs"
+            style={{ color: "rgba(255,255,255,0.55)", fontWeight: 400 }}
+          >
+            Kelola keuangan, notulensi, agenda, dan anggota AINA Centre dalam satu platform yang terpadu dan aman.
+          </p>
+
+          <div className="mt-8 flex items-center gap-3">
+            <div className="h-px flex-1 max-w-[48px]" style={{ background: "rgba(255,255,255,0.2)" }} />
+            <p className="text-[11px] text-white/30 font-medium">AINA Centre Management</p>
+          </div>
+        </div>
       </div>
 
       {/* ── Right panel — login form ── */}
       <div className="flex-1 flex items-center justify-center px-6 py-10">
         <div className="w-full max-w-sm animate-scale-in">
+
           {/* Mobile logo */}
           <div className="flex flex-col items-center mb-8 lg:hidden">
             <img
@@ -110,8 +112,15 @@ export default function Login() {
           </div>
 
           <div className="mb-8">
-            <h2 className="text-2xl font-bold text-foreground tracking-tight">Masuk ke Portal</h2>
-            <p className="text-sm mt-1.5 text-muted-foreground">Masukkan kredensial akun Anda</p>
+            <h2
+              className="text-[28px] font-bold text-foreground leading-tight"
+              style={{ letterSpacing: "-0.02em" }}
+            >
+              Masuk ke Portal
+            </h2>
+            <p className="text-[14px] mt-2 text-muted-foreground leading-relaxed">
+              Masukkan kredensial akun Anda untuk melanjutkan.
+            </p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">

@@ -650,4 +650,21 @@ export function registerRoutes(app: Router) {
     const { table, recordId } = req.query;
     res.json(await storage.listAuditLogs(table as string, recordId ? parseInt(recordId as string) : undefined));
   });
+
+  // ── AI Customer Service Chat ─────────────────────────────────────────────────
+
+  app.post("/api/ai-chat", requireAuth, async (req, res) => {
+    try {
+      const { messages } = req.body as { messages: { role: "user" | "assistant"; content: string }[] };
+      if (!messages || !Array.isArray(messages) || messages.length === 0) {
+        return res.status(400).json({ error: "messages diperlukan." });
+      }
+      const { chatWithAI } = await import("./aiChat.js");
+      const reply = await chatWithAI(messages);
+      res.json({ reply });
+    } catch (err: any) {
+      console.error("AI Chat error:", err);
+      res.status(500).json({ error: err.message ?? "Terjadi kesalahan." });
+    }
+  });
 }

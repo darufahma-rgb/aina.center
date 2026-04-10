@@ -10,6 +10,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import { ProfileModal } from "@/components/ProfileModal";
+import AIChatWidget from "@/components/AIChatWidget";
 
 // ─── Nav config ───────────────────────────────────────────────────────────────
 
@@ -443,6 +444,9 @@ export function PortalLayout({ children }: PortalLayoutProps) {
 
       {/* ── Profile Modal ────────────────────────────────────────────── */}
       <ProfileModal open={profileOpen} onClose={() => setProfileOpen(false)} />
+
+      {/* ── AI Customer Service Chat Widget ──────────────────────────── */}
+      <AIChatWidget />
     </div>
   );
 }

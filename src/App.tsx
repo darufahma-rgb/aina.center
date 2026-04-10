@@ -7,6 +7,7 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { PortalLayout } from "@/components/PortalLayout";
 import { queryClient } from "@/lib/queryClient";
+import AIChatWidget from "@/components/AIChatWidget";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import Notulensi from "./pages/Notulensi";
