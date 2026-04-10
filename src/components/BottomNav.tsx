@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { LayoutDashboard, CalendarDays, Wallet, FileText, Sparkles, X } from "lucide-react";
+import { LayoutDashboard, CalendarDays, Wallet, FileText, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const NAV_LINKS = [
@@ -96,7 +96,16 @@ export function BottomNav({ sidebarOpen = false, onSidebarClose }: BottomNavProp
                 style={{ background: "#3E0FA3" }}
               />
             )}
-            <Sparkles className={cn("h-[22px] w-[22px] shrink-0 mt-1", aiOpen ? "text-[#3E0FA3]" : "text-[#bbb]")} />
+            <img
+              src="/aina-icon.png"
+              alt="AI Asisten"
+              className="h-[22px] w-[22px] shrink-0 mt-1 object-contain"
+              style={{
+                filter: aiOpen
+                  ? "brightness(0) saturate(1) invert(15%) sepia(90%) saturate(3000%) hue-rotate(248deg) brightness(75%)"
+                  : "opacity(0.35)",
+              }}
+            />
             <span className={cn("text-[9px] font-bold tracking-wide", aiOpen ? "text-[#3E0FA3]" : "text-[#bbb]")}>
               AI Asisten
             </span>
