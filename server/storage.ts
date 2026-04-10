@@ -1,7 +1,7 @@
 import { eq, isNull, and, desc } from "drizzle-orm";
 import { db } from "./db";
 import {
-  users, notulensi, fiturTerbaru, keuangan, agenda, anggota, relasi, surat, inventaris, investorContent, auditLogs,
+  users, notulensi, fiturTerbaru, keuangan, agenda, anggota, relasi, surat, inventaris, investorContent, auditLogs, sponsor,
   type User, type SafeUser, type InsertUser,
   type Notulensi, type InsertNotulensi,
   type FiturTerbaru, type InsertFiturTerbaru,
@@ -12,6 +12,7 @@ import {
   type Surat, type InsertSurat,
   type Inventaris, type InsertInventaris,
   type InvestorContent, type InsertInvestorContent,
+  type Sponsor, type InsertSponsor,
   type AuditLog,
 } from "../shared/schema";
 import bcrypt from "bcryptjs";
@@ -46,6 +47,13 @@ export interface IStorage {
   createKeuangan(data: InsertKeuangan, userId: number): Promise<Keuangan>;
   updateKeuangan(id: number, data: Partial<InsertKeuangan>, userId: number): Promise<Keuangan | undefined>;
   deleteKeuangan(id: number, userId: number): Promise<boolean>;
+
+  // Sponsor
+  listSponsor(): Promise<Sponsor[]>;
+  getSponsor(id: number): Promise<Sponsor | undefined>;
+  createSponsor(data: InsertSponsor, userId: number): Promise<Sponsor>;
+  updateSponsor(id: number, data: Partial<InsertSponsor>, userId: number): Promise<Sponsor | undefined>;
+  deleteSponsor(id: number, userId: number): Promise<boolean>;
 
   // Agenda
   listAgenda(): Promise<Agenda[]>;
@@ -130,7 +138,7 @@ export class DatabaseStorage implements IStorage {
   }
 
   async listUsers() {
-    const all = await db.select().from(users).where(eq(users.isActive, true)).orderBy(desc(users.createdAt));
+    const all = await db.select().from(users).orderBy(desc(users.createdAt));
     return all.map(toSafeUser);
   }
 
@@ -230,6 +238,37 @@ export class DatabaseStorage implements IStorage {
     const [k] = await db.update(keuangan).set({ deletedAt: now(), updatedBy: userId }).where(eq(keuangan.id, id)).returning();
     if (k) await this.createAuditLog("keuangan", id, "delete", old, null, userId);
     return !!k;
+  }
+
+  // ── Sponsor ──
+
+  async listSponsor() {
+    return db.select().from(sponsor).where(isNull(sponsor.deletedAt)).orderBy(desc(sponsor.createdAt));
+  }
+
+  async getSponsor(id: number) {
+    const [s] = await db.select().from(sponsor).where(and(eq(sponsor.id, id), isNull(sponsor.deletedAt)));
+    return s;
+  }
+
+  async createSponsor(data: InsertSponsor, userId: number) {
+    const [s] = await db.insert(sponsor).values({ ...data, createdBy: userId, updatedBy: userId }).returning();
+    await this.createAuditLog("sponsor", s.id, "create", null, s, userId);
+    return s;
+  }
+
+  async updateSponsor(id: number, data: Partial<InsertSponsor>, userId: number) {
+    const old = await this.getSponsor(id);
+    const [s] = await db.update(sponsor).set({ ...data, updatedBy: userId, updatedAt: now() }).where(eq(sponsor.id, id)).returning();
+    if (s) await this.createAuditLog("sponsor", id, "update", old, s, userId);
+    return s;
+  }
+
+  async deleteSponsor(id: number, userId: number) {
+    const old = await this.getSponsor(id);
+    const [s] = await db.update(sponsor).set({ deletedAt: now(), updatedBy: userId }).where(eq(sponsor.id, id)).returning();
+    if (s) await this.createAuditLog("sponsor", id, "delete", old, null, userId);
+    return !!s;
   }
 
   // ── Agenda ──

@@ -13,6 +13,7 @@ import {
   insertInventarisSchema,
   insertInvestorContentSchema,
   insertUserSchema,
+  insertSponsorSchema,
 } from "../shared/schema";
 import { z } from "zod";
 
@@ -198,6 +199,80 @@ export function registerRoutes(app: Router) {
     const ok = await storage.deleteKeuangan(parseInt(req.params.id), req.session.userId!);
     if (!ok) return res.status(404).json({ message: "Not found" });
     res.json({ message: "Deleted" });
+  });
+
+  // ── Sponsor ─────────────────────────────────────────────────────────────────
+
+  app.get("/api/sponsor", requireAuth, async (req, res) => {
+    res.json(await storage.listSponsor());
+  });
+
+  app.get("/api/sponsor/:id", requireAuth, async (req, res) => {
+    const s = await storage.getSponsor(parseInt(req.params.id));
+    if (!s) return res.status(404).json({ message: "Not found" });
+    res.json(s);
+  });
+
+  app.post("/api/sponsor", requireAdmin, async (req, res) => {
+    const parsed = insertSponsorSchema.safeParse(req.body);
+    if (!parsed.success) return res.status(400).json({ message: parsed.error.message });
+    const s = await storage.createSponsor(parsed.data, req.session.userId!);
+    res.status(201).json(s);
+  });
+
+  app.patch("/api/sponsor/:id", requireAdmin, async (req, res) => {
+    const s = await storage.updateSponsor(parseInt(req.params.id), req.body, req.session.userId!);
+    if (!s) return res.status(404).json({ message: "Not found" });
+    res.json(s);
+  });
+
+  app.delete("/api/sponsor/:id", requireAdmin, async (req, res) => {
+    const ok = await storage.deleteSponsor(parseInt(req.params.id), req.session.userId!);
+    if (!ok) return res.status(404).json({ message: "Not found" });
+    res.json({ message: "Deleted" });
+  });
+
+  // ── Finance Summary (investor-safe) ─────────────────────────────────────────
+
+  app.get("/api/finance/summary", requireAuth, async (req, res) => {
+    const [allKeuangan, allSponsor] = await Promise.all([
+      storage.listKeuangan(),
+      storage.listSponsor(),
+    ]);
+    const isAdmin = req.session.userRole === "admin";
+    const totalIncome = allKeuangan.filter(k => k.type === "income").reduce((s, k) => s + parseFloat(k.amount.toString()), 0);
+    const totalExpense = allKeuangan.filter(k => k.type === "expense").reduce((s, k) => s + parseFloat(k.amount.toString()), 0);
+    const totalPledged = allSponsor.reduce((s, sp) => s + parseFloat(sp.pledgedAmount.toString()), 0);
+    const totalReceived = allSponsor.reduce((s, sp) => s + parseFloat(sp.receivedAmount.toString()), 0);
+    const activeSponsor = allSponsor.filter(sp => ["confirmed", "active"].includes(sp.status)).length;
+
+    // Build monthly trend (last 6 months label buckets from date field)
+    const monthlyMap: Record<string, { income: number; expense: number }> = {};
+    allKeuangan.forEach(k => {
+      const month = k.date.substring(0, 7); // Try ISO "YYYY-MM" or just use first 7 chars
+      if (!monthlyMap[month]) monthlyMap[month] = { income: 0, expense: 0 };
+      const amt = parseFloat(k.amount.toString());
+      if (k.type === "income") monthlyMap[month].income += amt;
+      else monthlyMap[month].expense += amt;
+    });
+
+    const summary = {
+      totalIncome,
+      totalExpense,
+      balance: totalIncome - totalExpense,
+      totalPledged,
+      totalReceived,
+      activeSponsor,
+      totalSponsor: allSponsor.length,
+      monthlyTrend: monthlyMap,
+      // For investor mode: only summary, no raw transactions
+      recentTransactions: isAdmin ? allKeuangan.slice(0, 5) : [],
+      sponsorList: isAdmin ? allSponsor : allSponsor.map(sp => ({
+        id: sp.id, name: sp.name, institution: sp.institution, status: sp.status,
+        pledgedAmount: sp.pledgedAmount, receivedAmount: sp.receivedAmount,
+      })),
+    };
+    res.json(summary);
   });
 
   // ── Agenda ──────────────────────────────────────────────────────────────────

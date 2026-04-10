@@ -1,7 +1,7 @@
 import { useState } from "react";
 import {
   Target, Lightbulb, Shield, Sparkles, TrendingUp, Rocket,
-  CheckCircle2, Eye, EyeOff, Edit2
+  CheckCircle2, Eye, EyeOff, Edit2, Wallet, Handshake, BarChart3,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -16,6 +16,88 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import type { FiturTerbaru, InvestorContent } from "../../shared/schema";
+
+const formatRp = (n: number) => "Rp " + Number(n).toLocaleString("id-ID");
+
+function FinancialHighlights() {
+  const { data: summary } = useQuery<any>({ queryKey: ["/api/finance/summary"] });
+  if (!summary) return null;
+
+  const sponsorStatusLabels: Record<string, string> = {
+    prospect: "Prospek", confirmed: "Dikonfirmasi", active: "Aktif",
+    completed: "Selesai", withdrawn: "Batal",
+  };
+
+  return (
+    <div className="space-y-4">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        <Card>
+          <CardContent className="p-4">
+            <div className="flex items-center gap-2 mb-2">
+              <Wallet className="h-4 w-4 text-primary" />
+              <span className="text-xs font-medium text-muted-foreground">Saldo Tersedia</span>
+            </div>
+            <p className="text-xl font-bold text-primary" data-testid="investor-balance">{formatRp(summary.balance ?? 0)}</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-4">
+            <div className="flex items-center gap-2 mb-2">
+              <TrendingUp className="h-4 w-4 text-green-600" />
+              <span className="text-xs font-medium text-muted-foreground">Total Dana Masuk</span>
+            </div>
+            <p className="text-xl font-bold text-green-600">{formatRp(summary.totalIncome ?? 0)}</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-4">
+            <div className="flex items-center gap-2 mb-2">
+              <Handshake className="h-4 w-4 text-amber-600" />
+              <span className="text-xs font-medium text-muted-foreground">Dana Sponsor Diterima</span>
+            </div>
+            <p className="text-xl font-bold text-amber-600">{formatRp(summary.totalReceived ?? 0)}</p>
+            <p className="text-xs text-muted-foreground mt-0.5">dari {formatRp(summary.totalPledged ?? 0)} dijanjikan</p>
+          </CardContent>
+        </Card>
+      </div>
+
+      {summary.sponsorList && summary.sponsorList.length > 0 && (
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle className="text-sm flex items-center gap-2">
+              <BarChart3 className="h-4 w-4 text-primary" /> Ringkasan Sponsor ({summary.totalSponsor} total, {summary.activeSponsor} aktif)
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3">
+              {summary.sponsorList.map((sp: any) => {
+                const pledged = Number(sp.pledgedAmount);
+                const received = Number(sp.receivedAmount);
+                const pct = pledged > 0 ? Math.min((received / pledged) * 100, 100) : 0;
+                return (
+                  <div key={sp.id} className="flex items-center gap-3">
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between mb-1">
+                        <p className="text-xs font-medium truncate">{sp.name}</p>
+                        <Badge variant="secondary" className="text-[9px] shrink-0 ml-2">
+                          {sponsorStatusLabels[sp.status] ?? sp.status}
+                        </Badge>
+                      </div>
+                      <div className="h-1.5 w-full bg-muted rounded-full overflow-hidden">
+                        <div className="h-full bg-primary/70 rounded-full" style={{ width: `${pct}%` }} />
+                      </div>
+                      <p className="text-[10px] text-muted-foreground mt-0.5">{formatRp(received)} / {formatRp(pledged)}</p>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </CardContent>
+        </Card>
+      )}
+    </div>
+  );
+}
 
 const sectionIcons: Record<string, any> = {
   about: Target, problem: Lightbulb, strengths: Shield,
@@ -151,6 +233,11 @@ export default function InvestorModePage() {
           </CardContent>
         </Card>
       )}
+
+      <div>
+        <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide mb-3">Ringkasan Keuangan</h2>
+        <FinancialHighlights />
+      </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {Object.keys(DEFAULT_CONTENT).map(renderSection)}

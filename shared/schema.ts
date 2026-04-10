@@ -9,6 +9,7 @@ export const notulensiStatusEnum = pgEnum("notulensi_status", ["draft", "final"]
 export const fiturStatusEnum = pgEnum("fitur_status", ["planned", "in_progress", "completed", "on_hold"]);
 export const fiturImpactEnum = pgEnum("fitur_impact", ["low", "medium", "high"]);
 export const keuanganTypeEnum = pgEnum("keuangan_type", ["income", "expense"]);
+export const keuanganSourceTypeEnum = pgEnum("keuangan_source_type", ["sponsor", "donor", "partner", "internal", "other"]);
 export const agendaStatusEnum = pgEnum("agenda_status", ["upcoming", "completed", "cancelled"]);
 export const anggotaStatusEnum = pgEnum("anggota_status", ["active", "inactive"]);
 export const relasiStatusEnum = pgEnum("relasi_status", ["active", "inactive", "prospect"]);
@@ -16,6 +17,7 @@ export const suratTypeEnum = pgEnum("surat_type", ["masuk", "keluar"]);
 export const suratStatusEnum = pgEnum("surat_status", ["draft", "sent", "received", "archived"]);
 export const inventarisConditionEnum = pgEnum("inventaris_condition", ["baik", "rusak", "perlu_perbaikan"]);
 export const auditActionEnum = pgEnum("audit_action", ["create", "update", "delete"]);
+export const sponsorStatusEnum = pgEnum("sponsor_status", ["prospect", "confirmed", "active", "completed", "withdrawn"]);
 
 // ─── Users ────────────────────────────────────────────────────────────────────
 
@@ -84,7 +86,7 @@ export const insertFiturTerbaruSchema = createInsertSchema(fiturTerbaru).omit({
 export type InsertFiturTerbaru = z.infer<typeof insertFiturTerbaruSchema>;
 export type FiturTerbaru = typeof fiturTerbaru.$inferSelect;
 
-// ─── Keuangan ─────────────────────────────────────────────────────────────────
+// ─── Keuangan (extended) ──────────────────────────────────────────────────────
 
 export const keuangan = pgTable("keuangan", {
   id: serial("id").primaryKey(),
@@ -93,6 +95,17 @@ export const keuangan = pgTable("keuangan", {
   description: text("description").notNull(),
   category: text("category").notNull(),
   date: text("date").notNull(),
+  // Income-specific
+  sourceName: text("source_name"),
+  sourceType: keuanganSourceTypeEnum("source_type"),
+  // Expense-specific
+  responsiblePerson: text("responsible_person"),
+  purpose: text("purpose"),
+  // Shared extras
+  paymentMethod: text("payment_method"),
+  proofUrl: text("proof_url"),
+  notes: text("notes"),
+  // Legacy field kept for backward compat
   counterpart: text("counterpart"),
   createdBy: integer("created_by").references(() => users.id),
   updatedBy: integer("updated_by").references(() => users.id),
@@ -103,9 +116,38 @@ export const keuangan = pgTable("keuangan", {
 
 export const insertKeuanganSchema = createInsertSchema(keuangan).omit({
   id: true, createdAt: true, updatedAt: true, deletedAt: true, createdBy: true, updatedBy: true,
+}).extend({
+  amount: z.string().or(z.number()).transform(v => String(v)),
 });
 export type InsertKeuangan = z.infer<typeof insertKeuanganSchema>;
 export type Keuangan = typeof keuangan.$inferSelect;
+
+// ─── Sponsor ──────────────────────────────────────────────────────────────────
+
+export const sponsor = pgTable("sponsor", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  institution: text("institution").notNull(),
+  contactPerson: text("contact_person").notNull(),
+  status: sponsorStatusEnum("status").notNull().default("prospect"),
+  pledgedAmount: numeric("pledged_amount", { precision: 15, scale: 2 }).notNull().default("0"),
+  receivedAmount: numeric("received_amount", { precision: 15, scale: 2 }).notNull().default("0"),
+  notes: text("notes"),
+  createdBy: integer("created_by").references(() => users.id),
+  updatedBy: integer("updated_by").references(() => users.id),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+  deletedAt: timestamp("deleted_at"),
+});
+
+export const insertSponsorSchema = createInsertSchema(sponsor).omit({
+  id: true, createdAt: true, updatedAt: true, deletedAt: true, createdBy: true, updatedBy: true,
+}).extend({
+  pledgedAmount: z.string().or(z.number()).transform(v => String(v)).optional(),
+  receivedAmount: z.string().or(z.number()).transform(v => String(v)).optional(),
+});
+export type InsertSponsor = z.infer<typeof insertSponsorSchema>;
+export type Sponsor = typeof sponsor.$inferSelect;
 
 // ─── Agenda ───────────────────────────────────────────────────────────────────
 

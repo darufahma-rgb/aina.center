@@ -30,7 +30,7 @@ The app starts via `npx tsx server/index.ts` which runs Express (port 5000) with
 1. **Dashboard** — Summary stats and quick overview
 2. **Notulensi** — Meeting notes with participants, decisions, action items
 3. **Agenda** — Calendar/schedule management
-4. **Keuangan** — Financial transactions (income & expenses)
+4. **Keuangan & Sponsor** — Financial transactions (income & expenses) with full field details, plus sponsor tracking with pledged vs received progress bars
 5. **FiturTerbaru** — Product feature tracking
 6. **Anggota** — Team member management
 7. **Relasi** — External relationships/partnerships
@@ -62,4 +62,9 @@ The app starts via `npx tsx server/index.ts` which runs Express (port 5000) with
 - `POST /api/auth/logout` — Logout
 - `GET /api/auth/me` — Current user
 - `GET /api/dashboard` — Dashboard summary
+- `GET /api/finance/summary` — Investor-safe finance summary (admins get raw transactions; investors get only aggregates)
 - CRUD endpoints for each module (requireAuth or requireAdmin)
+- `/api/sponsor` CRUD — Sponsor tracking (admin write, all read)
+- `/api/keuangan` CRUD — Income/expense tracking with extended fields (sourceName, sourceType, responsiblePerson, purpose, paymentMethod, proofUrl, notes)
+- `/api/users` CRUD — User management (admin only)
+- `GET /api/users/map` — UserId→username map for UI RecordMeta display
