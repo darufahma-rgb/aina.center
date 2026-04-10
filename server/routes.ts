@@ -559,12 +559,15 @@ export function registerRoutes(app: Router) {
   // ── Dashboard Summary ───────────────────────────────────────────────────────
 
   app.get("/api/dashboard", requireAuth, async (req, res) => {
-    const [allNotulensi, allAgenda, allFitur, allKeuangan, allAnggota] = await Promise.all([
+    const [allNotulensi, allAgenda, allFitur, allKeuangan, allAnggota, allSurat, allInventaris, allRelasi] = await Promise.all([
       storage.listNotulensi(),
       storage.listAgenda(),
       storage.listFiturTerbaru(),
       storage.listKeuangan(),
       storage.listAnggota(),
+      storage.listSurat(),
+      storage.listInventaris(),
+      storage.listRelasi(),
     ]);
 
     const now = new Date();
@@ -609,12 +612,18 @@ export function registerRoutes(app: Router) {
       upcomingAgenda: allAgenda.filter(a => a.status === "upcoming").length,
       totalNotulensi: allNotulensi.length,
       draftNotulensi: allNotulensi.filter(n => n.status === "draft").length,
+      totalSurat: allSurat.length,
+      totalInventaris: allInventaris.length,
+      totalRelasi: allRelasi.length,
       saldoTersedia: totalIncome - totalExpense,
       totalIncome,
       totalExpense,
-      recentNotulensi: allNotulensi.slice(0, 3),
-      upcomingAgendaList: allAgenda.filter(a => a.status === "upcoming").slice(0, 3),
-      latestFitur: allFitur.slice(0, 3),
+      recentNotulensi: allNotulensi.slice(0, 5),
+      upcomingAgendaList: allAgenda.filter(a => a.status === "upcoming").slice(0, 5),
+      allAgendaList: allAgenda.slice(0, 10),
+      latestFitur: allFitur.slice(0, 5),
+      recentKeuangan: allKeuangan.slice(0, 8),
+      anggotaList: allAnggota.filter(a => a.status === "active").slice(0, 10),
       // ── Insight data ──
       insights: {
         notulensiThisWeek,
