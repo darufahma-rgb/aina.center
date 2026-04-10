@@ -1,14 +1,14 @@
 import { defineConfig } from "drizzle-kit";
 
-if (!process.env.DATABASE_URL) {
-  throw new Error("DATABASE_URL is required");
+const url = process.env.SUPABASE_DATABASE_URL ?? process.env.DATABASE_URL;
+
+if (!url) {
+  throw new Error("SUPABASE_DATABASE_URL or DATABASE_URL is required");
 }
 
 export default defineConfig({
   out: "./migrations",
   schema: "./shared/schema.ts",
   dialect: "postgresql",
-  dbCredentials: {
-    url: process.env.DATABASE_URL,
-  },
+  dbCredentials: { url },
 });

@@ -1,14 +1,13 @@
-import { Pool, neonConfig } from "@neondatabase/serverless";
-import { drizzle } from "drizzle-orm/neon-serverless";
-import ws from "ws";
+import { Pool } from "pg";
+import { drizzle } from "drizzle-orm/node-postgres";
 import * as schema from "../shared/schema";
 
-neonConfig.webSocketConstructor = ws;
+// Prefer Supabase if configured, fall back to Replit's managed DB
+const connectionString = process.env.SUPABASE_DATABASE_URL ?? process.env.DATABASE_URL;
 
-if (!process.env.DATABASE_URL) {
-  throw new Error("DATABASE_URL environment variable is required");
+if (!connectionString) {
+  throw new Error("SUPABASE_DATABASE_URL or DATABASE_URL environment variable is required");
 }
 
-const pool = new Pool({ connectionString: process.env.DATABASE_URL });
-
-export const db = drizzle({ client: pool, schema });
+export const pool = new Pool({ connectionString });
+export const db = drizzle(pool, { schema });
