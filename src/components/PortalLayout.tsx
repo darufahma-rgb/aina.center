@@ -177,7 +177,7 @@ function Sidebar({
 
       {/* ── Icon rail — floating pill, always visible ─────────────── */}
       <div
-        className="fixed left-0 top-0 bottom-0 z-50 flex flex-col items-center py-4 gap-1"
+        className="sidebar-glow fixed z-50 flex flex-col items-center py-4 gap-1"
         style={{
           left: 12,
           top: 12,
@@ -186,7 +186,6 @@ function Sidebar({
           height: "calc(100vh - 24px)",
           borderRadius: 24,
           background: "#ffffff",
-          boxShadow: "0 8px 32px rgba(0,0,0,0.10), 0 2px 8px rgba(0,0,0,0.07)",
         }}
       >
         {/* Logo button — toggles full panel */}
@@ -236,17 +235,18 @@ function Sidebar({
       {/* ── Full floating panel — slides over icon rail ───────────── */}
       <div
         className={cn(
-          "fixed top-0 bottom-0 z-50 flex flex-col transition-all duration-300 ease-[cubic-bezier(0.32,0.72,0,1)]",
+          "sidebar-glow fixed z-50 flex flex-col transition-all duration-300 ease-[cubic-bezier(0.32,0.72,0,1)]",
           open ? "translate-x-0 opacity-100" : "-translate-x-full opacity-0 pointer-events-none",
         )}
         style={{
           left: 0,
+          top: 0,
+          bottom: 0,
           width: 268,
           margin: "10px",
           height: "calc(100vh - 20px)",
           borderRadius: 24,
           background: "#ffffff",
-          boxShadow: "0 24px 60px rgba(0,0,0,0.16), 0 8px 20px rgba(0,0,0,0.10)",
         }}
       >
         {/* Header */}

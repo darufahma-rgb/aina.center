@@ -193,6 +193,44 @@
     border: 1px solid rgba(139,92,246,0.16);
   }
 
+  /* ── Sidebar orbit glow ───────────────────────────────────────────── */
+  .sidebar-glow {
+    animation: sidebar-orbit-glow 4s ease-in-out infinite;
+  }
+
+  @keyframes sidebar-orbit-glow {
+    0% {
+      box-shadow:
+        0 0 0 1.5px rgba(139,92,246,0.65),
+        0 -12px 28px rgba(139,92,246,0.50),
+        0 0  45px rgba(139,92,246,0.12);
+    }
+    25% {
+      box-shadow:
+        0 0 0 1.5px rgba(168,85,247,0.75),
+        12px 0 28px rgba(168,85,247,0.55),
+        0 0  50px rgba(168,85,247,0.14);
+    }
+    50% {
+      box-shadow:
+        0 0 0 1.5px rgba(124,58,237,0.65),
+        0  12px 28px rgba(124,58,237,0.50),
+        0 0  45px rgba(124,58,237,0.12);
+    }
+    75% {
+      box-shadow:
+        0 0 0 1.5px rgba(139,92,246,0.75),
+        -12px 0 28px rgba(139,92,246,0.55),
+        0 0  50px rgba(139,92,246,0.14);
+    }
+    100% {
+      box-shadow:
+        0 0 0 1.5px rgba(139,92,246,0.65),
+        0 -12px 28px rgba(139,92,246,0.50),
+        0 0  45px rgba(139,92,246,0.12);
+    }
+  }
+
   /* ── Animate ──────────────────────────────────────────────────────── */
   .animate-fade-in  { animation: fade-in 0.28s ease-out both; }
   .animate-slide-in { animation: slide-in 0.24s ease-out both; }
