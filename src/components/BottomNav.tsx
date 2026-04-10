@@ -103,7 +103,9 @@ export function BottomNav({ sidebarOpen = false, onSidebarClose }: BottomNavProp
               style={{
                 filter: aiOpen
                   ? "brightness(0) invert(27%) sepia(91%) saturate(3200%) hue-rotate(248deg) brightness(90%)"
-                  : "brightness(0) opacity(0.28)",
+                  : "brightness(0)",
+                opacity: aiOpen ? 1 : 0.28,
+                transition: "opacity 0.2s, filter 0.2s",
               }}
             />
             <span className={cn("text-[9px] font-bold tracking-wide", aiOpen ? "text-[#3E0FA3]" : "text-[#bbb]")}>
