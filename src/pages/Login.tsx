@@ -158,8 +158,8 @@ export default function Login() {
           <p className="text-[10px] font-semibold tracking-[0.2em] uppercase mb-1" style={{ color: "rgba(200,170,255,0.6)" }}>
             AINA Internal Center
           </p>
-          <p className="text-[10px] leading-relaxed" style={{ color: "rgba(255,255,255,0.28)" }}>
-            Platform manajemen internal eksklusif untuk anggota dan pengurus AINA Centre. Akses terbatas hanya untuk pengguna terdaftar.
+          <p className="text-[11px] leading-relaxed" style={{ color: "rgba(255,255,255,0.32)" }}>
+            Manajemen Internal AINA Centre
           </p>
         </div>
       </div>
