@@ -4,9 +4,10 @@ A secure internal management portal for the AINA organization. Built as a fullst
 
 ## Design System
 
-**Theme**: Dark purple Cloud Dock — `--primary: 265 83% 57%`, sidebar `hsl(250,53%,7%)`  
+**Theme**: Light workspace with purple accents — `--primary: 265 83% 57%`, light gray background, white cards, dark sidebar  
 **Logo**: `public/logo.png` (AINA Centre Management brand icon)  
-**Layout**: Custom two-panel sidebar (56px icon rail + 216px collapsible nav panel); mobile bottom nav bar  
+**Layout**: Always-icon-only sidebar (60px); Dashboard is a 3-column full-bleed layout (dark left panel + center content + right floating cards, matching premium SaaS reference); other pages use standard padded layout; mobile bottom nav bar  
+**Login**: Split-panel (dark purple branding left + light form right)  
 **PWA**: `public/manifest.json` + full PWA meta tags in `index.html`  
 **UI Components**: shadcn/ui with neosoft layered shadow tokens (`shadow-neo-*`), purple gradient active pills (`.nav-active-pill`), glassmorphic header (`.glass-header`)
 

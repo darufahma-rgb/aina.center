@@ -262,21 +262,6 @@ function DesktopSidebar({
         </div>
       )}
 
-      {/* Expand handle */}
-      {!expanded && (
-        <button
-          onClick={onToggle}
-          className="absolute -right-3 top-20 h-6 w-6 rounded-full flex items-center justify-center text-white z-10"
-          style={{
-            background: "hsl(265,60%,28%)",
-            border: "1px solid rgba(139,92,246,0.35)",
-            boxShadow: "0 2px 10px rgba(0,0,0,0.30)",
-          }}
-          title="Buka panel"
-        >
-          <ChevronRight className="h-3 w-3" />
-        </button>
-      )}
     </div>
   );
 }
@@ -454,12 +439,11 @@ interface PortalLayoutProps {
 export function PortalLayout({ children }: PortalLayoutProps) {
   const { user, isAdmin, logout } = useAuth();
   const isMobile = useIsMobile();
-  const [sidebarExpanded, setSidebarExpanded] = useState(true);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { toast } = useToast();
 
   const initials = user?.username?.slice(0, 2).toUpperCase() ?? "??";
-  const sidebarWidth = isMobile ? 0 : sidebarExpanded ? 270 : 60;
+  const sidebarWidth = isMobile ? 0 : 60;
 
   const handleLogout = async () => {
     try {
@@ -472,11 +456,11 @@ export function PortalLayout({ children }: PortalLayoutProps) {
   return (
     <div className="min-h-screen bg-background relative">
 
-      {/* Desktop sidebar */}
+      {/* Desktop sidebar — always icon-only */}
       {!isMobile && (
         <DesktopSidebar
-          expanded={sidebarExpanded}
-          onToggle={() => setSidebarExpanded((v) => !v)}
+          expanded={false}
+          onToggle={() => {}}
           user={user}
           isAdmin={isAdmin}
           onLogout={handleLogout}
@@ -485,7 +469,7 @@ export function PortalLayout({ children }: PortalLayoutProps) {
 
       {/* Content wrapper */}
       <div
-        className="flex flex-col min-h-screen transition-all duration-300"
+        className="flex flex-col min-h-screen"
         style={{ marginLeft: sidebarWidth }}
       >
         {/* Top header — light frosted */}
