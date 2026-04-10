@@ -90,7 +90,7 @@ export function AppSidebar() {
 
       <SidebarContent className="px-2">
         {navSections.map((section) => (
-          <SidebarGroup key={section.label} defaultOpen>
+          <SidebarGroup key={section.label}>
             <SidebarGroupLabel className="text-sidebar-muted text-[10px] uppercase tracking-wider font-semibold px-3">
               {!collapsed && section.label}
             </SidebarGroupLabel>
