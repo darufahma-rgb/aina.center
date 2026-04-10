@@ -496,7 +496,8 @@ export function registerRoutes(app: Router) {
   app.get("/api/investor-content", requireAuth, async (req, res) => {
     const all = await storage.listInvestorContent();
     const isAdmin = req.session.userRole === "admin";
-    res.json(isAdmin ? all : all.filter(c => c.isVisible));
+    // _config key is always shared so non-admin presentation respects admin settings
+    res.json(isAdmin ? all : all.filter(c => c.isVisible || c.key === "_config"));
   });
 
   app.put("/api/investor-content/:key", requireAdmin, async (req, res) => {

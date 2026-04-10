@@ -36,7 +36,7 @@ The app starts via `npx tsx server/index.ts` which runs Express (port 5000) with
 7. **Relasi** — External relationships/partnerships
 8. **Surat** — Document/letter management
 9. **Inventaris** — Asset/equipment management
-10. **Investor Mode** — Curated content for investors (admin-controlled visibility)
+10. **Investor Mode** — Full controlled presentation layer with dual mode: Admin Control Panel (edit content, curate features, configure financial visibility) and a premium full-screen Presentation View. Zero raw internal data exposed. Config stored as `_config` investorContent key (JSON). Features: per-section visibility toggle, FiturTerbaru curation, financial/sponsor toggles, amount-hiding option, non-admin always sees clean view.
 11. **AI Report Assistant** (`/ai-report`) — Convert raw notes into structured reports (4 modes: Notulensi, Progress, Investor Summary, Short Summary). Template-based extraction engine in `server/aiReport.ts` with clear LLM integration seam. Supports edit-before-save, copy, save to history, and one-click save to Notulensi module.
 
 ## Key Files
