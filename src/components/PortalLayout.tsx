@@ -161,18 +161,20 @@ function Sidebar({
       {/* Sidebar panel */}
       <aside
         className={cn(
-          "sidebar-panel fixed top-0 bottom-0 z-[70] flex flex-col transition-transform duration-300 ease-[cubic-bezier(0.32,0.72,0,1)]",
+          "sidebar-panel fixed z-[70] flex flex-col transition-transform duration-300 ease-[cubic-bezier(0.32,0.72,0,1)]",
+          !isMobile && "top-0 bottom-0",
           "lg:translate-x-0",
           mobileOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0",
         )}
         style={isMobile ? {
-          left: 0,
-          top: 0,
-          bottom: 0,
+          left: 12,
+          top: "7%",
+          bottom: "7%",
           width: SIDEBAR_W,
-          borderRadius: "0 24px 0 0",
+          borderRadius: 24,
           background: ACCENT,
           border: "none",
+          overflowY: "auto",
         } : {
           left: SIDEBAR_MARGIN,
           top: SIDEBAR_MARGIN,
