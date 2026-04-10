@@ -444,7 +444,7 @@ export function PortalLayout({ children }: PortalLayoutProps) {
       <AIChatWidget />
 
       {/* ── Mobile bottom nav ────────────────────────────────────────── */}
-      <BottomNav />
+      <BottomNav sidebarOpen={mobileOpen} onSidebarClose={() => setMobileOpen(false)} />
     </div>
   );
 }

@@ -1,5 +1,5 @@
 import { Link, useLocation } from "react-router-dom";
-import { LayoutDashboard, CalendarDays, Wallet, FileText, Users } from "lucide-react";
+import { LayoutDashboard, CalendarDays, Wallet, FileText, Users, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const NAV_ITEMS = [
@@ -10,20 +10,55 @@ const NAV_ITEMS = [
   { icon: Users,          label: "Anggota",   url: "/anggota"   },
 ];
 
-export function BottomNav() {
+interface BottomNavProps {
+  sidebarOpen?: boolean;
+  onSidebarClose?: () => void;
+}
+
+export function BottomNav({ sidebarOpen = false, onSidebarClose }: BottomNavProps) {
   const { pathname } = useLocation();
 
   return (
     <nav
-      className="lg:hidden fixed bottom-0 left-0 right-0 z-50 px-3 pb-3"
-      style={{ paddingBottom: "max(12px, env(safe-area-inset-bottom))" }}
+      className="lg:hidden fixed bottom-0 left-0 right-0 z-50 px-3 flex justify-center"
+      style={{ paddingBottom: "max(12px, env(safe-area-inset-bottom))", paddingTop: 8 }}
     >
+      {/* Collapsed — single close button when sidebar is open */}
       <div
-        className="flex items-center justify-around rounded-2xl px-1 py-0.5"
+        className="absolute inset-x-3 bottom-0 flex justify-center items-end"
+        style={{
+          paddingBottom: "max(12px, env(safe-area-inset-bottom))",
+          pointerEvents: sidebarOpen ? "auto" : "none",
+          opacity: sidebarOpen ? 1 : 0,
+          transform: sidebarOpen ? "scale(1)" : "scale(0.85)",
+          transition: "opacity 0.22s ease, transform 0.22s ease",
+        }}
+      >
+        <button
+          onClick={onSidebarClose}
+          className="flex items-center gap-2 px-5 h-11 rounded-2xl font-semibold text-[13px] active:scale-95 transition-transform"
+          style={{
+            background: "#1A1A1A",
+            color: "#fff",
+            boxShadow: "0 4px 20px rgba(0,0,0,0.22)",
+          }}
+        >
+          <X className="h-4 w-4" />
+          Tutup
+        </button>
+      </div>
+
+      {/* Expanded — full 5-tab bar when sidebar is closed */}
+      <div
+        className="w-full flex items-center justify-around rounded-2xl px-1 py-0.5"
         style={{
           background: "#ffffff",
           border: "1px solid rgba(0,0,0,0.10)",
           boxShadow: "0 4px 24px rgba(0,0,0,0.13), 0 1px 4px rgba(0,0,0,0.06)",
+          opacity: sidebarOpen ? 0 : 1,
+          transform: sidebarOpen ? "scale(0.95)" : "scale(1)",
+          pointerEvents: sidebarOpen ? "none" : "auto",
+          transition: "opacity 0.18s ease, transform 0.18s ease",
         }}
       >
         {NAV_ITEMS.map(({ icon: Icon, label, url }) => {
