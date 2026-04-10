@@ -32,7 +32,7 @@ export default function Login() {
   return (
     <div
       className="min-h-screen flex items-center justify-center px-4 relative overflow-hidden"
-      style={{ background: "hsl(252,50%,4%)" }}
+      style={{ background: "hsl(0,0%,5%)" }}
     >
       {/* Aurora floating orbs */}
       <div

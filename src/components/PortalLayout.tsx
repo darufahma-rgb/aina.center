@@ -132,9 +132,9 @@ function DesktopSidebar({
       <div
         className="w-14 flex flex-col items-center pt-4 pb-3 shrink-0"
         style={{
-          background: "rgba(14,8,38,0.85)",
-          backdropFilter: "blur(28px) saturate(160%)",
-          WebkitBackdropFilter: "blur(28px) saturate(160%)",
+          background: "rgba(8,8,10,0.90)",
+          backdropFilter: "blur(28px) saturate(140%)",
+          WebkitBackdropFilter: "blur(28px) saturate(140%)",
           borderRight: "1px solid rgba(255,255,255,0.05)",
         }}
       >
@@ -167,9 +167,9 @@ function DesktopSidebar({
         <div
           className="w-[216px] flex flex-col overflow-hidden"
           style={{
-            background: "rgba(12,6,32,0.80)",
-            backdropFilter: "blur(32px) saturate(180%)",
-            WebkitBackdropFilter: "blur(32px) saturate(180%)",
+            background: "rgba(8,8,10,0.88)",
+            backdropFilter: "blur(32px) saturate(160%)",
+            WebkitBackdropFilter: "blur(32px) saturate(160%)",
             borderRight: "1px solid rgba(255,255,255,0.05)",
           }}
         >
@@ -302,9 +302,9 @@ function MobileBottomNav({ onMoreClick }: { onMoreClick: () => void }) {
       className="fixed bottom-0 left-0 right-0 z-40 flex items-stretch"
       style={{
         height: "60px",
-        background: "rgba(10,5,28,0.88)",
-        backdropFilter: "blur(28px) saturate(180%)",
-        WebkitBackdropFilter: "blur(28px) saturate(180%)",
+        background: "rgba(8,8,10,0.90)",
+        backdropFilter: "blur(28px) saturate(160%)",
+        WebkitBackdropFilter: "blur(28px) saturate(160%)",
         borderTop: "1px solid rgba(255,255,255,0.06)",
         boxShadow: "0 -4px 30px rgba(0,0,0,0.50)",
         paddingBottom: "env(safe-area-inset-bottom)",
@@ -370,9 +370,9 @@ function MobileNavSheet({
         side="left"
         className="w-[280px] p-0 border-r-0"
         style={{
-          background: "rgba(10,5,28,0.92)",
-          backdropFilter: "blur(40px) saturate(200%)",
-          WebkitBackdropFilter: "blur(40px) saturate(200%)",
+          background: "rgba(8,8,10,0.94)",
+          backdropFilter: "blur(40px) saturate(160%)",
+          WebkitBackdropFilter: "blur(40px) saturate(160%)",
           borderRight: "1px solid rgba(255,255,255,0.06)",
           boxShadow: "8px 0 40px rgba(0,0,0,0.60)",
         }}

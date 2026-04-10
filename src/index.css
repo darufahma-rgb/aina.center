@@ -6,47 +6,47 @@
 
 @layer base {
   :root {
-    /* ── macOS Dark Purple — Base ──────────────────────────────────── */
-    --background:    252 50% 4%;
-    --foreground:    248 25% 93%;
+    /* ── Black + Purple Accent System ─────────────────────────────── */
+    --background:    0 0% 5%;
+    --foreground:    0 0% 93%;
 
-    --card:          254 48% 7%;
-    --card-foreground: 248 25% 93%;
+    --card:          0 0% 8%;
+    --card-foreground: 0 0% 93%;
 
-    --popover:       254 48% 7%;
-    --popover-foreground: 248 25% 93%;
+    --popover:       0 0% 8%;
+    --popover-foreground: 0 0% 93%;
 
     --primary:       265 83% 62%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary:     265 35% 14%;
-    --secondary-foreground: 248 25% 88%;
+    --secondary:     265 20% 14%;
+    --secondary-foreground: 0 0% 88%;
 
-    --muted:         264 38% 12%;
-    --muted-foreground: 252 22% 58%;
+    --muted:         0 0% 12%;
+    --muted-foreground: 0 0% 52%;
 
     --accent:        265 50% 20%;
-    --accent-foreground: 248 25% 95%;
+    --accent-foreground: 0 0% 95%;
 
     --destructive:   265 60% 40%;
     --destructive-foreground: 0 0% 100%;
 
-    --border:        265 35% 13%;
-    --input:         265 38% 11%;
+    --border:        0 0% 14%;
+    --input:         0 0% 11%;
     --ring:          265 83% 62%;
 
     --radius: 0.625rem;
 
-    /* ── Sidebar (slightly lighter than background) ───────────────── */
-    --sidebar-background:  252 52% 5%;
-    --sidebar-foreground:  250 25% 88%;
+    /* ── Sidebar ──────────────────────────────────────────────────── */
+    --sidebar-background:  0 0% 4%;
+    --sidebar-foreground:  0 0% 85%;
     --sidebar-primary:     265 83% 62%;
     --sidebar-primary-foreground: 0 0% 100%;
     --sidebar-accent:      265 50% 16%;
     --sidebar-accent-foreground: 0 0% 100%;
-    --sidebar-border:      265 38% 11%;
+    --sidebar-border:      0 0% 11%;
     --sidebar-ring:        265 83% 62%;
-    --sidebar-muted:       252 18% 45%;
+    --sidebar-muted:       0 0% 42%;
 
     /* ── Semantic ──────────────────────────────────────────────────── */
     --success:          265 83% 62%;
@@ -79,26 +79,25 @@
     --shadow-neo-primary: 0 4px 18px rgba(139,92,246,0.50), 0 2px 8px rgba(139,92,246,0.30);
   }
 
-  /* Keep dark class identical so explicit dark-mode toggles also work */
   .dark {
-    --background:    252 50% 4%;
-    --foreground:    248 25% 93%;
-    --card:          254 48% 7%;
-    --card-foreground: 248 25% 93%;
-    --popover:       254 48% 7%;
-    --popover-foreground: 248 25% 93%;
+    --background:    0 0% 5%;
+    --foreground:    0 0% 93%;
+    --card:          0 0% 8%;
+    --card-foreground: 0 0% 93%;
+    --popover:       0 0% 8%;
+    --popover-foreground: 0 0% 93%;
     --primary:       265 83% 62%;
     --primary-foreground: 0 0% 100%;
-    --secondary:     265 35% 14%;
-    --secondary-foreground: 248 25% 88%;
-    --muted:         264 38% 12%;
-    --muted-foreground: 252 22% 58%;
+    --secondary:     265 20% 14%;
+    --secondary-foreground: 0 0% 88%;
+    --muted:         0 0% 12%;
+    --muted-foreground: 0 0% 52%;
     --accent:        265 50% 20%;
-    --accent-foreground: 248 25% 95%;
+    --accent-foreground: 0 0% 95%;
     --destructive:   265 60% 40%;
     --destructive-foreground: 0 0% 100%;
-    --border:        265 35% 13%;
-    --input:         265 38% 11%;
+    --border:        0 0% 14%;
+    --input:         0 0% 11%;
     --ring:          265 83% 62%;
     --shadow-neo-primary: 0 4px 18px rgba(139,92,246,0.50), 0 2px 8px rgba(139,92,246,0.30);
   }
@@ -110,7 +109,7 @@
   }
 
   html, body {
-    background: hsl(252, 50%, 4%);
+    background: hsl(0, 0%, 5%);
   }
 
   body {
@@ -188,11 +187,11 @@
 
   /* ── macOS Frosted header ─────────────────────────────────────────── */
   .glass-header {
-    background: rgba(14,8,35,0.75);
-    backdrop-filter: blur(28px) saturate(200%);
-    -webkit-backdrop-filter: blur(28px) saturate(200%);
+    background: rgba(8,8,10,0.80);
+    backdrop-filter: blur(28px) saturate(160%);
+    -webkit-backdrop-filter: blur(28px) saturate(160%);
     border-bottom: 1px solid rgba(255,255,255,0.06);
-    box-shadow: 0 1px 0 rgba(139,92,246,0.08), 0 4px 24px rgba(0,0,0,0.25);
+    box-shadow: 0 1px 0 rgba(139,92,246,0.08), 0 4px 24px rgba(0,0,0,0.30);
   }
 
   /* ── Standard card (inherits CSS vars) ───────────────────────────── */
