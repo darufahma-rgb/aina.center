@@ -554,42 +554,54 @@ export default function Dashboard() {
     <div className="animate-fade-in max-w-full">
 
       {/* ── Greeting ─────────────────────────────────────────────────── */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
-        <div>
-          <p className="text-[12px] text-[#999] mb-0.5">{today}</p>
-          <h1 className="text-2xl font-black text-[#1A1A1A] leading-tight">
-            {getGreeting()},{" "}
-            <span style={{ color: "#3E0FA3" }}>{displayName}</span>! 👋
-          </h1>
-        </div>
-
-        {/* World clock + Quick stats + PDF button */}
-        <div className="flex flex-wrap items-center gap-2 shrink-0">
-          <WorldClock />
-          <div className="flex items-center gap-2 px-3 py-1.5 rounded-full border border-black/[0.12] text-[12px] font-medium text-[#555]" style={{ background: "#F8F9FB" }}>
-            <Users className="h-3.5 w-3.5 text-[#3E0FA3]" />
-            {isLoading ? "—" : totalAnggota} Anggota
+      <div className="mb-5">
+        {/* Row 1: greeting text */}
+        <div className="flex items-start justify-between gap-2 mb-3">
+          <div className="min-w-0">
+            <p className="text-[11px] text-[#999] mb-0.5">{today}</p>
+            <h1 className="text-xl sm:text-2xl font-black text-[#1A1A1A] leading-tight">
+              {getGreeting()},{" "}
+              <span style={{ color: "#3E0FA3" }}>{displayName}</span>! 👋
+            </h1>
           </div>
-          <div className="flex items-center gap-2 px-3 py-1.5 rounded-full border border-black/[0.12] text-[12px] font-medium text-[#555]" style={{ background: "#F8F9FB" }}>
-            <CalendarDays className="h-3.5 w-3.5 text-[#3E0FA3]" />
-            {isLoading ? "—" : data?.upcomingAgenda ?? 0} Agenda
-          </div>
-          {isAdmin && (
-            <div className="flex items-center gap-2 px-3 py-1.5 rounded-full border border-black/[0.12] text-[12px] font-medium text-[#555]" style={{ background: "#F8F9FB" }}>
-              <Wallet className="h-3.5 w-3.5 text-[#3E0FA3]" />
-              {isLoading ? "—" : formatRp(data?.saldoTersedia ?? 0)}
-            </div>
-          )}
           <button
             onClick={handleExportPDF}
             disabled={isLoading || !data}
-            className="flex items-center gap-1.5 px-3 h-8 rounded-xl text-[12px] font-semibold text-white transition-all hover:opacity-90 active:scale-95 disabled:opacity-40"
+            className="shrink-0 flex items-center gap-1.5 px-3 h-8 rounded-xl text-[12px] font-semibold text-white transition-all hover:opacity-90 active:scale-95 disabled:opacity-40"
             style={{ background: "#3E0FA3" }}
             title="Download laporan PDF"
           >
             <Download className="h-3.5 w-3.5" />
-            Export PDF
+            <span className="hidden sm:inline">Export PDF</span>
+            <span className="sm:hidden">PDF</span>
           </button>
+        </div>
+
+        {/* Row 2: World clock — scrollable on mobile */}
+        <div className="overflow-x-auto pb-1 -mx-1 px-1">
+          <div className="flex items-center gap-2 w-max sm:w-auto">
+            <WorldClock />
+          </div>
+        </div>
+
+        {/* Row 3: Quick stats — scrollable chips */}
+        <div className="overflow-x-auto pb-1 mt-2 -mx-1 px-1">
+          <div className="flex items-center gap-2 w-max sm:w-auto">
+            <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full border border-black/[0.12] text-[11px] font-medium text-[#555]" style={{ background: "#F8F9FB" }}>
+              <Users className="h-3 w-3 text-[#3E0FA3]" />
+              {isLoading ? "—" : totalAnggota} Anggota
+            </div>
+            <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full border border-black/[0.12] text-[11px] font-medium text-[#555]" style={{ background: "#F8F9FB" }}>
+              <CalendarDays className="h-3 w-3 text-[#3E0FA3]" />
+              {isLoading ? "—" : data?.upcomingAgenda ?? 0} Agenda
+            </div>
+            {isAdmin && (
+              <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full border border-black/[0.12] text-[11px] font-medium text-[#555]" style={{ background: "#F8F9FB" }}>
+                <Wallet className="h-3 w-3 text-[#3E0FA3]" />
+                {isLoading ? "—" : formatRp(data?.saldoTersedia ?? 0)}
+              </div>
+            )}
+          </div>
         </div>
       </div>
 

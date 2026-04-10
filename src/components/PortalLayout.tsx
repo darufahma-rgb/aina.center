@@ -11,6 +11,7 @@ import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import { ProfileModal } from "@/components/ProfileModal";
 import AIChatWidget from "@/components/AIChatWidget";
+import { BottomNav } from "@/components/BottomNav";
 
 // ─── Nav config ───────────────────────────────────────────────────────────────
 
@@ -425,17 +426,17 @@ export function PortalLayout({ children }: PortalLayoutProps) {
               </button>
 
               <button
-                className="h-8 px-3.5 rounded-xl text-[12px] font-semibold text-white flex items-center gap-1.5 transition-all hover:opacity-90 active:scale-95"
+                className="h-8 w-8 sm:w-auto sm:px-3.5 rounded-xl text-[12px] font-semibold text-white flex items-center justify-center gap-1.5 transition-all hover:opacity-90 active:scale-95"
                 style={{ background: ACCENT }}
               >
-                <Plus className="h-3.5 w-3.5" />
-                Tambah Baru
+                <Plus className="h-3.5 w-3.5 shrink-0" />
+                <span className="hidden sm:inline">Tambah Baru</span>
               </button>
             </div>
           </header>
 
           {/* ── Page content ──────────────────────────────────────── */}
-          <main className="flex-1 p-5 pb-10 overflow-auto">
+          <main className="flex-1 p-4 sm:p-5 pb-24 lg:pb-10 overflow-auto">
             {children}
           </main>
         </div>
@@ -446,6 +447,9 @@ export function PortalLayout({ children }: PortalLayoutProps) {
 
       {/* ── AI Customer Service Chat Widget ──────────────────────────── */}
       <AIChatWidget />
+
+      {/* ── Mobile bottom nav ────────────────────────────────────────── */}
+      <BottomNav />
     </div>
   );
 }
