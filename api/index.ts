@@ -6,6 +6,8 @@ import { registerRoutes } from "../server/routes";
 
 const app = express();
 
+app.set("trust proxy", 1);
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
@@ -23,9 +25,9 @@ app.use(session({
     createTableIfMissing: true,
   }),
   cookie: {
-    secure: process.env.NODE_ENV === "production",
+    secure: true,
     httpOnly: true,
-    sameSite: "none",
+    sameSite: "lax",
     maxAge: 7 * 24 * 60 * 60 * 1000,
   },
 }));
