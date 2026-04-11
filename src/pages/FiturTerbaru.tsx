@@ -25,161 +25,61 @@ import MarkdownContent from "@/components/MarkdownContent";
 
 const GITHUB_REPO = "darciatemantaraglobal-gif/aina.web";
 
-// ─── AINA Feature Catalog ─────────────────────────────────────────────────────
+// ─── Extracted Feature Types ─────────────────────────────────────────────────
 
-const AINA_FEATURES = [
-  {
-    key: "dashboard",
-    name: "Dashboard",
-    emoji: "🏠",
-    description: "Pusat kendali utama AINA. Semua data penting organisasi dirangkum di sini — dari keuangan, agenda, hingga anggota. Bisa ekspor laporan PDF langsung!",
-    gradient: "linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 100%)",
-    border: "2px solid #a5b4fc",
-    iconBg: "linear-gradient(135deg, #4f46e5, #7c3aed)",
-    route: "/",
-    keywords: ["dashboard", "home", "beranda", "summary", "overview", "ringkasan"],
-  },
-  {
-    key: "notulensi",
-    name: "Notulensi",
-    emoji: "📝",
-    description: "Catat rapat sekali, akses selamanya. Notulensi rapat tersimpan rapi beserta keputusan dan tindak lanjutnya — tidak ada lagi catatan yang hilang!",
-    gradient: "linear-gradient(135deg, #fef9c3 0%, #fde68a 100%)",
-    border: "2px solid #fcd34d",
-    iconBg: "linear-gradient(135deg, #d97706, #f59e0b)",
-    route: "/notulensi",
-    keywords: ["notulensi", "notul", "meeting", "rapat", "minutes", "catatan rapat"],
-  },
-  {
-    key: "agenda",
-    name: "Agenda",
-    emoji: "📅",
-    description: "Jadwal kegiatan organisasi yang selalu up-to-date. Semua anggota bisa melihat agenda yang akan datang dan yang sudah selesai.",
-    gradient: "linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%)",
-    border: "2px solid #86efac",
-    iconBg: "linear-gradient(135deg, #16a34a, #22c55e)",
-    route: "/agenda",
-    keywords: ["agenda", "event", "jadwal", "schedule", "kegiatan"],
-  },
-  {
-    key: "keuangan",
-    name: "Keuangan",
-    emoji: "💰",
-    description: "Kelola keuangan organisasi dengan transparan. Pantau pemasukan, pengeluaran, saldo, dan data sponsor — semua tercatat dan bisa diaudit.",
-    gradient: "linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%)",
-    border: "2px solid #6ee7b7",
-    iconBg: "linear-gradient(135deg, #059669, #10b981)",
-    route: "/keuangan",
-    keywords: ["keuangan", "finance", "uang", "dana", "budget", "sponsor", "donasi", "income", "expense"],
-  },
-  {
-    key: "anggota",
-    name: "Anggota",
-    emoji: "👥",
-    description: "Direktori lengkap semua anggota aktif AINA. Kelola data, role, divisi, dan akses masing-masing anggota dengan mudah.",
-    gradient: "linear-gradient(135deg, #ede9fe 0%, #ddd6fe 100%)",
-    border: "2px solid #c4b5fd",
-    iconBg: "linear-gradient(135deg, #7c3aed, #8b5cf6)",
-    route: "/anggota",
-    keywords: ["anggota", "member", "user", "pengguna", "profile", "akun"],
-  },
-  {
-    key: "surat",
-    name: "Surat",
-    emoji: "📬",
-    description: "Arsip digital surat masuk dan keluar organisasi. Tidak perlu buka-buka folder fisik lagi — semua dokumen resmi tersimpan terstruktur di sini.",
-    gradient: "linear-gradient(135deg, #fff7ed 0%, #fed7aa 100%)",
-    border: "2px solid #fdba74",
-    iconBg: "linear-gradient(135deg, #ea580c, #f97316)",
-    route: "/surat",
-    keywords: ["surat", "letter", "dokumen", "document", "arsip"],
-  },
-  {
-    key: "inventaris",
-    name: "Inventaris",
-    emoji: "📦",
-    description: "Catat dan pantau semua barang dan aset organisasi. Siapa penanggung jawabnya, bagaimana kondisinya — semua terlacak jelas.",
-    gradient: "linear-gradient(135deg, #fce7f3 0%, #fbcfe8 100%)",
-    border: "2px solid #f9a8d4",
-    iconBg: "linear-gradient(135deg, #be185d, #ec4899)",
-    route: "/inventaris",
-    keywords: ["inventaris", "inventory", "barang", "aset", "asset", "item"],
-  },
-  {
-    key: "relasi",
-    name: "Relasi",
-    emoji: "🤝",
-    description: "Database hubungan organisasi dengan pihak luar — mitra, rekanan, dan kontak penting. Jaga jaringan AINA tetap kuat dan terorganisir.",
-    gradient: "linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%)",
-    border: "2px solid #7dd3fc",
-    iconBg: "linear-gradient(135deg, #0284c7, #0ea5e9)",
-    route: "/relasi",
-    keywords: ["relasi", "relation", "partner", "mitra", "kontak", "contact", "networking"],
-  },
-  {
-    key: "investor",
-    name: "Investor Mode",
-    emoji: "💼",
-    description: "Mode presentasi eksklusif untuk investor. Tampilkan data terpilih organisasi dalam format yang profesional dan meyakinkan.",
-    gradient: "linear-gradient(135deg, #f0fdf4 0%, #bbf7d0 100%)",
-    border: "2px solid #86efac",
-    iconBg: "linear-gradient(135deg, #15803d, #22c55e)",
-    route: "/investor",
-    keywords: ["investor", "invest", "presentasi", "pitch", "funding"],
-  },
-  {
-    key: "ai-report",
-    name: "AI Report",
-    emoji: "🤖",
-    description: "Ubah catatan mentah jadi laporan profesional dalam hitungan detik! AI membantu membuat notulensi, laporan progres, dan ringkasan investor secara otomatis.",
-    gradient: "linear-gradient(135deg, #f5f0ff 0%, #ede9fe 100%)",
-    border: "2px solid #c4b5fd",
-    iconBg: "linear-gradient(135deg, #3E0FA3, #7C3AED)",
-    route: "/ai-report",
-    keywords: ["report", "laporan", "ai report", "generate", "openai", "gpt", "ai"],
-  },
-  {
-    key: "fitur-terbaru",
-    name: "Fitur Terbaru",
-    emoji: "✨",
-    description: "Pantau terus perkembangan AINA! Lihat fitur-fitur baru yang sedang dikerjakan, riwayat update dari GitHub, dan baca penjelasan setiap perubahan dari AI.",
-    gradient: "linear-gradient(135deg, #fdf4ff 0%, #fae8ff 100%)",
-    border: "2px solid #e879f9",
-    iconBg: "linear-gradient(135deg, #a21caf, #d946ef)",
-    route: "/fitur",
-    keywords: ["fitur", "feature", "terbaru", "changelog", "update", "new", "baru"],
-  },
-  {
-    key: "ai-chat",
-    name: "AI Chat Asisten",
-    emoji: "💬",
-    description: "Ada yang bingung pakai portal? Tanya aja ke AI Chat! Asisten virtual AINA siap bantu 24/7 — klik ikon obrolan di pojok kanan bawah.",
-    gradient: "linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%)",
-    border: "2px solid #7dd3fc",
-    iconBg: "linear-gradient(135deg, #0369a1, #0ea5e9)",
-    route: null,
-    keywords: ["chat", "asisten", "ai chat", "assistant", "widget", "help"],
-  },
-] as const;
+interface ExtractedFeature {
+  id: string;
+  title: string;
+  category: string;
+  emoji: string;
+  explanation: string;
+  status: "baru" | "ditingkatkan" | "stabil";
+  commitCount: number;
+  lastUpdated: string;
+  commits: { sha: string; message: string; date: string; url: string }[];
+}
 
-// ─── Feature Groups for user-friendly display ────────────────────────────────
+const STATUS_CFG = {
+  baru:         { label: "🆕 Baru",          color: "#5B21B6", bg: "#EDE9FE" },
+  ditingkatkan: { label: "⬆️ Ditingkatkan",  color: "#1D4ED8", bg: "#DBEAFE" },
+  stabil:       { label: "✓ Stabil",         color: "#374151", bg: "#F3F4F6" },
+} as const;
 
-const FEATURE_GROUPS = [
-  { label: "Pusat Kendali",        icon: "🏠", keys: ["dashboard"] },
-  { label: "Kegiatan & Catatan",   icon: "📋", keys: ["agenda", "notulensi"] },
-  { label: "Data Organisasi",      icon: "👥", keys: ["anggota", "relasi"] },
-  { label: "Dokumen & Aset",       icon: "📦", keys: ["surat", "inventaris"] },
-  { label: "Keuangan",             icon: "💰", keys: ["keuangan"] },
-  { label: "Fitur Pintar (AI)",    icon: "🤖", keys: ["ai-report", "ai-chat"] },
-  { label: "Fitur Khusus",         icon: "✨", keys: ["investor", "fitur-terbaru"] },
-];
+const CATEGORY_ROUTE: Record<string, string> = {
+  "Keuangan":             "/keuangan",
+  "Anggota & Relasi":     "/anggota",
+  "Agenda & Kegiatan":    "/agenda",
+  "Notulensi & Rapat":    "/notulensi",
+  "Dokumen & Inventaris": "/inventaris",
+  "AI & Laporan Cerdas":  "/ai-report",
+};
 
-// ─── Feature Overview ─────────────────────────────────────────────────────────
+// ─── Feature Tab ────────────────────────────────────────────────────────────
+
+function FeatureSkeleton() {
+  return (
+    <div className="rounded-2xl border border-border bg-card p-5 space-y-3 animate-pulse">
+      <div className="flex items-center gap-3">
+        <div className="h-11 w-11 rounded-2xl bg-muted shrink-0" />
+        <div className="space-y-2 flex-1">
+          <div className="h-3 w-24 bg-muted rounded-full" />
+          <div className="h-4 w-40 bg-muted rounded-full" />
+        </div>
+      </div>
+      <div className="h-3 w-full bg-muted rounded-full" />
+      <div className="h-3 w-4/5 bg-muted rounded-full" />
+      <div className="flex gap-2 pt-1">
+        <div className="h-7 w-28 bg-muted rounded-xl" />
+        <div className="h-7 w-24 bg-muted rounded-xl" />
+      </div>
+    </div>
+  );
+}
 
 function FiturOverview() {
   const navigate = useNavigate();
 
-  const { data: commits } = useQuery<GitHubCommit[]>({
+  const { data: rawCommits, isLoading: loadingCommits } = useQuery<GitHubCommit[]>({
     queryKey: ["github-commits", 50],
     queryFn: async () => {
       const res = await fetch(
@@ -192,147 +92,253 @@ function FiturOverview() {
     staleTime: 1000 * 60 * 10,
   });
 
-  const thirtyDaysAgo = Date.now() - 30 * 24 * 60 * 60 * 1000;
+  const {
+    data: featureData,
+    isLoading: loadingFeatures,
+    isError,
+    refetch,
+    isFetching,
+  } = useQuery<{ features: ExtractedFeature[] }>({
+    queryKey: ["extracted-features", rawCommits?.[0]?.sha ?? ""],
+    queryFn: () =>
+      apiRequest("POST", "/api/github/extract-features", {
+        commits: rawCommits!.map((c) => ({
+          sha:     c.sha,
+          message: c.commit.message,
+          date:    c.commit.author.date,
+          url:     c.html_url,
+        })),
+      }),
+    enabled: !!rawCommits?.length,
+    staleTime: 1000 * 60 * 30,
+  });
 
-  function hasRecentActivity(keywords: readonly string[]) {
-    if (!commits) return false;
-    return commits.some((c) => {
-      const lower = c.commit.message.toLowerCase();
-      const withinMonth = new Date(c.commit.author.date).getTime() > thirtyDaysAgo;
-      return withinMonth && keywords.some((kw) => lower.includes(kw));
-    });
+  const [historyOpen, setHistoryOpen] = useState<string | null>(null);
+  const [explainOpen, setExplainOpen]  = useState<string | null>(null);
+
+  const features  = featureData?.features ?? [];
+  const isLoading = loadingCommits || (!!rawCommits?.length && loadingFeatures);
+
+  if (isLoading) {
+    return (
+      <div className="space-y-4">
+        <div
+          className="rounded-2xl px-6 py-4"
+          style={{ background: "linear-gradient(135deg, #1E0A3C 0%, #3E0FA3 65%, #7C3AED 100%)" }}
+        >
+          <p className="text-white font-bold text-base">Menganalisis riwayat pengembangan AINA...</p>
+          <p className="text-white/60 text-[12px] mt-1">AI sedang membaca dan merangkum semua perubahan 🔍</p>
+        </div>
+        {[1, 2, 3, 4, 5].map((i) => <FeatureSkeleton key={i} />)}
+      </div>
+    );
   }
 
-  const featureMap = Object.fromEntries(AINA_FEATURES.map((f) => [f.key, f]));
+  if (isError || !features.length) {
+    return (
+      <div className="rounded-2xl border border-border p-8 text-center space-y-3">
+        <p className="text-2xl">😕</p>
+        <p className="font-semibold text-foreground">Tidak dapat memuat data fitur</p>
+        <p className="text-[13px] text-muted-foreground">Pastikan koneksi internet stabil dan coba lagi.</p>
+        <button
+          onClick={() => refetch()}
+          className="mt-2 flex items-center gap-1.5 mx-auto text-[12px] font-semibold px-4 py-2 rounded-xl"
+          style={{ background: "#EDE9FE", color: "#7C3AED" }}
+        >
+          <RefreshCw className="h-3.5 w-3.5" /> Coba Lagi
+        </button>
+      </div>
+    );
+  }
 
   return (
-    <div className="space-y-7">
-
-      {/* Welcome hero */}
+    <div className="space-y-5">
+      {/* Hero header */}
       <div
         className="rounded-2xl px-6 py-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4"
         style={{ background: "linear-gradient(135deg, #1E0A3C 0%, #3E0FA3 65%, #7C3AED 100%)" }}
       >
-        <div className="space-y-1">
-          <p className="text-white font-bold text-lg leading-tight">
-            Selamat datang di AINA Centre! 👋
-          </p>
-          <p className="text-white/70 text-[13px] leading-relaxed max-w-sm">
-            Semua yang kamu butuhkan untuk mengelola organisasi ada di sini.
-            Pilih fitur di bawah untuk mulai.
+        <div className="space-y-1.5">
+          <p className="text-white font-bold text-[18px] leading-tight">Apa saja fitur AINA? 🚀</p>
+          <p className="text-white/65 text-[13px] leading-relaxed max-w-md">
+            Dirangkum otomatis dari riwayat pengembangan — diubah menjadi penjelasan yang mudah dipahami semua orang.
           </p>
         </div>
-        <div className="flex items-center gap-3 flex-wrap">
+        <div className="flex items-center gap-2.5 flex-wrap">
           <div
             className="px-4 py-2.5 rounded-xl text-center"
-            style={{ background: "rgba(255,255,255,0.12)" }}
+            style={{ background: "rgba(255,255,255,0.13)" }}
           >
-            <p className="text-white font-bold text-2xl leading-none">{AINA_FEATURES.length}</p>
-            <p className="text-white/60 text-[10px] mt-0.5">fitur tersedia</p>
+            <p className="text-white font-bold text-xl leading-none">{features.length}</p>
+            <p className="text-white/55 text-[10px] mt-0.5">area fitur</p>
           </div>
-          <div
-            className="px-4 py-2.5 rounded-xl text-center"
-            style={{ background: "rgba(255,255,255,0.12)" }}
+          <button
+            onClick={() => refetch()}
+            disabled={isFetching}
+            className="h-10 w-10 rounded-xl flex items-center justify-center transition-opacity hover:opacity-75 disabled:opacity-50"
+            style={{ background: "rgba(255,255,255,0.13)" }}
+            title="Refresh"
           >
-            <p className="text-white font-bold text-2xl leading-none">{FEATURE_GROUPS.length}</p>
-            <p className="text-white/60 text-[10px] mt-0.5">kategori</p>
-          </div>
+            <RefreshCw className={`h-4 w-4 text-white ${isFetching ? "animate-spin" : ""}`} />
+          </button>
         </div>
       </div>
 
-      {/* How to use tip */}
+      {/* Info tip */}
       <div
-        className="flex items-start gap-3 px-4 py-3 rounded-xl text-[12px]"
+        className="flex items-start gap-2.5 px-4 py-3 rounded-xl"
         style={{ background: "#F0F4FF", border: "1px solid #C7D2FE" }}
       >
-        <span className="text-lg leading-none mt-0.5">💡</span>
-        <p className="text-[#3730A3] leading-relaxed">
-          <strong>Cara pakai:</strong> Klik tombol <strong>Buka</strong> pada fitur mana saja untuk langsung menggunakannya.
-          Fitur bertanda <strong>🆕 Baru</strong> baru saja diperbarui oleh tim pengembang.
+        <span className="text-base leading-none mt-0.5">💡</span>
+        <p className="text-[12px] text-[#3730A3] leading-relaxed">
+          <strong>Cara baca halaman ini:</strong> Setiap kartu mewakili satu area fitur AINA yang
+          sedang aktif dikembangkan. Klik <strong>Lihat Riwayat</strong> untuk melihat perubahan
+          terkait, atau <strong>AI Jelaskan</strong> untuk penjelasan lebih detail.
         </p>
       </div>
 
-      {/* Feature groups */}
-      <div className="space-y-8">
-        {FEATURE_GROUPS.map((group) => {
-          const groupFeatures = group.keys.map((k) => featureMap[k]).filter(Boolean);
+      {/* Feature cards */}
+      <div className="space-y-3">
+        {features.map((f) => {
+          const sc      = STATUS_CFG[f.status] ?? STATUS_CFG.stabil;
+          const isHOpen = historyOpen === f.id;
+          const isEOpen = explainOpen === f.id;
+          const fRoute  = CATEGORY_ROUTE[f.category] ?? null;
+
           return (
-            <div key={group.label} className="space-y-3">
-              {/* Group header */}
-              <div className="flex items-center gap-2">
-                <span className="text-base">{group.icon}</span>
-                <h2 className="font-bold text-sm text-foreground">{group.label}</h2>
-                <div className="flex-1 h-px bg-border/60" />
+            <div
+              key={f.id}
+              className="rounded-2xl border border-border bg-card overflow-hidden transition-all hover:shadow-md"
+              style={{ borderLeft: "4px solid #7C3AED" }}
+            >
+              {/* Main body */}
+              <div className="p-5">
+                <div className="flex items-start gap-3">
+                  <div
+                    className="h-12 w-12 rounded-2xl flex items-center justify-center text-2xl shrink-0 shadow"
+                    style={{ background: "linear-gradient(135deg, #3E0FA3, #7C3AED)" }}
+                  >
+                    {f.emoji}
+                  </div>
+                  <div className="flex-1 min-w-0 pt-0.5">
+                    <div className="flex items-center gap-1.5 flex-wrap mb-1">
+                      <span
+                        className="text-[10px] font-bold px-2 py-0.5 rounded-full border"
+                        style={{ background: "#F5F0FF", color: "#7C3AED", borderColor: "#C4B5FD" }}
+                      >
+                        {f.category}
+                      </span>
+                      <span
+                        className="text-[10px] font-bold px-2 py-0.5 rounded-full"
+                        style={{ background: sc.bg, color: sc.color }}
+                      >
+                        {sc.label}
+                      </span>
+                    </div>
+                    <h3 className="font-bold text-[16px] text-foreground leading-tight">{f.title}</h3>
+                  </div>
+                </div>
+
+                <p className="text-[13px] text-foreground/70 mt-3 leading-relaxed">{f.explanation}</p>
+
+                <div className="flex items-center gap-3 mt-3 pt-2 border-t border-border/40">
+                  <span className="flex items-center gap-1 text-[11px] text-muted-foreground">
+                    <GitCommit className="h-3 w-3" />
+                    <strong className="text-foreground">{f.commitCount}</strong> perubahan tercatat
+                  </span>
+                  <span className="text-border">·</span>
+                  <span className="flex items-center gap-1 text-[11px] text-muted-foreground">
+                    <Clock className="h-3 w-3" />
+                    Diperbarui {timeAgo(f.lastUpdated)}
+                  </span>
+                </div>
               </div>
 
-              {/* Cards row */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                {groupFeatures.map((f) => {
-                  const isNew = hasRecentActivity(f.keywords);
-                  return (
-                    <div
-                      key={f.key}
-                      className="rounded-2xl overflow-hidden flex flex-col transition-all hover:-translate-y-0.5 hover:shadow-lg"
-                      style={{ border: f.border }}
+              {/* Expanded: commit history */}
+              {isHOpen && (
+                <div
+                  className="px-5 pb-4 pt-3 border-t border-border/40 space-y-2.5"
+                  style={{ background: "#FAFAFA" }}
+                >
+                  <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground mb-2">
+                    Perubahan terkait
+                  </p>
+                  {f.commits.map((c) => (
+                    <a
+                      key={c.sha}
+                      href={c.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-start gap-2 group"
                     >
-                      {/* Card header strip */}
-                      <div
-                        className="px-4 pt-4 pb-3 flex items-start justify-between gap-2"
-                        style={{ background: f.gradient }}
-                      >
-                        <div className="flex items-center gap-2.5">
-                          <div
-                            className="h-10 w-10 rounded-xl flex items-center justify-center text-xl shadow-sm shrink-0"
-                            style={{ background: f.iconBg }}
-                          >
-                            {f.emoji}
-                          </div>
-                          <div>
-                            <h3 className="font-bold text-[14px] text-foreground leading-tight">
-                              {f.name}
-                            </h3>
-                            {isNew && (
-                              <span
-                                className="inline-block text-[10px] font-bold px-1.5 py-0.5 rounded-md mt-0.5"
-                                style={{ background: "#7C3AED", color: "#fff" }}
-                              >
-                                🆕 Baru
-                              </span>
-                            )}
-                          </div>
-                        </div>
-                        {f.route ? (
-                          <button
-                            onClick={() => navigate(f.route!)}
-                            className="shrink-0 flex items-center gap-1 text-[11px] font-bold px-3 py-1.5 rounded-xl transition-all hover:opacity-90 active:scale-95 shadow-sm"
-                            style={{ background: f.iconBg, color: "#fff" }}
-                          >
-                            Buka <Navigation className="h-3 w-3" />
-                          </button>
-                        ) : (
-                          <span
-                            className="shrink-0 text-[10px] px-2 py-1 rounded-xl font-medium"
-                            style={{ background: "rgba(0,0,0,0.06)", color: "#666" }}
-                          >
-                            Selalu aktif
-                          </span>
-                        )}
-                      </div>
+                      <code className="shrink-0 text-[10px] bg-muted px-1.5 py-0.5 rounded font-mono text-muted-foreground mt-0.5">
+                        {c.sha.slice(0, 7)}
+                      </code>
+                      <span className="text-[12px] text-foreground/75 group-hover:text-primary transition-colors leading-relaxed">
+                        {c.message}
+                      </span>
+                      <ExternalLink className="h-3 w-3 text-muted-foreground shrink-0 mt-0.5 opacity-0 group-hover:opacity-100 transition-opacity" />
+                    </a>
+                  ))}
+                </div>
+              )}
 
-                      {/* Description */}
-                      <div className="px-4 py-3 bg-white/80">
-                        <p className="text-[12px] text-foreground/70 leading-relaxed">
-                          {f.description}
-                        </p>
-                      </div>
-                    </div>
-                  );
-                })}
+              {/* Expanded: AI explanation */}
+              {isEOpen && (
+                <div
+                  className="px-5 pb-4 pt-3 border-t border-purple-100"
+                  style={{ background: "linear-gradient(135deg, #F5F0FF 0%, #EDE9FE 100%)" }}
+                >
+                  <div className="flex items-start gap-2">
+                    <span className="text-base shrink-0">✨</span>
+                    <p className="text-[13px] text-[#3E0FA3] leading-relaxed font-medium">{f.explanation}</p>
+                  </div>
+                  <p className="text-[10px] text-purple-400 mt-2">
+                    Penjelasan dihasilkan otomatis oleh AI berdasarkan riwayat pengembangan
+                  </p>
+                </div>
+              )}
+
+              {/* Action buttons */}
+              <div className="px-5 pb-4 flex items-center gap-2 flex-wrap">
+                <button
+                  onClick={() => { setHistoryOpen(isHOpen ? null : f.id); setExplainOpen(null); }}
+                  className="flex items-center gap-1.5 text-[11px] font-semibold px-3 py-1.5 rounded-xl border transition-all hover:bg-muted"
+                  style={{ borderColor: "#C4B5FD", color: "#7C3AED" }}
+                >
+                  <GitCommit className="h-3 w-3" />
+                  {isHOpen ? "Tutup Riwayat" : "Lihat Riwayat"}
+                </button>
+                <button
+                  onClick={() => { setExplainOpen(isEOpen ? null : f.id); setHistoryOpen(null); }}
+                  className="flex items-center gap-1.5 text-[11px] font-semibold px-3 py-1.5 rounded-xl transition-all"
+                  style={{
+                    background: isEOpen ? "#7C3AED" : "#EDE9FE",
+                    color:      isEOpen ? "#fff"    : "#7C3AED",
+                  }}
+                >
+                  <Wand2 className="h-3 w-3" />
+                  {isEOpen ? "Tutup" : "AI Jelaskan"}
+                </button>
+                {fRoute && (
+                  <button
+                    onClick={() => navigate(fRoute)}
+                    className="flex items-center gap-1.5 text-[11px] font-semibold px-3 py-1.5 rounded-xl transition-all hover:opacity-80"
+                    style={{ background: "linear-gradient(135deg, #3E0FA3, #7C3AED)", color: "#fff" }}
+                  >
+                    <Navigation className="h-3 w-3" />
+                    Buka Fitur
+                  </button>
+                )}
               </div>
             </div>
           );
         })}
       </div>
+
+      <p className="text-[11px] text-center text-muted-foreground pb-2">
+        Dihasilkan otomatis dari riwayat pengembangan · Diperbarui setiap 30 menit
+      </p>
     </div>
   );
 }

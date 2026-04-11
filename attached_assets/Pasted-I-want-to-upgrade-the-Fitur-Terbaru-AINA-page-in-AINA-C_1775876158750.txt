@@ -1,0 +1,168 @@
+I want to upgrade the “Fitur Terbaru AINA” page in AINA Center so it automatically generates a clean feature overview based on GitHub commit history from the AINA Web repository.
+
+Important context:
+- AINA Center is the internal portal
+- GitHub commit history is intentionally fetched from the AINA Web repo
+- I want the page to automatically turn commit history into understandable product features
+- The goal is not to show raw commits as the main experience, but to transform them into elegant, easy-to-understand feature cards
+
+==================================================
+MAIN GOAL
+==================================================
+
+Make the “Fitur” tab automatically display what features AINA has, based on GitHub commit history.
+
+The page should:
+- analyze commit history from the AINA Web repo
+- group related commits into feature-level summaries
+- explain features in simple Indonesian language
+- present them in an elegant, accessible, and product-oriented way
+
+==================================================
+DESIRED USER EXPERIENCE
+==================================================
+
+Instead of showing users only raw technical commits, the page should show:
+
+- feature name
+- feature category
+- simple explanation
+- status
+- last updated time
+- related commits
+- actions such as:
+  - Lihat Riwayat
+  - AI Jelaskan
+  - Buka Detail
+
+This should feel like a product evolution page, not a developer-only log page.
+
+==================================================
+DATA SOURCE
+==================================================
+
+Use GitHub commit history from the existing AINA Web repo integration.
+
+Do not remove the GitHub History tab.
+Instead:
+- keep GitHub History as the raw technical source
+- make the “Fitur” tab become the interpreted / human-friendly version of that history
+
+==================================================
+FEATURE GENERATION LOGIC
+==================================================
+
+Build a feature extraction layer that does the following:
+
+1. Read recent commits from GitHub history
+2. Detect patterns or related commit clusters
+3. Group commits into possible product features or improvements
+4. Generate a human-readable feature title
+5. Generate a simple feature explanation in Indonesian
+6. Assign a rough category such as:
+   - AI
+   - UI/UX
+   - Akademik
+   - Keagamaan
+   - Performa
+   - Sistem
+   - Admin
+   - Lainnya
+7. Mark the latest update time
+8. Keep references to the original supporting commits
+
+This can start with a practical hybrid approach:
+- keyword matching
+- simple grouping logic
+- optional OpenAI assistance for naming and explaining
+
+==================================================
+AI ASSISTANCE
+==================================================
+
+Use OpenAI API where useful to:
+- turn grouped commit changes into a clean feature title
+- generate a very simple Indonesian explanation
+- avoid technical jargon
+- explain what the feature does and why it matters
+
+Rules:
+- do not invent fake features
+- stay grounded in real commit history
+- preserve meaning
+- keep explanations short and clear
+- make it understandable to non-technical users
+
+If OpenAI is used:
+- use backend only
+- use OPENAI_API_KEY from environment variables
+- reuse existing AI service patterns if possible
+
+==================================================
+PAGE DESIGN
+==================================================
+
+Redesign the “Fitur” tab so it feels elegant and easy to access.
+
+Design requirements:
+- clean card layout
+- strong spacing
+- purple AINA accent
+- premium SaaS feel
+- simple visual hierarchy
+- category badges
+- last updated info
+- optional related commit count
+- graceful empty/loading states
+
+The page should not feel crowded.
+It should feel like a curated feature showcase generated from product development history.
+
+==================================================
+CARD CONTENT
+==================================================
+
+Each feature card should ideally include:
+- feature title
+- category badge
+- short explanation
+- supporting commit count
+- latest update time
+- optional status badge such as:
+  - Baru
+  - Ditingkatkan
+  - Stabil
+- action buttons:
+  - Lihat Riwayat
+  - AI Jelaskan
+  - Buka Detail
+
+==================================================
+INTERACTION
+==================================================
+
+- Clicking “Lihat Riwayat” should open related commits
+- Clicking “AI Jelaskan” should show a simpler explanation if available
+- Clicking “Buka Detail” can expand the card or open a dedicated feature detail view
+
+==================================================
+IMPORTANT GOAL
+==================================================
+
+The “Fitur” tab should automatically answer this question:
+
+“Apa saja fitur yang sudah dimiliki dan dikembangkan oleh AINA?”
+
+without forcing users to read raw commit logs.
+
+==================================================
+FINAL RESULT
+==================================================
+
+Turn the Fitur page into:
+GitHub development history
+→ interpreted feature summaries
+→ elegant feature cards
+→ easy understanding for all users
+
+Please inspect the current AINA Center codebase first and integrate this into the existing GitHub History + Fitur page structure, instead of rebuilding the page from scratch.

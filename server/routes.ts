@@ -923,6 +923,155 @@ Aturan:
     }
   });
 
+  // ── GitHub: Extract Features from Commit History ─────────────────────────────
+
+  app.post("/api/github/extract-features", requireAuth, async (req, res) => {
+    try {
+      const { commits } = req.body as {
+        commits: { sha: string; message: string; date: string; url: string }[];
+      };
+      if (!commits || !Array.isArray(commits) || commits.length === 0) {
+        return res.status(400).json({ error: "commits diperlukan." });
+      }
+
+      const CATEGORIES = [
+        { name: "AI & Laporan Cerdas",    emoji: "🤖", keywords: ["ai", "openai", "gpt", "chat", "report", "laporan", "explain", "insight", "simple-explain"] },
+        { name: "Tampilan & Pengalaman",  emoji: "🎨", keywords: ["ui", "style", "design", "layout", "theme", "css", "component", "button", "icon", "color", "responsive", "animate", "card", "modal", "page", "view", "dark", "light", "markdown", "font"] },
+        { name: "Keuangan",               emoji: "💰", keywords: ["keuangan", "finance", "dana", "uang", "budget", "sponsor", "donasi"] },
+        { name: "Anggota & Relasi",       emoji: "👥", keywords: ["anggota", "member", "relasi", "partner", "kontak", "user", "profile"] },
+        { name: "Agenda & Kegiatan",      emoji: "📅", keywords: ["agenda", "event", "jadwal", "schedule", "kegiatan"] },
+        { name: "Notulensi & Rapat",      emoji: "📝", keywords: ["notulensi", "notul", "rapat", "meeting", "minutes"] },
+        { name: "Dokumen & Inventaris",   emoji: "📦", keywords: ["surat", "inventaris", "dokumen", "aset", "barang", "letter"] },
+        { name: "Sistem & Infrastruktur", emoji: "⚙️", keywords: ["auth", "security", "database", "schema", "migration", "api", "server", "backend", "route", "login", "password", "session", "build", "deploy", "vercel", "supabase", "vite", "esbuild"] },
+        { name: "Perbaikan & Performa",   emoji: "🔧", keywords: ["fix", "bug", "error", "performance", "optimize", "cache", "bundle", "speed", "patch", "hotfix", "improve", "update"] },
+        { name: "Fitur Baru",             emoji: "✨", keywords: ["fitur", "feature", "changelog", "baru", "tambah", "add", "new"] },
+      ];
+
+      // Group commits by first matching category
+      const grouped: Record<string, { commits: typeof commits; cat: typeof CATEGORIES[0] }> = {};
+      for (const commit of commits) {
+        const lower = commit.message.toLowerCase();
+        let matched = false;
+        for (const cat of CATEGORIES) {
+          if (cat.keywords.some((kw) => lower.includes(kw))) {
+            if (!grouped[cat.name]) grouped[cat.name] = { commits: [], cat };
+            grouped[cat.name].commits.push(commit);
+            matched = true;
+            break;
+          }
+        }
+        if (!matched) {
+          const misc = "Lainnya";
+          if (!grouped[misc]) grouped[misc] = { commits: [], cat: { name: "Lainnya", emoji: "📌", keywords: [] } };
+          grouped[misc].commits.push(commit);
+        }
+      }
+
+      const sevenDays  = Date.now() - 7  * 24 * 60 * 60 * 1000;
+      const thirtyDays = Date.now() - 30 * 24 * 60 * 60 * 1000;
+
+      const groups = Object.entries(grouped)
+        .filter(([, v]) => v.commits.length > 0)
+        .map(([, v]) => {
+          const sorted = [...v.commits].sort(
+            (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+          );
+          const isNew     = sorted.some((c) => new Date(c.date).getTime() > sevenDays);
+          const isRecent  = sorted.some((c) => new Date(c.date).getTime() > thirtyDays);
+          const status    = isNew ? "baru" : isRecent ? "ditingkatkan" : "stabil";
+          return {
+            category:    v.cat.name,
+            emoji:       v.cat.emoji,
+            status,
+            commitCount: v.commits.length,
+            lastUpdated: sorted[0].date,
+            commits:     sorted.slice(0, 6).map((c) => ({
+              sha:     c.sha,
+              message: c.message.split("\n")[0].slice(0, 90),
+              date:    c.date,
+              url:     c.url,
+            })),
+            messages: sorted.slice(0, 6).map((c) => c.message.split("\n")[0]).join("\n"),
+          };
+        })
+        .sort((a, b) => new Date(b.lastUpdated).getTime() - new Date(a.lastUpdated).getTime())
+        .slice(0, 9);
+
+      // Single AI call for all groups
+      let aiMap: Record<string, { title: string; explanation: string }> = {};
+      try {
+        const apiKey = process.env.OPENAI_API_KEY;
+        if (apiKey && groups.length > 0) {
+          const OpenAI = (await import("openai")).default;
+          const client = new OpenAI({ apiKey });
+
+          const groupSummary = groups
+            .map((g, i) => `Kelompok ${i + 1} — ${g.category}:\n${g.messages}`)
+            .join("\n\n---\n\n");
+
+          const aiResponse = await client.chat.completions.create({
+            model: "gpt-4o-mini",
+            messages: [
+              {
+                role: "system",
+                content: `Kamu adalah asisten produk AINA Centre yang ramah dan komunikatif.
+Tugasmu: ubah kelompok catatan teknis pengembangan menjadi ringkasan fitur yang mudah dipahami siapapun.
+Gunakan Bahasa Indonesia yang hangat, hindari jargon teknis.
+Fokus pada manfaat untuk pengguna, bukan detail implementasi.
+Balas HANYA dalam format JSON yang diminta.`,
+              },
+              {
+                role: "user",
+                content: `Berikut kelompok perubahan dari pengembangan portal AINA:
+
+${groupSummary}
+
+Untuk setiap kelompok, buatkan:
+1. "title": judul fitur singkat dan menarik (max 5 kata, Bahasa Indonesia)
+2. "explanation": penjelasan 2–3 kalimat tentang apa manfaatnya bagi pengguna (Bahasa Indonesia, tanpa jargon teknis)
+
+Format JSON:
+{
+  "features": [
+    { "category": "<nama kategori persis>", "title": "...", "explanation": "..." }
+  ]
+}`,
+              },
+            ],
+            max_tokens: 1400,
+            temperature: 0.55,
+            response_format: { type: "json_object" },
+          });
+
+          const content = aiResponse.choices[0]?.message?.content ?? "{}";
+          const parsed = JSON.parse(content) as { features?: { category: string; title: string; explanation: string }[] };
+          for (const f of parsed.features ?? []) {
+            aiMap[f.category] = { title: f.title, explanation: f.explanation };
+          }
+        }
+      } catch (aiErr) {
+        console.error("Feature extraction AI error:", aiErr);
+      }
+
+      const features = groups.map((g) => ({
+        id:          g.category.toLowerCase().replace(/[^a-z0-9]/g, "-"),
+        title:       aiMap[g.category]?.title       ?? g.category,
+        category:    g.category,
+        emoji:       g.emoji,
+        explanation: aiMap[g.category]?.explanation ?? `Perkembangan terkini di area ${g.category} pada portal AINA Centre.`,
+        status:      g.status,
+        commitCount: g.commitCount,
+        lastUpdated: g.lastUpdated,
+        commits:     g.commits,
+      }));
+
+      res.json({ features });
+    } catch (err: any) {
+      console.error("Extract features error:", err);
+      res.status(500).json({ error: err.message ?? "Terjadi kesalahan." });
+    }
+  });
+
   app.post("/api/ai-chat", requireAuth, async (req, res) => {
     try {
       const { messages } = req.body as { messages: { role: "user" | "assistant"; content: string }[] };
