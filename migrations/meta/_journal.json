@@ -8,6 +8,13 @@
       "when": 1775867364492,
       "tag": "0000_remarkable_shotgun",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1775874629949,
+      "tag": "0001_commit_insights",
+      "breakpoints": true
     }
   ]
 }
