@@ -3,7 +3,27 @@ import bcrypt from "bcryptjs";
 import multer from "multer";
 import path from "path";
 import fs from "fs";
+import { createClient } from "@supabase/supabase-js";
 import { requireAuth, requireAdmin } from "./auth";
+
+function getSupabaseClient() {
+  const url = process.env.SUPABASE_URL;
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!url || !key) return null;
+  return createClient(url, key);
+}
+
+async function uploadAvatarToSupabase(filePath: string, filename: string, mimeType: string): Promise<string | null> {
+  const supabase = getSupabaseClient();
+  if (!supabase) return null;
+  const fileBuffer = fs.readFileSync(filePath);
+  const { data, error } = await supabase.storage
+    .from("avatars")
+    .upload(filename, fileBuffer, { contentType: mimeType, upsert: true });
+  if (error) { console.error("Supabase upload error:", error.message); return null; }
+  const { data: { publicUrl } } = supabase.storage.from("avatars").getPublicUrl(filename);
+  return publicUrl;
+}
 import { storage } from "./storage";
 import {
   insertNotulensiSchema,
@@ -93,7 +113,19 @@ export function registerRoutes(app: Router) {
     avatarUpload.single("avatar")(req, res, async (err) => {
       if (err) return res.status(400).json({ message: err.message });
       if (!req.file) return res.status(400).json({ message: "No file uploaded" });
-      const avatarUrl = `/uploads/${req.file.filename}`;
+
+      let avatarUrl = `/uploads/${req.file.filename}`;
+
+      const supabaseUrl = await uploadAvatarToSupabase(
+        req.file.path,
+        req.file.filename,
+        req.file.mimetype,
+      );
+      if (supabaseUrl) {
+        avatarUrl = supabaseUrl;
+        try { fs.unlinkSync(req.file.path); } catch {}
+      }
+
       const updated = await storage.updateUser(req.session.userId!, { avatarUrl });
       res.json(updated);
     });
