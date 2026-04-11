@@ -809,15 +809,30 @@ export function registerRoutes(app: Router) {
       const OpenAI = (await import("openai")).default;
       const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
-      const prompt = diffText
-        ? `Kamu adalah asisten teknis AINA Centre. Jelaskan perubahan kode berikut dalam bahasa Indonesia yang mudah dipahami oleh non-developer (maks 5 poin singkat).\n\nPesan commit: "${message.split("\n")[0]}"\n\nDiff:\n${diffText}`
-        : `Kamu adalah asisten teknis AINA Centre. Berdasarkan pesan commit berikut, jelaskan kemungkinan perubahan yang dilakukan dalam bahasa Indonesia yang mudah dipahami (maks 5 poin singkat).\n\nPesan commit: "${message.split("\n")[0]}"`;
+      const systemPrompt = `Kamu adalah asisten AINA Centre yang ramah, seru, dan mudah dimengerti siapa saja — bukan cuma developer!
+
+Tugasmu: jelaskan perubahan commit dengan gaya yang:
+- **Santai tapi informatif** — kayak ngobrol sama teman yang paham teknologi
+- Mudah dimengerti oleh siapapun, termasuk yang tidak berlatar belakang teknis
+- Pakai format **Markdown** — gunakan bold untuk kata/frasa penting, bullet list untuk poin-poin
+- Maksimal 4–5 poin singkat
+- Ceritakan: **apa yang berubah** dan **kenapa itu penting atau berguna**
+- Hindari jargon teknis yang berat; kalau terpaksa pakai, jelaskan singkat
+
+Jangan mengarang fakta yang tidak ada di pesan commit atau diff.`;
+
+      const userPrompt = diffText
+        ? `Pesan commit: **"${message.split("\n")[0]}"**\n\nDiff kode:\n${diffText}`
+        : `Pesan commit: **"${message.split("\n")[0]}"**\n\nBerdasarkan pesan commit ini, jelaskan kemungkinan perubahan yang dilakukan.`;
 
       const response = await client.chat.completions.create({
         model: "gpt-4o-mini",
-        messages: [{ role: "user", content: prompt }],
-        max_tokens: 400,
-        temperature: 0.4,
+        messages: [
+          { role: "system", content: systemPrompt },
+          { role: "user", content: userPrompt },
+        ],
+        max_tokens: 500,
+        temperature: 0.6,
       });
 
       const explanation = response.choices[0]?.message?.content ?? "Tidak dapat menghasilkan penjelasan.";
@@ -861,13 +876,27 @@ export function registerRoutes(app: Router) {
         ? `Pesan commit: "${message.split("\n")[0]}"\n\nPenjelasan teknis:\n${detailedExplanation}`
         : `Pesan commit: "${message.split("\n")[0]}"`;
 
-      const prompt = `Kamu adalah asisten produk AINA. Buat penjelasan SANGAT SEDERHANA dalam Bahasa Indonesia (maksimal 2-3 kalimat pendek) tentang perubahan berikut. Jangan gunakan istilah teknis. Jelaskan apa yang berubah dan kenapa penting bagi pengguna. Jangan mengarang fakta baru.\n\n${context}`;
+      const systemPrompt = `Kamu adalah asisten AINA Centre yang ramah dan seru! 🎉
+
+Tugasmu: ubah penjelasan teknis commit menjadi ringkasan yang **super gampang dipahami** siapa saja.
+
+Aturan:
+- Tulis dalam Bahasa Indonesia yang santai dan hangat
+- Maksimal **2–3 kalimat pendek** saja
+- **Tebalkan** kata atau frasa yang paling penting
+- Ceritakan: apa yang berubah + kenapa pengguna akan merasakannya
+- Nol jargon teknis — kalau terpaksa, ganti dengan analogi sehari-hari
+- Jangan mengarang fakta baru
+- Format Markdown boleh dipakai`;
 
       const response = await client.chat.completions.create({
         model: "gpt-4o-mini",
-        messages: [{ role: "user", content: prompt }],
+        messages: [
+          { role: "system", content: systemPrompt },
+          { role: "user", content: context },
+        ],
         max_tokens: 200,
-        temperature: 0.5,
+        temperature: 0.65,
       });
 
       const simpleExplanation = response.choices[0]?.message?.content ?? "Tidak dapat menghasilkan penjelasan sederhana.";
