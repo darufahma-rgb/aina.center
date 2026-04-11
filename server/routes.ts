@@ -21,7 +21,9 @@ import {
 import { generateReport, type ReportMode } from "./aiReport";
 import { z } from "zod";
 
-const uploadsDir = path.join(process.cwd(), "public/uploads");
+const uploadsDir = process.env.NODE_ENV === "production"
+  ? "/tmp/uploads"
+  : path.join(process.cwd(), "public/uploads");
 if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir, { recursive: true });
 
 const avatarUpload = multer({
