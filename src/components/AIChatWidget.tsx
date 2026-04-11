@@ -115,14 +115,15 @@ export default function AIChatWidget() {
       {/* ── Chat panel ─────────────────────────────────────────── */}
       <div
         className={cn(
-          "fixed z-50 flex flex-col rounded-3xl shadow-2xl overflow-hidden transition-all duration-300 origin-bottom-right",
-          "bottom-[88px] left-3 right-3 lg:bottom-24 lg:left-auto lg:right-6 lg:w-[360px]",
+          "fixed z-[60] flex flex-col shadow-2xl overflow-hidden transition-all duration-300",
+          "bottom-[76px] left-0 right-0 rounded-t-3xl lg:rounded-3xl lg:bottom-24 lg:left-auto lg:right-6 lg:w-[360px]",
           open
-            ? "opacity-100 scale-100 pointer-events-auto"
-            : "opacity-0 scale-90 pointer-events-none",
+            ? "opacity-100 translate-y-0 pointer-events-auto"
+            : "opacity-0 translate-y-4 pointer-events-none",
         )}
         style={{
-          height: 520,
+          height: "calc(100svh - 96px)",
+          maxHeight: 560,
           background: "#ffffff",
           border: "1px solid rgba(0,0,0,0.08)",
         }}
