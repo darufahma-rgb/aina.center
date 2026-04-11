@@ -22,3 +22,6 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Generated API bundle (rebuilt during Vercel deploy)
+api/index.js
