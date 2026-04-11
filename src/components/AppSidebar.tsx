@@ -15,11 +15,14 @@ import { useToast } from "@/hooks/use-toast";
 
 const navSections = [
   {
-    label: "Overview",
-    items: [{ title: "Dashboard", url: "/", icon: LayoutDashboard }],
+    label: "Pantau",
+    items: [
+      { title: "Dashboard", url: "/", icon: LayoutDashboard },
+      { title: "Fitur Terbaru", url: "/fitur", icon: Sparkles },
+    ],
   },
   {
-    label: "Operations",
+    label: "Operasional",
     items: [
       { title: "Notulensi", url: "/notulensi", icon: FileText },
       { title: "Agenda", url: "/agenda", icon: CalendarDays },
@@ -27,22 +30,21 @@ const navSections = [
     ],
   },
   {
-    label: "Documentation",
-    items: [
-      { title: "Fitur Terbaru", url: "/fitur", icon: Sparkles },
-      { title: "Surat", url: "/surat", icon: Mail },
-      { title: "Inventaris", url: "/inventaris", icon: Package },
-    ],
-  },
-  {
-    label: "Organization",
+    label: "Organisasi",
     items: [
       { title: "Anggota", url: "/anggota", icon: Users },
       { title: "Relasi", url: "/relasi", icon: Handshake },
     ],
   },
   {
-    label: "Presentation",
+    label: "Dokumen",
+    items: [
+      { title: "Surat", url: "/surat", icon: Mail },
+      { title: "Inventaris", url: "/inventaris", icon: Package },
+    ],
+  },
+  {
+    label: "Presentasi",
     items: [{ title: "Investor Mode", url: "/investor", icon: Presentation }],
   },
   {
