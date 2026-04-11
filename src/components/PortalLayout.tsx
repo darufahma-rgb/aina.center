@@ -344,7 +344,10 @@ export function PortalLayout({ children }: PortalLayoutProps) {
   const { pathname } = useLocation();
   const [searchVal, setSearchVal] = useState("");
   const [profileOpen, setProfileOpen] = useState(false);
+  const [quickOpen, setQuickOpen] = useState(false);
   const isMobile = useIsMobile();
+
+  useEffect(() => { setQuickOpen(false); }, [pathname]);
 
   const handleLogout = async () => {
     try { await logout(); }
@@ -378,10 +381,22 @@ export function PortalLayout({ children }: PortalLayoutProps) {
           style={{ overflow: "hidden", border: "1px solid rgba(0,0,0,0.10)" }}
         >
           {/* ── Top bar ──────────────────────────────────────────── */}
-          <header className="flex items-center justify-between px-5 py-3.5 border-b shrink-0" style={{ borderColor: "rgba(0,0,0,0.09)" }}>
+          <header className="flex items-center justify-between px-4 py-3 border-b shrink-0" style={{ borderColor: "rgba(0,0,0,0.09)" }}>
 
-            {/* Left: page tabs */}
-            <div className="flex items-center gap-1">
+            {/* Left: profile avatar (mobile) + page tabs (desktop) */}
+            <div className="flex items-center gap-2">
+              {/* Mobile: profile avatar */}
+              <button
+                className="lg:hidden h-8 w-8 rounded-full flex items-center justify-center text-white text-[11px] font-bold shrink-0 overflow-hidden"
+                style={{ background: ACCENT }}
+                onClick={() => setProfileOpen(true)}
+                title="Profil"
+              >
+                {user?.avatarUrl
+                  ? <img src={user.avatarUrl} alt="avatar" className="h-full w-full object-cover" />
+                  : (user?.displayName || user?.username || "??").slice(0, 2).toUpperCase()
+                }
+              </button>
 
               <nav className="hidden sm:flex items-center gap-0.5">
                 {PAGE_TABS.map((tab) => {
@@ -428,20 +443,54 @@ export function PortalLayout({ children }: PortalLayoutProps) {
               </button>
 
               <button
-                className="h-8 w-8 rounded-xl flex items-center justify-center text-[#999] hover:bg-black/[0.05] transition-all"
+                className="hidden lg:flex h-8 w-8 rounded-xl items-center justify-center text-[#999] hover:bg-black/[0.05] transition-all"
                 onClick={() => setProfileOpen(true)}
                 title="Profil"
               >
                 <Settings className="h-4 w-4" />
               </button>
 
-              <button
-                className="h-8 w-8 sm:w-auto sm:px-3.5 rounded-xl text-[12px] font-semibold text-white flex items-center justify-center gap-1.5 transition-all hover:opacity-90 active:scale-95"
-                style={{ background: ACCENT }}
-              >
-                <Plus className="h-3.5 w-3.5 shrink-0" />
-                <span className="hidden sm:inline">Tambah Baru</span>
-              </button>
+              {/* Plus / Quick create */}
+              <div className="relative">
+                <button
+                  onClick={() => setQuickOpen(v => !v)}
+                  className="h-8 w-8 sm:w-auto sm:px-3.5 rounded-xl text-[12px] font-semibold text-white flex items-center justify-center gap-1.5 transition-all hover:opacity-90 active:scale-95"
+                  style={{ background: ACCENT }}
+                >
+                  <Plus className="h-3.5 w-3.5 shrink-0" />
+                  <span className="hidden sm:inline">Tambah Baru</span>
+                </button>
+
+                {/* Dropdown */}
+                {quickOpen && (
+                  <>
+                    <div className="fixed inset-0 z-40" onClick={() => setQuickOpen(false)} />
+                    <div
+                      className="absolute right-0 top-10 z-50 w-48 rounded-2xl shadow-xl py-1.5 overflow-hidden"
+                      style={{ background: "#fff", border: "1px solid rgba(0,0,0,0.09)" }}
+                    >
+                      {[
+                        { label: "Agenda",    url: "/agenda",    icon: CalendarDays },
+                        { label: "Notulensi", url: "/notulensi", icon: FileText     },
+                        { label: "Keuangan",  url: "/keuangan",  icon: Wallet       },
+                        { label: "Anggota",   url: "/anggota",   icon: Users        },
+                        { label: "Surat",     url: "/surat",     icon: Mail         },
+                        { label: "Inventaris",url: "/inventaris",icon: Package      },
+                      ].map(({ label, url, icon: Icon }) => (
+                        <Link
+                          key={url}
+                          to={url}
+                          onClick={() => setQuickOpen(false)}
+                          className="flex items-center gap-3 px-4 py-2.5 text-[13px] font-medium text-gray-700 hover:bg-black/[0.04] transition-colors"
+                        >
+                          <Icon className="h-4 w-4 shrink-0" style={{ color: ACCENT }} />
+                          {label}
+                        </Link>
+                      ))}
+                    </div>
+                  </>
+                )}
+              </div>
             </div>
           </header>
 
