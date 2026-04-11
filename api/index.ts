@@ -11,22 +11,17 @@ import bcrypt from "bcryptjs";
 const app = express();
 
 app.set("trust proxy", 1);
-
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: false }));
 
-const connectionString = process.env.SUPABASE_DATABASE_URL ?? process.env.DATABASE_URL;
-
-if (!connectionString) {
-  throw new Error("SUPABASE_DATABASE_URL or DATABASE_URL is not set");
-}
+const connectionString = process.env.SUPABASE_DATABASE_URL ?? process.env.DATABASE_URL ?? "";
 
 const PgSession = connectPgSimple(session);
 const pool = new pg.Pool({
   connectionString,
   ssl: { rejectUnauthorized: false },
-  max: 5,
-  idleTimeoutMillis: 30000,
+  max: 3,
+  idleTimeoutMillis: 20000,
   connectionTimeoutMillis: 10000,
 });
 
@@ -52,39 +47,43 @@ app.use("/uploads", express.static("/tmp/uploads"));
 app.get("/api/health", async (_req, res) => {
   try {
     await pool.query("SELECT 1");
-    res.json({ status: "ok", db: "connected" });
+    res.json({
+      status: "ok",
+      db: "connected",
+      env: {
+        hasDbUrl: !!process.env.SUPABASE_DATABASE_URL || !!process.env.DATABASE_URL,
+        hasSessionSecret: !!process.env.SESSION_SECRET,
+        nodeEnv: process.env.NODE_ENV,
+      },
+    });
   } catch (err: any) {
-    res.status(500).json({ status: "error", db: err.message });
+    res.status(500).json({ status: "error", message: err.message });
   }
 });
 
 registerRoutes(app);
 
 app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
-  console.error("[API Error]", err);
-  res.status(err.status ?? 500).json({
-    message: err.message ?? "Internal server error",
-  });
+  console.error("[API Error]", err?.message ?? err);
+  res.status(err?.status ?? 500).json({ message: err?.message ?? "Internal server error" });
 });
 
 async function seedAdmin() {
-  const adminUsername = process.env.ADMIN_USERNAME ?? "admin";
-  const adminPassword = process.env.ADMIN_PASSWORD ?? "Admin@AINA2024";
-  const adminEmail = process.env.ADMIN_EMAIL ?? "admin@aina.id";
-
-  const existing = await db.select().from(users).where(eq(users.username, adminUsername));
-  if (existing.length === 0) {
-    const passwordHash = await bcrypt.hash(adminPassword, 12);
-    await db.insert(users).values({
-      username: adminUsername,
-      email: adminEmail,
-      passwordHash,
-      role: "admin",
-      isActive: true,
-    });
+  if (!connectionString) return;
+  try {
+    const adminUsername = process.env.ADMIN_USERNAME ?? "admin";
+    const existing = await db.select().from(users).where(eq(users.username, adminUsername));
+    if (existing.length === 0) {
+      const adminPassword = process.env.ADMIN_PASSWORD ?? "Admin@AINA2024";
+      const adminEmail = process.env.ADMIN_EMAIL ?? "admin@aina.id";
+      const passwordHash = await bcrypt.hash(adminPassword, 12);
+      await db.insert(users).values({ username: adminUsername, email: adminEmail, passwordHash, role: "admin", isActive: true });
+    }
+  } catch (err: any) {
+    console.error("[Seed Admin]", err?.message);
   }
 }
 
-seedAdmin().catch((err) => console.error("[Seed Admin Error]", err));
+seedAdmin();
 
 export default app;
