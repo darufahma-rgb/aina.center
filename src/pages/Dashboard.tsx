@@ -5,9 +5,12 @@ import {
   ArrowRight, MoreHorizontal, Wallet, Download,
   Package, Mail, Handshake, Zap, PauseCircle,
   ListTodo, PlayCircle, Target, Globe,
+  Bot, Palette, DollarSign, Calendar, Settings, Wrench, Layers,
+  type LucideIcon,
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useQuery } from "@tanstack/react-query";
+import { apiRequest } from "@/lib/queryClient";
 import { Link } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import type { Notulensi, Agenda } from "../../shared/schema";
@@ -817,88 +820,91 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* ── Laporan Fitur Terbaru AINA ────────────────────────────── */}
-      <FiturReviewSection
-        fiturList={data?.latestFitur ?? []}
-        totalFitur={totalFitur}
-        completedFitur={completedFitur}
-        inProgressFitur={data?.insights?.inProgressFitur ?? 0}
-        isLoading={isLoading}
-      />
+      {/* ── Fitur AINA Centre ─────────────────────────────────────── */}
+      <FiturReviewSection />
     </div>
   );
 }
 
 // ─── Fitur Review Section ──────────────────────────────────────────────────────
 
-type FiturStatus = "planned" | "in_progress" | "completed" | "on_hold";
-type FiturImpact = "low" | "medium" | "high";
+interface ExtractedFeature {
+  id: string;
+  category: string;
+  title: string;
+  explanation: string;
+  status: "baru" | "ditingkatkan" | "stabil";
+  commitCount: number;
+  lastCommitDate: string;
+  commits: { sha: string; message: string; date: string }[];
+}
 
-const STATUS_CONFIG: Record<FiturStatus, { label: string; color: string; bg: string; icon: any }> = {
-  planned:     { label: "Direncanakan", color: "#6B7280", bg: "#F3F4F6", icon: ListTodo },
-  in_progress: { label: "Berjalan",     color: "#2563EB", bg: "#EFF6FF", icon: PlayCircle },
-  completed:   { label: "Selesai",      color: "#16A34A", bg: "#F0FDF4", icon: CheckCircle2 },
-  on_hold:     { label: "Ditunda",      color: "#D97706", bg: "#FFFBEB", icon: PauseCircle },
+const FEAT_STATUS_CFG = {
+  baru:         { label: "🆕 Baru",          color: "#5B21B6", bg: "#EDE9FE" },
+  ditingkatkan: { label: "⬆️ Ditingkatkan",  color: "#1D4ED8", bg: "#DBEAFE" },
+  stabil:       { label: "✓ Stabil",         color: "#374151", bg: "#F3F4F6" },
+} as const;
+
+const DASH_CATEGORY_ICON: Record<string, LucideIcon> = {
+  "AI & Laporan Cerdas":    Bot,
+  "Tampilan & Pengalaman":  Palette,
+  "Keuangan":               DollarSign,
+  "Anggota & Relasi":       Users,
+  "Agenda & Kegiatan":      Calendar,
+  "Notulensi & Rapat":      FileText,
+  "Dokumen & Inventaris":   Package,
+  "Sistem & Infrastruktur": Settings,
+  "Perbaikan & Performa":   Wrench,
+  "Fitur Baru":             Sparkles,
 };
 
-const IMPACT_CONFIG: Record<FiturImpact, { label: string; color: string; bg: string }> = {
-  low:    { label: "Rendah",  color: "#6B7280", bg: "#F3F4F6" },
-  medium: { label: "Sedang",  color: "#D97706", bg: "#FEF3C7" },
-  high:   { label: "Tinggi",  color: "#DC2626", bg: "#FEF2F2" },
-};
-
-function FiturCard({ f }: { f: any }) {
-  const status = STATUS_CONFIG[f.status as FiturStatus] ?? STATUS_CONFIG.planned;
-  const impact = IMPACT_CONFIG[f.impact as FiturImpact] ?? IMPACT_CONFIG.medium;
-  const StatusIcon = status.icon;
+function FiturCard({ f }: { f: ExtractedFeature }) {
+  const st = FEAT_STATUS_CFG[f.status] ?? FEAT_STATUS_CFG.stabil;
+  const Icon = DASH_CATEGORY_ICON[f.category] ?? Layers;
 
   return (
     <Link to="/fitur" className="shrink-0" style={{ width: 260 }}>
       <div
         className="h-full rounded-2xl p-4 flex flex-col gap-3 transition-all duration-150 hover:-translate-y-1 hover:shadow-lg cursor-pointer border"
-        style={{
-          background: "#F8F9FB",
-          borderColor: "rgba(0,0,0,0.11)",
-        }}
+        style={{ background: "#F8F9FB", borderColor: "rgba(0,0,0,0.11)" }}
       >
-        {/* Top row: category + impact */}
-        <div className="flex items-center justify-between gap-2">
+        {/* Icon + category */}
+        <div className="flex items-center gap-2">
+          <div
+            className="h-8 w-8 rounded-lg flex items-center justify-center shrink-0"
+            style={{ background: "#F5F0FF", border: "1.5px solid #C4B5FD" }}
+          >
+            <Icon className="h-4 w-4" style={{ color: "#7C3AED" }} />
+          </div>
           <span
-            className="text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider truncate max-w-[120px]"
+            className="text-[10px] font-bold px-2 py-0.5 rounded-full truncate"
             style={{ background: "#3E0FA315", color: "#3E0FA3" }}
           >
             {f.category}
           </span>
-          <span
-            className="text-[10px] font-bold px-2 py-0.5 rounded-full shrink-0 flex items-center gap-1"
-            style={{ background: impact.bg, color: impact.color }}
-          >
-            <Target className="h-2.5 w-2.5" />
-            {impact.label}
-          </span>
         </div>
 
-        {/* Name */}
+        {/* Title */}
         <p className="text-[14px] font-bold text-[#1A1A1A] leading-snug line-clamp-2">
-          {f.name}
+          {f.title}
         </p>
 
-        {/* Description */}
+        {/* Explanation */}
         <p className="text-[12px] text-[#888] leading-relaxed line-clamp-3 flex-1">
-          {f.description}
+          {f.explanation}
         </p>
 
-        {/* Status + date */}
+        {/* Status + commit count */}
         <div className="flex items-center justify-between pt-1 border-t border-black/[0.08]">
           <span
-            className="text-[11px] font-semibold flex items-center gap-1 px-2 py-0.5 rounded-full"
-            style={{ background: status.bg, color: status.color }}
+            className="text-[10px] font-bold px-2 py-0.5 rounded-full"
+            style={{ background: st.bg, color: st.color }}
           >
-            <StatusIcon className="h-3 w-3" />
-            {status.label}
+            {st.label}
           </span>
-          <span className="text-[10px] text-[#bbb]">
-            {formatDate(f.createdAt)}
+          <span className="text-[10px] text-[#bbb] flex items-center gap-1">
+            <Zap className="h-2.5 w-2.5" />
+            {f.commitCount} update
           </span>
         </div>
       </div>
@@ -906,14 +912,31 @@ function FiturCard({ f }: { f: any }) {
   );
 }
 
-function FiturReviewSection({
-  fiturList, totalFitur, completedFitur, inProgressFitur, isLoading,
-}: {
-  fiturList: any[]; totalFitur: number; completedFitur: number;
-  inProgressFitur: number; isLoading: boolean;
-}) {
-  const planned = Math.max(0, totalFitur - completedFitur - inProgressFitur);
-  const overallPct = totalFitur > 0 ? Math.round((completedFitur / totalFitur) * 100) : 0;
+function FiturReviewSection() {
+  const { data: rawCommits = [], isLoading: loadingCommits } = useQuery<any[]>({
+    queryKey: ["/api/github/commits"],
+    staleTime: 10 * 60 * 1000,
+  });
+
+  const firstSha = rawCommits[0]?.sha ?? "";
+  const { data: features = [], isLoading: loadingFeatures } = useQuery<ExtractedFeature[]>({
+    queryKey: ["extract-features", firstSha],
+    queryFn: async () => {
+      const res = await apiRequest("POST", "/api/github/extract-features", {
+        commits: rawCommits.slice(0, 50),
+      });
+      return res.json();
+    },
+    enabled: rawCommits.length > 0,
+    staleTime: 30 * 60 * 1000,
+  });
+
+  const isLoading = loadingCommits || loadingFeatures;
+  const total     = features.length;
+  const baru      = features.filter(f => f.status === "baru").length;
+  const tingkat   = features.filter(f => f.status === "ditingkatkan").length;
+  const stabil    = features.filter(f => f.status === "stabil").length;
+  const activePct = total > 0 ? Math.round(((baru + tingkat) / total) * 100) : 0;
 
   return (
     <div
@@ -930,28 +953,28 @@ function FiturReviewSection({
             >
               <Sparkles className="h-3.5 w-3.5 text-white" />
             </div>
-            <h3 className="text-[16px] font-bold text-[#1A1A1A]">Laporan Fitur Terbaru AINA</h3>
+            <h3 className="text-[16px] font-bold text-[#1A1A1A]">Fitur AINA Centre</h3>
           </div>
           <p className="text-[12px] text-[#999] ml-9">
-            Review program & fitur organisasi yang sedang berjalan
+            Area fitur aktif berdasarkan riwayat pengembangan terbaru
           </p>
         </div>
 
         <div className="flex items-center gap-3 shrink-0">
-          {/* Overall progress */}
+          {/* Active percentage ring */}
           <div className="flex items-center gap-2 px-3 py-2 rounded-xl" style={{ background: "#F5F3FF" }}>
             <div className="relative">
-              <ProgressRing pct={overallPct} size={36} stroke={4} color="#3E0FA3" />
+              <ProgressRing pct={activePct} size={36} stroke={4} color="#3E0FA3" />
               <span
                 className="absolute inset-0 flex items-center justify-center text-[9px] font-bold"
                 style={{ color: "#3E0FA3" }}
               >
-                {overallPct}%
+                {activePct}%
               </span>
             </div>
             <div>
-              <p className="text-[11px] font-bold text-[#3E0FA3]">Progress</p>
-              <p className="text-[10px] text-[#A78BFA]">{completedFitur}/{totalFitur} selesai</p>
+              <p className="text-[11px] font-bold text-[#3E0FA3]">Aktif</p>
+              <p className="text-[10px] text-[#A78BFA]">{baru + tingkat}/{total} area</p>
             </div>
           </div>
 
@@ -965,19 +988,15 @@ function FiturReviewSection({
         </div>
       </div>
 
-      {/* Status summary pills */}
+      {/* Stats pills */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-5">
         {[
-          { label: "Total Fitur",    value: totalFitur,      color: "#3E0FA3", bg: "#F5F3FF", icon: Zap },
-          { label: "Selesai",        value: completedFitur,  color: "#16A34A", bg: "#F0FDF4", icon: CheckCircle2 },
-          { label: "Sedang Berjalan",value: inProgressFitur, color: "#2563EB", bg: "#EFF6FF", icon: PlayCircle },
-          { label: "Direncanakan",   value: planned,         color: "#6B7280", bg: "#F3F4F6", icon: ListTodo },
+          { label: "Total Area",     value: total,   color: "#3E0FA3", bg: "#F5F3FF", icon: Layers },
+          { label: "Baru",           value: baru,    color: "#5B21B6", bg: "#EDE9FE", icon: Sparkles },
+          { label: "Ditingkatkan",   value: tingkat, color: "#1D4ED8", bg: "#DBEAFE", icon: TrendingUp },
+          { label: "Stabil",         value: stabil,  color: "#6B7280", bg: "#F3F4F6", icon: CheckCircle2 },
         ].map(({ label, value, color, bg, icon: Icon }) => (
-          <div
-            key={label}
-            className="flex items-center gap-3 p-3 rounded-2xl"
-            style={{ background: bg }}
-          >
+          <div key={label} className="flex items-center gap-3 p-3 rounded-2xl" style={{ background: bg }}>
             <div
               className="h-9 w-9 rounded-xl flex items-center justify-center shrink-0"
               style={{ background: `${color}20` }}
@@ -1001,20 +1020,17 @@ function FiturReviewSection({
             <div key={i} className="h-52 w-64 rounded-2xl bg-black/[0.04] animate-pulse shrink-0" />
           ))}
         </div>
-      ) : fiturList.length === 0 ? (
+      ) : features.length === 0 ? (
         <div className="py-12 text-center">
           <Sparkles className="h-8 w-8 text-[#ddd] mx-auto mb-2" />
-          <p className="text-[13px] text-[#bbb]">Belum ada fitur yang ditambahkan</p>
-          <Link to="/fitur" className="mt-3 inline-block text-[12px] font-semibold text-[#3E0FA3] hover:opacity-80">
-            Tambah Fitur Pertama →
-          </Link>
+          <p className="text-[13px] text-[#bbb]">Data fitur sedang dimuat...</p>
         </div>
       ) : (
         <div
           className="flex gap-4 overflow-x-auto pb-2"
           style={{ scrollbarWidth: "thin", scrollbarColor: "rgba(0,0,0,0.1) transparent" }}
         >
-          {fiturList.map((f) => (
+          {features.map((f) => (
             <FiturCard key={f.id} f={f} />
           ))}
 
