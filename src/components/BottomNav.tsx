@@ -4,7 +4,7 @@ import {
   LayoutDashboard, CalendarDays, Wallet, FileText,
   Users, Handshake, Mail, Package,
   Wand2, Presentation, Sparkles, UserCog,
-  LogOut, X, LayoutGrid,
+  LogOut, X, LayoutGrid, Bot,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -226,14 +226,9 @@ export function BottomNav({ user, isAdmin, onLogout, onProfileOpen }: BottomNavP
                     border: aiOpen ? `1.5px solid ${ACCENT}30` : "1.5px solid transparent",
                   }}
                 >
-                  <img
-                    src="/aigypt-icon.png"
-                    alt="AI"
-                    className="h-5 w-5 object-contain"
-                    style={{
-                      filter: "brightness(0)",
-                      opacity: aiOpen ? 1 : 0.4,
-                    }}
+                  <Bot
+                    className="h-5 w-5"
+                    style={{ color: aiOpen ? ACCENT : "#888" }}
                   />
                   <span className="text-[10px] font-semibold" style={{ color: aiOpen ? ACCENT : "#666" }}>
                     AI Asisten
