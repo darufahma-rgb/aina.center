@@ -162,12 +162,24 @@ const AINA_FEATURES = [
   },
 ] as const;
 
-// ─── Feature Overview (auto from GitHub) ─────────────────────────────────────
+// ─── Feature Groups for user-friendly display ────────────────────────────────
+
+const FEATURE_GROUPS = [
+  { label: "Pusat Kendali",        icon: "🏠", keys: ["dashboard"] },
+  { label: "Kegiatan & Catatan",   icon: "📋", keys: ["agenda", "notulensi"] },
+  { label: "Data Organisasi",      icon: "👥", keys: ["anggota", "relasi"] },
+  { label: "Dokumen & Aset",       icon: "📦", keys: ["surat", "inventaris"] },
+  { label: "Keuangan",             icon: "💰", keys: ["keuangan"] },
+  { label: "Fitur Pintar (AI)",    icon: "🤖", keys: ["ai-report", "ai-chat"] },
+  { label: "Fitur Khusus",         icon: "✨", keys: ["investor", "fitur-terbaru"] },
+];
+
+// ─── Feature Overview ─────────────────────────────────────────────────────────
 
 function FiturOverview() {
   const navigate = useNavigate();
 
-  const { data: commits, isLoading } = useQuery<GitHubCommit[]>({
+  const { data: commits } = useQuery<GitHubCommit[]>({
     queryKey: ["github-commits", 50],
     queryFn: async () => {
       const res = await fetch(
@@ -182,131 +194,140 @@ function FiturOverview() {
 
   const thirtyDaysAgo = Date.now() - 30 * 24 * 60 * 60 * 1000;
 
-  function getActivity(keywords: readonly string[]) {
-    if (!commits) return { count: 0, lastDate: null as string | null };
-    const matched = commits.filter((c) => {
+  function hasRecentActivity(keywords: readonly string[]) {
+    if (!commits) return false;
+    return commits.some((c) => {
       const lower = c.commit.message.toLowerCase();
-      return keywords.some((kw) => lower.includes(kw));
+      const withinMonth = new Date(c.commit.author.date).getTime() > thirtyDaysAgo;
+      return withinMonth && keywords.some((kw) => lower.includes(kw));
     });
-    const recent = matched.filter((c) => new Date(c.commit.author.date).getTime() > thirtyDaysAgo);
-    const lastDate = matched[0]?.commit.author.date ?? null;
-    return { count: recent.length, lastDate };
   }
 
-  function activityLevel(count: number): { label: string; color: string; bg: string } {
-    if (count >= 5) return { label: "Aktif 🔥", color: "#16a34a", bg: "#dcfce7" };
-    if (count >= 2) return { label: "Ada update", color: "#d97706", bg: "#fef9c3" };
-    if (count >= 1) return { label: "Minor update", color: "#7c3aed", bg: "#ede9fe" };
-    return { label: "Stabil ✓", color: "#6b7280", bg: "#f3f4f6" };
-  }
-
-  const totalCommits = commits?.length ?? 0;
-  const recentCommits = commits?.filter((c) => new Date(c.commit.author.date).getTime() > thirtyDaysAgo).length ?? 0;
+  const featureMap = Object.fromEntries(AINA_FEATURES.map((f) => [f.key, f]));
 
   return (
-    <div className="space-y-6">
-      {/* Header banner */}
+    <div className="space-y-7">
+
+      {/* Welcome hero */}
       <div
-        className="rounded-2xl px-5 py-4 flex items-center justify-between gap-4 flex-wrap"
-        style={{
-          background: "linear-gradient(135deg, #1E0A3C 0%, #3E0FA3 60%, #7C3AED 100%)",
-        }}
+        className="rounded-2xl px-6 py-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4"
+        style={{ background: "linear-gradient(135deg, #1E0A3C 0%, #3E0FA3 65%, #7C3AED 100%)" }}
       >
-        <div>
-          <p className="text-white font-bold text-base leading-tight">Portal AINA Centre</p>
-          <p className="text-white/70 text-[12px] mt-0.5">
-            Sistem manajemen internal — {AINA_FEATURES.length} fitur aktif
+        <div className="space-y-1">
+          <p className="text-white font-bold text-lg leading-tight">
+            Selamat datang di AINA Centre! 👋
+          </p>
+          <p className="text-white/70 text-[13px] leading-relaxed max-w-sm">
+            Semua yang kamu butuhkan untuk mengelola organisasi ada di sini.
+            Pilih fitur di bawah untuk mulai.
           </p>
         </div>
-        <div className="flex items-center gap-4">
-          <div className="text-center">
-            <p className="text-white font-bold text-xl leading-none">{recentCommits}</p>
-            <p className="text-white/60 text-[10px] mt-0.5">update bulan ini</p>
+        <div className="flex items-center gap-3 flex-wrap">
+          <div
+            className="px-4 py-2.5 rounded-xl text-center"
+            style={{ background: "rgba(255,255,255,0.12)" }}
+          >
+            <p className="text-white font-bold text-2xl leading-none">{AINA_FEATURES.length}</p>
+            <p className="text-white/60 text-[10px] mt-0.5">fitur tersedia</p>
           </div>
-          <div className="text-center">
-            <p className="text-white font-bold text-xl leading-none">{totalCommits}</p>
-            <p className="text-white/60 text-[10px] mt-0.5">total commit</p>
+          <div
+            className="px-4 py-2.5 rounded-xl text-center"
+            style={{ background: "rgba(255,255,255,0.12)" }}
+          >
+            <p className="text-white font-bold text-2xl leading-none">{FEATURE_GROUPS.length}</p>
+            <p className="text-white/60 text-[10px] mt-0.5">kategori</p>
           </div>
         </div>
       </div>
 
-      {/* Source label */}
-      <div className="flex items-center gap-2">
-        <GitBranch className="h-3.5 w-3.5 text-muted-foreground" />
-        <p className="text-[11px] text-muted-foreground">
-          Aktivitas diambil otomatis dari riwayat commit{" "}
-          <a
-            href={`https://github.com/${GITHUB_REPO}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-primary font-medium hover:underline"
-          >
-            {GITHUB_REPO}
-          </a>
+      {/* How to use tip */}
+      <div
+        className="flex items-start gap-3 px-4 py-3 rounded-xl text-[12px]"
+        style={{ background: "#F0F4FF", border: "1px solid #C7D2FE" }}
+      >
+        <span className="text-lg leading-none mt-0.5">💡</span>
+        <p className="text-[#3730A3] leading-relaxed">
+          <strong>Cara pakai:</strong> Klik tombol <strong>Buka</strong> pada fitur mana saja untuk langsung menggunakannya.
+          Fitur bertanda <strong>🆕 Baru</strong> baru saja diperbarui oleh tim pengembang.
         </p>
-        {isLoading && <RefreshCw className="h-3 w-3 text-muted-foreground animate-spin" />}
       </div>
 
-      {/* Feature grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {AINA_FEATURES.map((f) => {
-          const { count, lastDate } = getActivity(f.keywords);
-          const activity = activityLevel(count);
+      {/* Feature groups */}
+      <div className="space-y-8">
+        {FEATURE_GROUPS.map((group) => {
+          const groupFeatures = group.keys.map((k) => featureMap[k]).filter(Boolean);
           return (
-            <div
-              key={f.key}
-              className="rounded-2xl p-4 flex flex-col gap-3 transition-all hover:-translate-y-0.5 hover:shadow-md cursor-default"
-              style={{ background: f.gradient, border: f.border }}
-            >
-              {/* Top: icon + activity badge */}
-              <div className="flex items-start justify-between">
-                <div
-                  className="h-11 w-11 rounded-2xl flex items-center justify-center text-xl shadow-sm"
-                  style={{ background: f.iconBg }}
-                >
-                  {f.emoji}
-                </div>
-                <span
-                  className="text-[10px] font-semibold px-2 py-0.5 rounded-full"
-                  style={{ color: activity.color, background: activity.bg }}
-                >
-                  {activity.label}
-                </span>
+            <div key={group.label} className="space-y-3">
+              {/* Group header */}
+              <div className="flex items-center gap-2">
+                <span className="text-base">{group.icon}</span>
+                <h2 className="font-bold text-sm text-foreground">{group.label}</h2>
+                <div className="flex-1 h-px bg-border/60" />
               </div>
 
-              {/* Name + description */}
-              <div>
-                <h3 className="font-bold text-[14px] text-foreground leading-tight">{f.name}</h3>
-                <p className="text-[12px] text-foreground/65 mt-1 leading-relaxed line-clamp-3">
-                  {f.description}
-                </p>
-              </div>
+              {/* Cards row */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                {groupFeatures.map((f) => {
+                  const isNew = hasRecentActivity(f.keywords);
+                  return (
+                    <div
+                      key={f.key}
+                      className="rounded-2xl overflow-hidden flex flex-col transition-all hover:-translate-y-0.5 hover:shadow-lg"
+                      style={{ border: f.border }}
+                    >
+                      {/* Card header strip */}
+                      <div
+                        className="px-4 pt-4 pb-3 flex items-start justify-between gap-2"
+                        style={{ background: f.gradient }}
+                      >
+                        <div className="flex items-center gap-2.5">
+                          <div
+                            className="h-10 w-10 rounded-xl flex items-center justify-center text-xl shadow-sm shrink-0"
+                            style={{ background: f.iconBg }}
+                          >
+                            {f.emoji}
+                          </div>
+                          <div>
+                            <h3 className="font-bold text-[14px] text-foreground leading-tight">
+                              {f.name}
+                            </h3>
+                            {isNew && (
+                              <span
+                                className="inline-block text-[10px] font-bold px-1.5 py-0.5 rounded-md mt-0.5"
+                                style={{ background: "#7C3AED", color: "#fff" }}
+                              >
+                                🆕 Baru
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                        {f.route ? (
+                          <button
+                            onClick={() => navigate(f.route!)}
+                            className="shrink-0 flex items-center gap-1 text-[11px] font-bold px-3 py-1.5 rounded-xl transition-all hover:opacity-90 active:scale-95 shadow-sm"
+                            style={{ background: f.iconBg, color: "#fff" }}
+                          >
+                            Buka <Navigation className="h-3 w-3" />
+                          </button>
+                        ) : (
+                          <span
+                            className="shrink-0 text-[10px] px-2 py-1 rounded-xl font-medium"
+                            style={{ background: "rgba(0,0,0,0.06)", color: "#666" }}
+                          >
+                            Selalu aktif
+                          </span>
+                        )}
+                      </div>
 
-              {/* Footer: stats + action */}
-              <div className="flex items-center justify-between mt-auto pt-1">
-                <div className="space-y-0.5">
-                  {count > 0 ? (
-                    <p className="text-[10px] font-medium" style={{ color: activity.color }}>
-                      {count} update bulan ini
-                    </p>
-                  ) : (
-                    <p className="text-[10px] text-muted-foreground">Tidak ada update bulan ini</p>
-                  )}
-                  {lastDate && (
-                    <p className="text-[10px] text-muted-foreground">
-                      Terakhir: {timeAgo(lastDate)}
-                    </p>
-                  )}
-                </div>
-                {f.route && (
-                  <button
-                    onClick={() => navigate(f.route!)}
-                    className="flex items-center gap-1 text-[11px] font-semibold px-2.5 py-1.5 rounded-xl transition-all hover:opacity-90 active:scale-95"
-                    style={{ background: f.iconBg, color: "#fff" }}
-                  >
-                    Buka <Navigation className="h-3 w-3" />
-                  </button>
-                )}
+                      {/* Description */}
+                      <div className="px-4 py-3 bg-white/80">
+                        <p className="text-[12px] text-foreground/70 leading-relaxed">
+                          {f.description}
+                        </p>
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
             </div>
           );
@@ -928,7 +949,7 @@ export default function FiturTerbaruPage() {
 
   return (
     <div className="space-y-5 animate-fade-in">
-      <PageHeader title="Fitur Terbaru AINA" description="Product development progress and feature tracking">
+      <PageHeader title="Fitur AINA Centre" description="Panduan lengkap semua fitur yang tersedia untuk kamu gunakan">
         {isAdmin && activeTab === "fitur" && (
           <Button size="sm" className="gap-1.5" onClick={() => setDialogOpen(true)}>
             <Plus className="h-3.5 w-3.5" /> Tambah Fitur
@@ -939,8 +960,8 @@ export default function FiturTerbaruPage() {
       {/* Tabs */}
       <div className="flex gap-1 p-1 rounded-2xl w-fit" style={{ background: "rgba(0,0,0,0.05)" }}>
         {([
-          { key: "fitur",  label: "Fitur",          icon: Sparkles  },
-          { key: "github", label: "Riwayat GitHub",  icon: GitCommit },
+          { key: "fitur",  label: "Semua Fitur",      icon: Sparkles  },
+          { key: "github", label: "Riwayat Update",  icon: GitCommit },
         ] as const).map(({ key, label, icon: Icon }) => (
           <button
             key={key}
