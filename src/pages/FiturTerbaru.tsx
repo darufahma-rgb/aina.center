@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Sparkles, Plus, Edit, Trash2, GitCommit, ExternalLink, RefreshCw, GitBranch, Clock, User } from "lucide-react";
+import { Sparkles, Plus, Edit, Trash2, GitCommit, ExternalLink, RefreshCw, GitBranch, Clock, User, Wand2, ChevronDown, ChevronUp } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -57,6 +57,110 @@ interface GitHubCommit {
     author: { name: string; date: string };
   };
   html_url: string;
+}
+
+function CommitCard({ commit }: { commit: GitHubCommit }) {
+  const [explanation, setExplanation] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [expanded, setExpanded] = useState(false);
+
+  async function explain() {
+    if (explanation) { setExpanded(v => !v); return; }
+    setLoading(true);
+    setExpanded(true);
+    try {
+      const res = await fetch("/api/github/explain", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ sha: commit.sha, message: commit.commit.message, repo: GITHUB_REPO }),
+      });
+      const data = await res.json();
+      setExplanation(data.explanation ?? data.error ?? "Gagal.");
+    } catch {
+      setExplanation("Terjadi kesalahan saat menghubungi AI.");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  return (
+    <Card className="hover:shadow-sm transition-shadow border border-border/60">
+      <CardContent className="px-4 py-3">
+        <div className="flex items-start gap-3">
+          <div
+            className="h-7 w-7 rounded-full flex items-center justify-center shrink-0 mt-0.5"
+            style={{ background: "linear-gradient(135deg, #3E0FA3, #7C3AED)" }}
+          >
+            <GitCommit className="h-3.5 w-3.5 text-white" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="text-[13px] font-medium text-foreground leading-snug">
+              {cleanMessage(commit.commit.message)}
+            </p>
+            <div className="flex items-center gap-3 mt-1.5 flex-wrap">
+              <a
+                href={commit.html_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-mono text-[11px] text-primary hover:underline"
+              >
+                {shortSha(commit.sha)}
+              </a>
+              <span className="flex items-center gap-1 text-[11px] text-muted-foreground">
+                <User className="h-3 w-3" />
+                {commit.commit.author.name}
+              </span>
+              <span className="flex items-center gap-1 text-[11px] text-muted-foreground">
+                <Clock className="h-3 w-3" />
+                {timeAgo(commit.commit.author.date)}
+              </span>
+            </div>
+
+            {/* Explanation panel */}
+            {expanded && (
+              <div
+                className="mt-3 rounded-xl p-3 text-[12px] leading-relaxed"
+                style={{ background: "linear-gradient(135deg, #f5f0ff, #ede9fe)", border: "1px solid #ddd6fe" }}
+              >
+                {loading ? (
+                  <div className="flex items-center gap-2 text-purple-600">
+                    <RefreshCw className="h-3.5 w-3.5 animate-spin" />
+                    <span>AI sedang menganalisis perubahan...</span>
+                  </div>
+                ) : (
+                  <div className="text-purple-900 whitespace-pre-wrap">{explanation}</div>
+                )}
+              </div>
+            )}
+
+            {/* Explain button */}
+            <button
+              onClick={explain}
+              disabled={loading}
+              className="mt-2 flex items-center gap-1.5 text-[11px] font-semibold transition-colors"
+              style={{ color: expanded ? "#7C3AED" : "#999" }}
+            >
+              <Wand2 className="h-3 w-3" />
+              {loading ? "Menganalisis..." : expanded ? (
+                <span className="flex items-center gap-0.5">Sembunyikan <ChevronUp className="h-3 w-3" /></span>
+              ) : (
+                <span className="flex items-center gap-0.5">Jelaskan perubahan <ChevronDown className="h-3 w-3" /></span>
+              )}
+            </button>
+          </div>
+          <a
+            href={commit.html_url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="shrink-0 text-muted-foreground hover:text-primary transition-colors"
+          >
+            <ExternalLink className="h-3.5 w-3.5" />
+          </a>
+        </div>
+      </CardContent>
+    </Card>
+  );
 }
 
 function GitHubTab() {
@@ -126,53 +230,8 @@ function GitHubTab() {
 
       {/* Commit list */}
       <div className="space-y-2">
-        {commits?.map((commit, idx) => (
-          <Card
-            key={commit.sha}
-            className="hover:shadow-sm transition-shadow border border-border/60"
-          >
-            <CardContent className="px-4 py-3">
-              <div className="flex items-start gap-3">
-                <div
-                  className="h-7 w-7 rounded-full flex items-center justify-center shrink-0 mt-0.5"
-                  style={{ background: "linear-gradient(135deg, #3E0FA3, #7C3AED)" }}
-                >
-                  <GitCommit className="h-3.5 w-3.5 text-white" />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-[13px] font-medium text-foreground leading-snug">
-                    {cleanMessage(commit.commit.message)}
-                  </p>
-                  <div className="flex items-center gap-3 mt-1.5 flex-wrap">
-                    <a
-                      href={commit.html_url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="font-mono text-[11px] text-primary hover:underline flex items-center gap-1"
-                    >
-                      {shortSha(commit.sha)}
-                    </a>
-                    <span className="flex items-center gap-1 text-[11px] text-muted-foreground">
-                      <User className="h-3 w-3" />
-                      {commit.commit.author.name}
-                    </span>
-                    <span className="flex items-center gap-1 text-[11px] text-muted-foreground">
-                      <Clock className="h-3 w-3" />
-                      {timeAgo(commit.commit.author.date)}
-                    </span>
-                  </div>
-                </div>
-                <a
-                  href={commit.html_url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="shrink-0 text-muted-foreground hover:text-primary transition-colors"
-                >
-                  <ExternalLink className="h-3.5 w-3.5" />
-                </a>
-              </div>
-            </CardContent>
-          </Card>
+        {commits?.map((commit) => (
+          <CommitCard key={commit.sha} commit={commit} />
         ))}
       </div>
 

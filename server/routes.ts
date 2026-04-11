@@ -653,6 +653,45 @@ export function registerRoutes(app: Router) {
 
   // ── AI Customer Service Chat ─────────────────────────────────────────────────
 
+  app.post("/api/github/explain", requireAuth, async (req, res) => {
+    try {
+      const { sha, message, repo } = req.body as { sha: string; message: string; repo: string };
+      if (!sha || !message || !repo) return res.status(400).json({ error: "sha, message, dan repo diperlukan." });
+
+      // Fetch commit diff from GitHub
+      let diffText = "";
+      try {
+        const ghRes = await fetch(`https://api.github.com/repos/${repo}/commits/${sha}`, {
+          headers: { Accept: "application/vnd.github.diff", "User-Agent": "AINA-Portal" },
+        });
+        if (ghRes.ok) {
+          const raw = await ghRes.text();
+          diffText = raw.slice(0, 6000);
+        }
+      } catch { /* diff optional */ }
+
+      const OpenAI = (await import("openai")).default;
+      const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+
+      const prompt = diffText
+        ? `Kamu adalah asisten teknis AINA Centre. Jelaskan perubahan kode berikut dalam bahasa Indonesia yang mudah dipahami oleh non-developer (maks 5 poin singkat).\n\nPesan commit: "${message.split("\n")[0]}"\n\nDiff:\n${diffText}`
+        : `Kamu adalah asisten teknis AINA Centre. Berdasarkan pesan commit berikut, jelaskan kemungkinan perubahan yang dilakukan dalam bahasa Indonesia yang mudah dipahami (maks 5 poin singkat).\n\nPesan commit: "${message.split("\n")[0]}"`;
+
+      const response = await client.chat.completions.create({
+        model: "gpt-4o-mini",
+        messages: [{ role: "user", content: prompt }],
+        max_tokens: 400,
+        temperature: 0.4,
+      });
+
+      const explanation = response.choices[0]?.message?.content ?? "Tidak dapat menghasilkan penjelasan.";
+      res.json({ explanation });
+    } catch (err: any) {
+      console.error("GitHub explain error:", err);
+      res.status(500).json({ error: err.message ?? "Terjadi kesalahan." });
+    }
+  });
+
   app.post("/api/ai-chat", requireAuth, async (req, res) => {
     try {
       const { messages } = req.body as { messages: { role: "user" | "assistant"; content: string }[] };
