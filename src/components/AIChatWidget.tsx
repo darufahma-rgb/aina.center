@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { MessageCircle, X, Send, Bot, User, Loader2, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
+import MarkdownContent from "@/components/MarkdownContent";
 
 interface Message {
   role: "user" | "assistant";
@@ -183,12 +184,11 @@ export default function AIChatWidget() {
                 )}
                 style={m.role === "user" ? { background: "linear-gradient(135deg, #3E0FA3, #7C3AED)" } : undefined}
               >
-                {m.content.split("\n").map((line, j) => (
-                  <span key={j}>
-                    {line}
-                    {j < m.content.split("\n").length - 1 && <br />}
-                  </span>
-                ))}
+                {m.role === "assistant" ? (
+                  <MarkdownContent content={m.content} prose="default" className="text-[13px]" />
+                ) : (
+                  <span className="whitespace-pre-wrap">{m.content}</span>
+                )}
               </div>
             </div>
           ))}

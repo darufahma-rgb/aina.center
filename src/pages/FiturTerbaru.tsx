@@ -21,6 +21,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import type { FiturTerbaru } from "../../shared/schema";
+import MarkdownContent from "@/components/MarkdownContent";
 
 const GITHUB_REPO = "darciatemantaraglobal-gif/aina.web";
 
@@ -274,7 +275,7 @@ function CommitCard({
                       <span>AI sedang menganalisis perubahan...</span>
                     </div>
                   ) : (
-                    <div className="text-purple-900 whitespace-pre-wrap">{detailedExplanation}</div>
+                    <MarkdownContent content={detailedExplanation ?? ""} prose="purple" className="text-[12px]" />
                   )}
                 </div>
 
@@ -287,7 +288,7 @@ function CommitCard({
                     <p className="text-[10px] font-semibold text-green-600 uppercase tracking-wide mb-1.5 flex items-center gap-1">
                       <Zap className="h-3 w-3" /> Penjelasan Sederhana
                     </p>
-                    <div className="text-green-900">{simpleExplanation}</div>
+                    <MarkdownContent content={simpleExplanation ?? ""} prose="green" className="text-[12px]" />
                   </div>
                 )}
 
