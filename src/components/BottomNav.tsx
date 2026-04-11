@@ -95,6 +95,31 @@ export function BottomNav({ user, isAdmin, onLogout, onProfileOpen }: BottomNavP
         />
       )}
 
+      {/* ── Floating AI button (above bottom bar) ── */}
+      {!open && (
+        <button
+          onClick={handleAI}
+          className="lg:hidden fixed z-50 flex items-center justify-center rounded-full transition-all active:scale-90"
+          style={{
+            bottom: 84,
+            right: 16,
+            width: 40,
+            height: 40,
+            background: aiOpen ? ACCENT : "#fff",
+            boxShadow: aiOpen
+              ? `0 4px 18px ${ACCENT}55`
+              : "0 2px 12px rgba(0,0,0,0.15)",
+            border: aiOpen ? "none" : "1px solid rgba(0,0,0,0.08)",
+          }}
+          aria-label="AI Asisten"
+        >
+          <Bot
+            className="h-[18px] w-[18px]"
+            style={{ color: aiOpen ? "#fff" : ACCENT }}
+          />
+        </button>
+      )}
+
       {/* ── Whole command center container ── */}
       <div
         className="lg:hidden fixed left-0 right-0 bottom-0 z-50"
