@@ -1026,14 +1026,29 @@ Balas HANYA dalam format JSON yang diminta.`,
 
 ${groupSummary}
 
+Peta menu AINA Centre (gunakan saat mengisi "cara akses"):
+- AI & Laporan Cerdas → menu "AI Report" di sidebar
+- Tampilan & Pengalaman → tampil otomatis saat membuka portal
+- Keuangan → menu "Keuangan" di sidebar
+- Anggota & Relasi → menu "Anggota" atau "Relasi" di sidebar
+- Agenda & Kegiatan → menu "Agenda" di sidebar
+- Notulensi & Rapat → menu "Notulensi" di sidebar
+- Dokumen & Inventaris → menu "Surat" atau "Inventaris" di sidebar
+- Sistem & Infrastruktur → tidak perlu akses khusus, berlaku otomatis
+- Perbaikan & Performa → tidak perlu akses khusus, berlaku otomatis
+- Fitur Baru → menu "Fitur Terbaru" di sidebar
+
 Untuk setiap kelompok, buatkan:
 1. "title": judul fitur singkat dan menarik (max 5 kata, Bahasa Indonesia)
-2. "explanation": penjelasan 2–3 kalimat tentang apa manfaatnya bagi pengguna (Bahasa Indonesia, tanpa jargon teknis)
+2. "explanation": 3 poin singkat dengan format persis berikut (pisahkan dengan \n):
+   • Apa yang berubah: <1 kalimat deskripsi singkat>
+   • Manfaat untuk kamu: <1 kalimat manfaat nyata bagi pengguna>
+   • Cara akses: <instruksi singkat berdasarkan peta menu di atas>
 
 Format JSON:
 {
   "features": [
-    { "category": "<nama kategori persis>", "title": "...", "explanation": "..." }
+    { "category": "<nama kategori persis>", "title": "...", "explanation": "• Apa yang berubah: ...\n• Manfaat untuk kamu: ...\n• Cara akses: ..." }
   ]
 }`,
               },

@@ -309,12 +309,32 @@ function FiturOverview() {
                   className="px-5 pb-4 pt-3 border-t border-purple-100"
                   style={{ background: "linear-gradient(135deg, #F5F0FF 0%, #EDE9FE 100%)" }}
                 >
-                  <div className="flex items-start gap-2">
+                  <div className="flex items-start gap-2 mb-2">
                     <span className="text-base shrink-0">✨</span>
-                    <p className="text-[13px] text-[#3E0FA3] leading-relaxed font-medium">{f.explanation}</p>
+                    <span className="text-[11px] font-bold text-[#5B21B6] uppercase tracking-wide">Penjelasan AI</span>
                   </div>
-                  <p className="text-[10px] text-purple-400 mt-2">
-                    Penjelasan dihasilkan otomatis oleh AI berdasarkan riwayat pengembangan
+                  <ul className="space-y-2 ml-1">
+                    {f.explanation.split("\n").filter(Boolean).map((line, i) => {
+                      const clean = line.replace(/^[•\-]\s*/, "");
+                      const colon = clean.indexOf(":");
+                      const label = colon > -1 ? clean.slice(0, colon) : null;
+                      const body  = colon > -1 ? clean.slice(colon + 1).trim() : clean;
+                      return (
+                        <li key={i} className="flex items-start gap-2">
+                          <span className="mt-0.5 h-4 w-4 rounded-full flex items-center justify-center shrink-0 text-[9px] font-black"
+                            style={{ background: "#7C3AED22", color: "#7C3AED" }}>
+                            {i + 1}
+                          </span>
+                          <p className="text-[12px] text-[#3E0FA3] leading-relaxed">
+                            {label && <span className="font-bold">{label}: </span>}
+                            <span className="font-medium">{body}</span>
+                          </p>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                  <p className="text-[10px] text-purple-400 mt-3">
+                    Dihasilkan otomatis oleh AI · berdasarkan riwayat pengembangan
                   </p>
                 </div>
               )}
@@ -340,16 +360,6 @@ function FiturOverview() {
                   <Wand2 className="h-3 w-3" />
                   {isEOpen ? "Tutup" : "AI Jelaskan"}
                 </button>
-                {fRoute && (
-                  <button
-                    onClick={() => navigate(fRoute)}
-                    className="flex items-center gap-1.5 text-[11px] font-semibold px-3 py-1.5 rounded-xl transition-all hover:opacity-80"
-                    style={{ background: "linear-gradient(135deg, #3E0FA3, #7C3AED)", color: "#fff" }}
-                  >
-                    <Navigation className="h-3 w-3" />
-                    Buka Fitur
-                  </button>
-                )}
               </div>
             </div>
           );
