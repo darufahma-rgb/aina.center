@@ -4,8 +4,8 @@ import {
   Sparkles, Plus, Edit, Trash2, GitCommit, ExternalLink, RefreshCw,
   GitBranch, Clock, User, Wand2, ChevronDown, ChevronUp, Zap,
   Navigation, Copy, Check, MapPin, Loader2,
-  Bot, Palette, DollarSign, Users, Calendar, FileText, Package,
-  Settings, Wrench, Layers, type LucideIcon,
+  BrainCircuit, Paintbrush2, Landmark, UsersRound, CalendarCheck,
+  ClipboardList, Archive, Server, Hammer, Rocket, Layers, type LucideIcon,
 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -57,17 +57,35 @@ const CATEGORY_ROUTE: Record<string, string> = {
 };
 
 const CATEGORY_ICON: Record<string, LucideIcon> = {
-  "AI & Laporan Cerdas":    Bot,
-  "Tampilan & Pengalaman":  Palette,
-  "Keuangan":               DollarSign,
-  "Anggota & Relasi":       Users,
-  "Agenda & Kegiatan":      Calendar,
-  "Notulensi & Rapat":      FileText,
-  "Dokumen & Inventaris":   Package,
-  "Sistem & Infrastruktur": Settings,
-  "Perbaikan & Performa":   Wrench,
-  "Fitur Baru":             Sparkles,
+  "AI & Laporan Cerdas":    BrainCircuit,
+  "Tampilan & Pengalaman":  Paintbrush2,
+  "Keuangan":               Landmark,
+  "Anggota & Relasi":       UsersRound,
+  "Agenda & Kegiatan":      CalendarCheck,
+  "Notulensi & Rapat":      ClipboardList,
+  "Dokumen & Inventaris":   Archive,
+  "Sistem & Infrastruktur": Server,
+  "Perbaikan & Performa":   Hammer,
+  "Fitur Baru":             Rocket,
 };
+
+/** Split explanation string by bullet • and return clean items */
+function parseBullets(text: string): { label: string | null; body: string }[] {
+  const parts = text.split("•").map((s) => s.trim()).filter(Boolean);
+  if (parts.length <= 1) {
+    // Fall back: try splitting by newline
+    const lines = text.split("\n").map((s) => s.replace(/^[•\-]\s*/, "").trim()).filter(Boolean);
+    if (lines.length > 1) return lines.map((l) => {
+      const ci = l.indexOf(":");
+      return ci > -1 ? { label: l.slice(0, ci).trim(), body: l.slice(ci + 1).trim() } : { label: null, body: l };
+    });
+    return [{ label: null, body: text }];
+  }
+  return parts.map((p) => {
+    const ci = p.indexOf(":");
+    return ci > -1 ? { label: p.slice(0, ci).trim(), body: p.slice(ci + 1).trim() } : { label: null, body: p };
+  });
+}
 
 // ─── Feature Tab ────────────────────────────────────────────────────────────
 
@@ -259,7 +277,16 @@ function FiturOverview() {
                   </div>
                 </div>
 
-                <p className="text-[13px] text-foreground/70 mt-3 leading-relaxed">{f.explanation}</p>
+                {(() => {
+                  const bullets = parseBullets(f.explanation);
+                  const first = bullets[0];
+                  const preview = first?.body ?? f.explanation;
+                  return (
+                    <p className="text-[13px] text-foreground/70 mt-3 leading-relaxed line-clamp-2">
+                      {preview}
+                    </p>
+                  );
+                })()}
 
                 <div className="flex items-center gap-3 mt-3 pt-2 border-t border-border/40">
                   <span className="flex items-center gap-1 text-[11px] text-muted-foreground">
@@ -313,25 +340,21 @@ function FiturOverview() {
                     <span className="text-base shrink-0">✨</span>
                     <span className="text-[11px] font-bold text-[#5B21B6] uppercase tracking-wide">Penjelasan AI</span>
                   </div>
-                  <ul className="space-y-2 ml-1">
-                    {f.explanation.split("\n").filter(Boolean).map((line, i) => {
-                      const clean = line.replace(/^[•\-]\s*/, "");
-                      const colon = clean.indexOf(":");
-                      const label = colon > -1 ? clean.slice(0, colon) : null;
-                      const body  = colon > -1 ? clean.slice(colon + 1).trim() : clean;
-                      return (
-                        <li key={i} className="flex items-start gap-2">
-                          <span className="mt-0.5 h-4 w-4 rounded-full flex items-center justify-center shrink-0 text-[9px] font-black"
-                            style={{ background: "#7C3AED22", color: "#7C3AED" }}>
-                            {i + 1}
-                          </span>
-                          <p className="text-[12px] text-[#3E0FA3] leading-relaxed">
-                            {label && <span className="font-bold">{label}: </span>}
-                            <span className="font-medium">{body}</span>
-                          </p>
-                        </li>
-                      );
-                    })}
+                  <ul className="space-y-2.5 ml-0">
+                    {parseBullets(f.explanation).map(({ label, body }, i) => (
+                      <li key={i} className="flex items-start gap-2.5">
+                        <span
+                          className="mt-0.5 h-5 w-5 rounded-full flex items-center justify-center shrink-0 text-[9px] font-black"
+                          style={{ background: "#7C3AED", color: "#fff" }}
+                        >
+                          {i + 1}
+                        </span>
+                        <p className="text-[12px] text-[#3E0FA3] leading-relaxed">
+                          {label && <span className="font-bold">{label}:</span>}{" "}
+                          <span className="font-medium">{body}</span>
+                        </p>
+                      </li>
+                    ))}
                   </ul>
                   <p className="text-[10px] text-purple-400 mt-3">
                     Dihasilkan otomatis oleh AI · berdasarkan riwayat pengembangan

@@ -5,7 +5,8 @@ import {
   ArrowRight, MoreHorizontal, Wallet, Download,
   Package, Mail, Handshake, Zap, PauseCircle,
   ListTodo, PlayCircle, Target, Globe,
-  Bot, Palette, DollarSign, Calendar, Settings, Wrench, Layers,
+  BrainCircuit, Paintbrush2, Landmark, UsersRound, CalendarCheck,
+  ClipboardList, Archive, Server, Hammer, Rocket, Layers,
   type LucideIcon,
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
@@ -846,16 +847,16 @@ const FEAT_STATUS_CFG = {
 } as const;
 
 const DASH_CATEGORY_ICON: Record<string, LucideIcon> = {
-  "AI & Laporan Cerdas":    Bot,
-  "Tampilan & Pengalaman":  Palette,
-  "Keuangan":               DollarSign,
-  "Anggota & Relasi":       Users,
-  "Agenda & Kegiatan":      Calendar,
-  "Notulensi & Rapat":      FileText,
-  "Dokumen & Inventaris":   Package,
-  "Sistem & Infrastruktur": Settings,
-  "Perbaikan & Performa":   Wrench,
-  "Fitur Baru":             Sparkles,
+  "AI & Laporan Cerdas":    BrainCircuit,
+  "Tampilan & Pengalaman":  Paintbrush2,
+  "Keuangan":               Landmark,
+  "Anggota & Relasi":       UsersRound,
+  "Agenda & Kegiatan":      CalendarCheck,
+  "Notulensi & Rapat":      ClipboardList,
+  "Dokumen & Inventaris":   Archive,
+  "Sistem & Infrastruktur": Server,
+  "Perbaikan & Performa":   Hammer,
+  "Fitur Baru":             Rocket,
 };
 
 function FiturCard({ f }: { f: ExtractedFeature }) {
