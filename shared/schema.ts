@@ -311,6 +311,22 @@ export const insertReportSchema = createInsertSchema(reports).omit({
 export type InsertReport = z.infer<typeof insertReportSchema>;
 export type Report = typeof reports.$inferSelect;
 
+// ─── Commit Insights ─────────────────────────────────────────────────────────
+
+export const commitInsights = pgTable("commit_insights", {
+  id: serial("id").primaryKey(),
+  commitHash: text("commit_hash").notNull().unique(),
+  repoName: text("repo_name").notNull(),
+  detailedExplanation: text("detailed_explanation"),
+  simpleExplanation: text("simple_explanation"),
+  mappedFeatureTarget: text("mapped_feature_target"),
+  generatedBy: integer("generated_by").references(() => users.id),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
+export type CommitInsight = typeof commitInsights.$inferSelect;
+
 // ─── Audit Logs ───────────────────────────────────────────────────────────────
 
 export const auditLogs = pgTable("audit_logs", {

@@ -37,7 +37,10 @@ import {
   insertInvestorContentSchema,
   insertUserSchema,
   insertSponsorSchema,
+  commitInsights,
 } from "../shared/schema";
+import { db } from "./db";
+import { eq, and } from "drizzle-orm";
 import { generateReport, type ReportMode } from "./aiReport";
 import { z } from "zod";
 
@@ -685,12 +688,58 @@ export function registerRoutes(app: Router) {
     res.json(await storage.listAuditLogs(table as string, recordId ? parseInt(recordId as string) : undefined));
   });
 
-  // ── AI Customer Service Chat ─────────────────────────────────────────────────
+  // ── Commit Insights: CRUD ────────────────────────────────────────────────────
+
+  app.get("/api/commit-insights/:sha", requireAuth, async (req, res) => {
+    try {
+      const { sha } = req.params;
+      const rows = await db.select().from(commitInsights).where(eq(commitInsights.commitHash, sha)).limit(1);
+      if (rows.length === 0) return res.json(null);
+      res.json(rows[0]);
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  app.patch("/api/commit-insights/:sha/mapping", requireAdmin, async (req, res) => {
+    try {
+      const { sha } = req.params;
+      const { mappedFeatureTarget, repo } = req.body as { mappedFeatureTarget: string; repo: string };
+      const existing = await db.select().from(commitInsights).where(eq(commitInsights.commitHash, sha)).limit(1);
+      if (existing.length === 0) {
+        await db.insert(commitInsights).values({
+          commitHash: sha,
+          repoName: repo ?? "",
+          mappedFeatureTarget,
+          generatedBy: (req as any).session?.userId ?? null,
+        });
+      } else {
+        await db.update(commitInsights)
+          .set({ mappedFeatureTarget, updatedAt: new Date() })
+          .where(eq(commitInsights.commitHash, sha));
+      }
+      res.json({ ok: true });
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  // ── GitHub: Detailed Explain ─────────────────────────────────────────────────
 
   app.post("/api/github/explain", requireAuth, async (req, res) => {
     try {
       const { sha, message, repo } = req.body as { sha: string; message: string; repo: string };
       if (!sha || !message || !repo) return res.status(400).json({ error: "sha, message, dan repo diperlukan." });
+
+      // Return cached if already stored
+      const cached = await db.select().from(commitInsights).where(eq(commitInsights.commitHash, sha)).limit(1);
+      if (cached.length > 0 && cached[0].detailedExplanation) {
+        return res.json({
+          explanation: cached[0].detailedExplanation,
+          simpleExplanation: cached[0].simpleExplanation ?? null,
+          mappedFeatureTarget: cached[0].mappedFeatureTarget ?? null,
+        });
+      }
 
       // Fetch commit diff from GitHub
       let diffText = "";
@@ -719,9 +768,75 @@ export function registerRoutes(app: Router) {
       });
 
       const explanation = response.choices[0]?.message?.content ?? "Tidak dapat menghasilkan penjelasan.";
-      res.json({ explanation });
+
+      // Upsert detailed explanation to DB
+      try {
+        if (cached.length === 0) {
+          await db.insert(commitInsights).values({
+            commitHash: sha,
+            repoName: repo,
+            detailedExplanation: explanation,
+            generatedBy: (req as any).session?.userId ?? null,
+          });
+        } else {
+          await db.update(commitInsights)
+            .set({ detailedExplanation: explanation, updatedAt: new Date() })
+            .where(eq(commitInsights.commitHash, sha));
+        }
+      } catch { /* non-fatal */ }
+
+      res.json({ explanation, simpleExplanation: null, mappedFeatureTarget: null });
     } catch (err: any) {
       console.error("GitHub explain error:", err);
+      res.status(500).json({ error: err.message ?? "Terjadi kesalahan." });
+    }
+  });
+
+  // ── GitHub: Simple AI Explanation (admin generates, all can read) ─────────────
+
+  app.post("/api/github/simple-explain", requireAdmin, async (req, res) => {
+    try {
+      const { sha, message, detailedExplanation, repo } = req.body as {
+        sha: string; message: string; detailedExplanation: string; repo: string;
+      };
+      if (!sha || !message || !repo) return res.status(400).json({ error: "sha, message, dan repo diperlukan." });
+
+      const OpenAI = (await import("openai")).default;
+      const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+
+      const context = detailedExplanation
+        ? `Pesan commit: "${message.split("\n")[0]}"\n\nPenjelasan teknis:\n${detailedExplanation}`
+        : `Pesan commit: "${message.split("\n")[0]}"`;
+
+      const prompt = `Kamu adalah asisten produk AINA. Buat penjelasan SANGAT SEDERHANA dalam Bahasa Indonesia (maksimal 2-3 kalimat pendek) tentang perubahan berikut. Jangan gunakan istilah teknis. Jelaskan apa yang berubah dan kenapa penting bagi pengguna. Jangan mengarang fakta baru.\n\n${context}`;
+
+      const response = await client.chat.completions.create({
+        model: "gpt-4o-mini",
+        messages: [{ role: "user", content: prompt }],
+        max_tokens: 200,
+        temperature: 0.5,
+      });
+
+      const simpleExplanation = response.choices[0]?.message?.content ?? "Tidak dapat menghasilkan penjelasan sederhana.";
+
+      // Save to DB
+      const existing = await db.select().from(commitInsights).where(eq(commitInsights.commitHash, sha)).limit(1);
+      if (existing.length === 0) {
+        await db.insert(commitInsights).values({
+          commitHash: sha,
+          repoName: repo,
+          simpleExplanation,
+          generatedBy: (req as any).session?.userId ?? null,
+        });
+      } else {
+        await db.update(commitInsights)
+          .set({ simpleExplanation, updatedAt: new Date() })
+          .where(eq(commitInsights.commitHash, sha));
+      }
+
+      res.json({ simpleExplanation });
+    } catch (err: any) {
+      console.error("GitHub simple explain error:", err);
       res.status(500).json({ error: err.message ?? "Terjadi kesalahan." });
     }
   });

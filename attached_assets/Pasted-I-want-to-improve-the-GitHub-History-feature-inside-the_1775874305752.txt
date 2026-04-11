@@ -1,0 +1,182 @@
+I want to improve the GitHub History feature inside the AINA Center repository.
+
+Important context:
+- This project is AINA Center, which acts as the internal portal/dashboard
+- The GitHub history shown in this portal is intentionally fetched from another repo: AINA Web
+- So keep the GitHub source repo as the AINA Web repo
+- AINA Center is the place to read, explain, simplify, and connect that history to internal product features
+
+Current state:
+- In the “Fitur Terbaru AINA” page, there is a GitHub History tab
+- Commits are fetched from the AINA Web repo
+- There is already a “Jelaskan perubahan” action
+- That explanation should now become the start of a richer feature flow
+
+Goal:
+Turn GitHub commit history into a product understanding tool, not just a technical log.
+
+==================================================
+MAIN FLOW TO BUILD
+==================================================
+
+For each commit item in GitHub History:
+
+1. Show commit information as usual
+2. User clicks “Jelaskan perubahan”
+3. After explanation is shown, also show:
+   - a button: “Buka ke Fitur”
+   - a button: “AI Jelasin Sederhana”
+
+The user should then understand:
+- what changed
+- why it matters
+- where to see it in AINA Center
+
+==================================================
+FEATURE 1 — BUKA KE FITUR
+==================================================
+
+Add a button:
+[ Buka ke Fitur ]
+
+Purpose:
+After reading the explanation, user can directly navigate to the related feature page/module in AINA Center.
+
+Implementation requirements:
+- Create a commit-to-feature mapping mechanism
+- A commit can be linked to one related feature/module in AINA Center
+- The mapping can start simple:
+  - manual mapping by commit hash or commit message
+  - or keyword matching fallback
+- The target should point to relevant pages/modules inside AINA Center, such as:
+  - /fitur
+  - /agenda
+  - /notulensi
+  - /anggota
+  - or a feature detail section if available
+
+Behavior:
+- If mapping exists → navigate to the relevant page or feature
+- If no mapping exists → show a friendly message:
+  “Fitur terkait belum tersedia”
+
+Please make this mapping system easy to extend later.
+
+==================================================
+FEATURE 2 — AI JELASIN SEDERHANA
+==================================================
+
+Add a button:
+[ AI Jelasin Sederhana ]
+
+Purpose:
+Transform the technical commit + explanation into very simple Indonesian language that can be understood by non-technical users.
+
+Use OpenAI API for this feature.
+
+Requirements:
+- Use backend-only OpenAI integration
+- Use OPENAI_API_KEY from environment variables
+- Prefer the same OpenAI integration style already used in AI Report Assistant
+- Reuse existing OpenAI service patterns if possible
+- Do not expose secrets to frontend
+
+Input to AI:
+- commit message
+- existing explanation text
+
+Output:
+- 1 short simplified explanation in Indonesian
+- maximum 2–3 sentences
+- very easy to understand
+- no technical jargon if possible
+- do not invent any new facts
+- explain what changed and why it matters in simple human language
+
+Example:
+
+Commit:
+“Fix error when displaying old messages with missing content”
+
+AI simple explanation:
+“Memperbaiki masalah pada pesan lama yang sebelumnya tidak tampil lengkap. Sekarang riwayat pesan lama bisa dibuka dengan normal sehingga pengalaman pengguna jadi lebih rapi dan jelas.”
+
+==================================================
+UX REQUIREMENTS
+==================================================
+
+When user expands “Jelaskan perubahan”, structure the UI like this:
+
+1. Detailed explanation block
+2. AI simple explanation block (if generated)
+3. Action buttons:
+   - Buka ke Fitur
+   - AI Jelasin Sederhana
+   - Copy explanation (optional)
+
+UX rules:
+- Show loading state when AI is generating
+- Show inline result under the commit item
+- Allow toggling show/hide
+- Keep the UI clean and not too crowded
+- Make it feel like a smart product insight tool
+
+==================================================
+ACCESS RULES
+==================================================
+
+- Both Admin and User can view commit history and detailed explanation
+- AI simple explanation can be:
+  Option A: admin only
+  Option B: visible to all once generated
+
+Best recommended behavior:
+- Admin can trigger AI generation
+- Once generated, all users can read the saved simple explanation
+
+Please implement whichever is cleaner with current architecture.
+
+==================================================
+DATA / STORAGE
+==================================================
+
+If appropriate, store generated AI simple explanations so they do not need to be regenerated every time.
+
+Suggested fields if adding storage:
+- commit_hash
+- repo_name
+- detailed_explanation
+- simple_explanation
+- mapped_feature_target
+- created_at
+- updated_at
+- generated_by
+
+This can be implemented in a new table if needed, or integrated into an existing structured storage approach.
+
+==================================================
+IMPORTANT DESIGN GOAL
+==================================================
+
+This should not feel like a developer-only commit viewer.
+
+It should feel like:
+- a product evolution tracker
+- a learning tool for the team
+- a bridge between technical history and product understanding
+
+==================================================
+FINAL RESULT
+==================================================
+
+Inside AINA Center, GitHub History from AINA Web should become:
+
+Commit history
+→ detailed explanation
+→ simple AI explanation
+→ direct path to related feature
+
+Users should be able to understand:
+- what changed
+- what it means
+- where to access the related feature

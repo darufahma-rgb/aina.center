@@ -1,5 +1,10 @@
-import { useState } from "react";
-import { Sparkles, Plus, Edit, Trash2, GitCommit, ExternalLink, RefreshCw, GitBranch, Clock, User, Wand2, ChevronDown, ChevronUp } from "lucide-react";
+import { useState, useCallback } from "react";
+import { useNavigate } from "react-router-dom";
+import {
+  Sparkles, Plus, Edit, Trash2, GitCommit, ExternalLink, RefreshCw,
+  GitBranch, Clock, User, Wand2, ChevronDown, ChevronUp, Zap,
+  Navigation, Copy, Check, MapPin, Loader2,
+} from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -18,6 +23,32 @@ import { Switch } from "@/components/ui/switch";
 import type { FiturTerbaru } from "../../shared/schema";
 
 const GITHUB_REPO = "darciatemantaraglobal-gif/aina.web";
+
+// ─── Feature Keyword Mapping ─────────────────────────────────────────────────
+
+const FEATURE_ROUTES: { keywords: string[]; route: string; label: string }[] = [
+  { keywords: ["agenda", "event", "jadwal", "schedule"], route: "/agenda", label: "Agenda" },
+  { keywords: ["notulensi", "notul", "meeting", "rapat", "minutes"], route: "/notulensi", label: "Notulensi" },
+  { keywords: ["anggota", "member", "user", "pengguna"], route: "/anggota", label: "Anggota" },
+  { keywords: ["keuangan", "finance", "uang", "dana", "budget", "sponsor", "donasi"], route: "/keuangan", label: "Keuangan" },
+  { keywords: ["relasi", "relation", "partner", "mitra", "kontak", "contact"], route: "/relasi", label: "Relasi" },
+  { keywords: ["surat", "letter", "dokumen", "document"], route: "/surat", label: "Surat" },
+  { keywords: ["inventaris", "inventory", "barang", "aset", "asset"], route: "/inventaris", label: "Inventaris" },
+  { keywords: ["investor", "invest"], route: "/investor", label: "Investor Mode" },
+  { keywords: ["report", "laporan", "ai report", "ai-report"], route: "/ai-report", label: "AI Report" },
+  { keywords: ["fitur", "feature", "terbaru", "changelog", "update"], route: "/fitur", label: "Fitur Terbaru" },
+  { keywords: ["dashboard", "home", "beranda"], route: "/", label: "Dashboard" },
+];
+
+function guessFeatureRoute(text: string): { route: string; label: string } | null {
+  const lower = text.toLowerCase();
+  for (const { keywords, route, label } of FEATURE_ROUTES) {
+    if (keywords.some((kw) => lower.includes(kw))) return { route, label };
+  }
+  return null;
+}
+
+// ─── Helpers ─────────────────────────────────────────────────────────────────
 
 const statusColors: Record<string, string> = {
   planned:     "bg-muted text-muted-foreground border border-border",
@@ -41,33 +72,78 @@ function timeAgo(dateStr: string) {
   return new Date(dateStr).toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" });
 }
 
-function shortSha(sha: string) {
-  return sha.slice(0, 7);
-}
+function shortSha(sha: string) { return sha.slice(0, 7); }
 
 function cleanMessage(msg: string) {
   const firstLine = msg.split("\n")[0];
   return firstLine.length > 80 ? firstLine.slice(0, 77) + "…" : firstLine;
 }
 
+// ─── Types ───────────────────────────────────────────────────────────────────
+
 interface GitHubCommit {
   sha: string;
-  commit: {
-    message: string;
-    author: { name: string; date: string };
-  };
+  commit: { message: string; author: { name: string; date: string } };
   html_url: string;
 }
 
-function CommitCard({ commit }: { commit: GitHubCommit }) {
-  const [explanation, setExplanation] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [expanded, setExpanded] = useState(false);
+interface StoredInsight {
+  detailedExplanation: string | null;
+  simpleExplanation: string | null;
+  mappedFeatureTarget: string | null;
+}
 
-  async function explain() {
-    if (explanation) { setExpanded(v => !v); return; }
-    setLoading(true);
+// ─── CommitCard ──────────────────────────────────────────────────────────────
+
+function CommitCard({ commit }: { commit: GitHubCommit }) {
+  const { isAdmin } = useAuth();
+  const navigate = useNavigate();
+  const { toast } = useToast();
+
+  const [expanded, setExpanded] = useState(false);
+  const [loadingDetail, setLoadingDetail] = useState(false);
+  const [loadingSimple, setLoadingSimple] = useState(false);
+  const [copied, setCopied] = useState(false);
+
+  const [detailedExplanation, setDetailedExplanation] = useState<string | null>(null);
+  const [simpleExplanation, setSimpleExplanation] = useState<string | null>(null);
+  const [mappedTarget, setMappedTarget] = useState<string | null>(null);
+  const [insightLoaded, setInsightLoaded] = useState(false);
+
+  // Derive effective target: stored mapping → keyword guess from message
+  const effectiveTarget = mappedTarget
+    ?? guessFeatureRoute(commit.commit.message)?.route
+    ?? null;
+  const effectiveLabel = mappedTarget
+    ? (FEATURE_ROUTES.find((f) => f.route === mappedTarget)?.label ?? "Fitur")
+    : (guessFeatureRoute(commit.commit.message)?.label ?? null);
+
+  async function loadInsight() {
+    try {
+      const res = await fetch(`/api/commit-insights/${commit.sha}`, { credentials: "include" });
+      if (res.ok) {
+        const data: StoredInsight | null = await res.json();
+        if (data) {
+          if (data.detailedExplanation) setDetailedExplanation(data.detailedExplanation);
+          if (data.simpleExplanation) setSimpleExplanation(data.simpleExplanation);
+          if (data.mappedFeatureTarget) setMappedTarget(data.mappedFeatureTarget);
+        }
+      }
+    } catch { /* non-fatal */ }
+    setInsightLoaded(true);
+  }
+
+  async function handleExpand() {
+    if (expanded) { setExpanded(false); return; }
     setExpanded(true);
+    if (!insightLoaded) await loadInsight();
+    if (!detailedExplanation && !loadingDetail) {
+      await generateDetailedExplanation();
+    }
+  }
+
+  async function generateDetailedExplanation() {
+    setLoadingDetail(true);
     try {
       const res = await fetch("/api/github/explain", {
         method: "POST",
@@ -76,12 +152,49 @@ function CommitCard({ commit }: { commit: GitHubCommit }) {
         body: JSON.stringify({ sha: commit.sha, message: commit.commit.message, repo: GITHUB_REPO }),
       });
       const data = await res.json();
-      setExplanation(data.explanation ?? data.error ?? "Gagal.");
+      setDetailedExplanation(data.explanation ?? data.error ?? "Gagal mendapatkan penjelasan.");
+      if (data.simpleExplanation) setSimpleExplanation(data.simpleExplanation);
+      if (data.mappedFeatureTarget) setMappedTarget(data.mappedFeatureTarget);
     } catch {
-      setExplanation("Terjadi kesalahan saat menghubungi AI.");
+      setDetailedExplanation("Terjadi kesalahan saat menghubungi AI.");
     } finally {
-      setLoading(false);
+      setLoadingDetail(false);
     }
+  }
+
+  async function handleSimpleExplain() {
+    if (!isAdmin) return;
+    setLoadingSimple(true);
+    try {
+      const res = await fetch("/api/github/simple-explain", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({
+          sha: commit.sha,
+          message: commit.commit.message,
+          detailedExplanation: detailedExplanation ?? "",
+          repo: GITHUB_REPO,
+        }),
+      });
+      const data = await res.json();
+      setSimpleExplanation(data.simpleExplanation ?? data.error ?? "Gagal.");
+    } catch {
+      toast({ title: "Gagal", description: "Tidak dapat menghubungi AI.", variant: "destructive" });
+    } finally {
+      setLoadingSimple(false);
+    }
+  }
+
+  async function handleCopy() {
+    const text = [
+      `Commit: ${commit.commit.message.split("\n")[0]}`,
+      detailedExplanation ? `\nPenjelasan:\n${detailedExplanation}` : "",
+      simpleExplanation ? `\nRingkasan sederhana:\n${simpleExplanation}` : "",
+    ].join("").trim();
+    await navigator.clipboard.writeText(text);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
   }
 
   return (
@@ -94,7 +207,9 @@ function CommitCard({ commit }: { commit: GitHubCommit }) {
           >
             <GitCommit className="h-3.5 w-3.5 text-white" />
           </div>
+
           <div className="flex-1 min-w-0">
+            {/* Commit title + meta */}
             <p className="text-[13px] font-medium text-foreground leading-snug">
               {cleanMessage(commit.commit.message)}
             </p>
@@ -108,47 +223,115 @@ function CommitCard({ commit }: { commit: GitHubCommit }) {
                 {shortSha(commit.sha)}
               </a>
               <span className="flex items-center gap-1 text-[11px] text-muted-foreground">
-                <User className="h-3 w-3" />
-                {commit.commit.author.name}
+                <User className="h-3 w-3" />{commit.commit.author.name}
               </span>
               <span className="flex items-center gap-1 text-[11px] text-muted-foreground">
-                <Clock className="h-3 w-3" />
-                {timeAgo(commit.commit.author.date)}
+                <Clock className="h-3 w-3" />{timeAgo(commit.commit.author.date)}
               </span>
             </div>
 
-            {/* Explanation panel */}
+            {/* Expanded panel */}
             {expanded && (
-              <div
-                className="mt-3 rounded-xl p-3 text-[12px] leading-relaxed"
-                style={{ background: "linear-gradient(135deg, #f5f0ff, #ede9fe)", border: "1px solid #ddd6fe" }}
-              >
-                {loading ? (
-                  <div className="flex items-center gap-2 text-purple-600">
-                    <RefreshCw className="h-3.5 w-3.5 animate-spin" />
-                    <span>AI sedang menganalisis perubahan...</span>
+              <div className="mt-3 space-y-3">
+                {/* Detailed explanation */}
+                <div
+                  className="rounded-xl p-3 text-[12px] leading-relaxed"
+                  style={{ background: "linear-gradient(135deg, #f5f0ff, #ede9fe)", border: "1px solid #ddd6fe" }}
+                >
+                  <p className="text-[10px] font-semibold text-purple-500 uppercase tracking-wide mb-1.5">
+                    Penjelasan Perubahan
+                  </p>
+                  {loadingDetail ? (
+                    <div className="flex items-center gap-2 text-purple-600">
+                      <RefreshCw className="h-3.5 w-3.5 animate-spin" />
+                      <span>AI sedang menganalisis perubahan...</span>
+                    </div>
+                  ) : (
+                    <div className="text-purple-900 whitespace-pre-wrap">{detailedExplanation}</div>
+                  )}
+                </div>
+
+                {/* Simple explanation (visible to all once generated) */}
+                {simpleExplanation && (
+                  <div
+                    className="rounded-xl p-3 text-[12px] leading-relaxed"
+                    style={{ background: "linear-gradient(135deg, #f0fdf4, #dcfce7)", border: "1px solid #86efac" }}
+                  >
+                    <p className="text-[10px] font-semibold text-green-600 uppercase tracking-wide mb-1.5 flex items-center gap-1">
+                      <Zap className="h-3 w-3" /> Penjelasan Sederhana
+                    </p>
+                    <div className="text-green-900">{simpleExplanation}</div>
                   </div>
-                ) : (
-                  <div className="text-purple-900 whitespace-pre-wrap">{explanation}</div>
                 )}
+
+                {/* Action buttons */}
+                <div className="flex items-center gap-2 flex-wrap pt-0.5">
+                  {/* Buka ke Fitur */}
+                  {effectiveTarget ? (
+                    <button
+                      onClick={() => navigate(effectiveTarget)}
+                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-semibold transition-all hover:opacity-90"
+                      style={{ background: "linear-gradient(135deg, #3E0FA3, #7C3AED)", color: "#fff" }}
+                    >
+                      <Navigation className="h-3 w-3" />
+                      Buka {effectiveLabel}
+                    </button>
+                  ) : (
+                    <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-medium text-muted-foreground bg-muted/60 border border-border/50">
+                      <MapPin className="h-3 w-3" />
+                      Fitur terkait belum tersedia
+                    </span>
+                  )}
+
+                  {/* AI Jelasin Sederhana (admin only trigger, result visible to all) */}
+                  {isAdmin && !simpleExplanation && (
+                    <button
+                      onClick={handleSimpleExplain}
+                      disabled={loadingSimple || loadingDetail || !detailedExplanation}
+                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-semibold transition-all border"
+                      style={{
+                        borderColor: "#86efac",
+                        color: loadingSimple ? "#9ca3af" : "#16a34a",
+                        background: loadingSimple ? "#f9fafb" : "#f0fdf4",
+                      }}
+                    >
+                      {loadingSimple
+                        ? <><Loader2 className="h-3 w-3 animate-spin" /> Menganalisis...</>
+                        : <><Zap className="h-3 w-3" /> AI Jelasin Sederhana</>
+                      }
+                    </button>
+                  )}
+
+                  {/* Copy */}
+                  {(detailedExplanation || simpleExplanation) && (
+                    <button
+                      onClick={handleCopy}
+                      className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-[11px] font-medium text-muted-foreground hover:text-foreground transition-colors border border-border/50"
+                    >
+                      {copied ? <Check className="h-3 w-3 text-green-500" /> : <Copy className="h-3 w-3" />}
+                      {copied ? "Tersalin" : "Salin"}
+                    </button>
+                  )}
+                </div>
               </div>
             )}
 
-            {/* Explain button */}
+            {/* Expand trigger */}
             <button
-              onClick={explain}
-              disabled={loading}
+              onClick={handleExpand}
               className="mt-2 flex items-center gap-1.5 text-[11px] font-semibold transition-colors"
               style={{ color: expanded ? "#7C3AED" : "#999" }}
             >
               <Wand2 className="h-3 w-3" />
-              {loading ? "Menganalisis..." : expanded ? (
+              {expanded ? (
                 <span className="flex items-center gap-0.5">Sembunyikan <ChevronUp className="h-3 w-3" /></span>
               ) : (
                 <span className="flex items-center gap-0.5">Jelaskan perubahan <ChevronDown className="h-3 w-3" /></span>
               )}
             </button>
           </div>
+
+          {/* External link */}
           <a
             href={commit.html_url}
             target="_blank"
@@ -162,6 +345,8 @@ function CommitCard({ commit }: { commit: GitHubCommit }) {
     </Card>
   );
 }
+
+// ─── GitHub Tab ──────────────────────────────────────────────────────────────
 
 function GitHubTab() {
   const [perPage, setPerPage] = useState(20);
@@ -228,6 +413,18 @@ function GitHubTab() {
         </Button>
       </div>
 
+      {/* Info hint */}
+      <div
+        className="rounded-xl px-4 py-2.5 text-[11px] text-purple-700 flex items-start gap-2"
+        style={{ background: "#f5f0ff", border: "1px solid #ddd6fe" }}
+      >
+        <Wand2 className="h-3.5 w-3.5 mt-0.5 shrink-0" />
+        <span>
+          Klik <strong>Jelaskan perubahan</strong> pada setiap commit untuk melihat penjelasan AI.
+          Admin dapat mengaktifkan <strong>AI Jelasin Sederhana</strong> agar bisa dibaca semua anggota.
+        </span>
+      </div>
+
       {/* Commit list */}
       <div className="space-y-2">
         {commits?.map((commit) => (
@@ -242,7 +439,7 @@ function GitHubTab() {
             variant="outline"
             size="sm"
             className="gap-1.5"
-            onClick={() => setPerPage(p => p + 20)}
+            onClick={() => setPerPage((p) => p + 20)}
             disabled={isFetching}
           >
             {isFetching ? <RefreshCw className="h-3.5 w-3.5 animate-spin" /> : null}
@@ -254,7 +451,16 @@ function GitHubTab() {
   );
 }
 
-function FiturForm({ initial, onClose, onSave, isAdmin }: { initial?: Partial<FiturTerbaru>; onClose: () => void; onSave: (data: any) => void; isAdmin: boolean }) {
+// ─── Fitur Form ───────────────────────────────────────────────────────────────
+
+function FiturForm({
+  initial, onClose, onSave, isAdmin,
+}: {
+  initial?: Partial<FiturTerbaru>;
+  onClose: () => void;
+  onSave: (data: any) => void;
+  isAdmin: boolean;
+}) {
   const [name, setName] = useState(initial?.name ?? "");
   const [category, setCategory] = useState(initial?.category ?? "");
   const [status, setStatus] = useState(initial?.status ?? "planned");
@@ -267,11 +473,11 @@ function FiturForm({ initial, onClose, onSave, isAdmin }: { initial?: Partial<Fi
       <div className="grid grid-cols-2 gap-3">
         <div className="space-y-1.5 col-span-2">
           <Label>Nama Fitur *</Label>
-          <Input value={name} onChange={e => setName(e.target.value)} placeholder="Nama fitur" />
+          <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="Nama fitur" />
         </div>
         <div className="space-y-1.5">
           <Label>Kategori *</Label>
-          <Input value={category} onChange={e => setCategory(e.target.value)} placeholder="AI, UX, Backend, dsb" />
+          <Input value={category} onChange={(e) => setCategory(e.target.value)} placeholder="AI, UX, Backend, dsb" />
         </div>
         <div className="space-y-1.5">
           <Label>Status</Label>
@@ -298,7 +504,12 @@ function FiturForm({ initial, onClose, onSave, isAdmin }: { initial?: Partial<Fi
         </div>
         <div className="space-y-1.5 col-span-2">
           <Label>Deskripsi *</Label>
-          <Textarea value={description} onChange={e => setDescription(e.target.value)} rows={3} placeholder="Deskripsi fitur..." />
+          <Textarea
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            rows={3}
+            placeholder="Deskripsi fitur..."
+          />
         </div>
         {isAdmin && (
           <div className="col-span-2 flex items-center justify-between p-3 rounded-lg border">
@@ -312,11 +523,18 @@ function FiturForm({ initial, onClose, onSave, isAdmin }: { initial?: Partial<Fi
       </div>
       <DialogFooter>
         <Button variant="outline" onClick={onClose}>Batal</Button>
-        <Button onClick={() => onSave({ name, category, status, description, impact, isInvestorVisible })} disabled={!name || !category || !description}>Simpan</Button>
+        <Button
+          onClick={() => onSave({ name, category, status, description, impact, isInvestorVisible })}
+          disabled={!name || !category || !description}
+        >
+          Simpan
+        </Button>
       </DialogFooter>
     </div>
   );
 }
+
+// ─── Main Page ────────────────────────────────────────────────────────────────
 
 export default function FiturTerbaruPage() {
   const { isAdmin } = useAuth();
@@ -355,12 +573,9 @@ export default function FiturTerbaruPage() {
       </PageHeader>
 
       {/* Tabs */}
-      <div
-        className="flex gap-1 p-1 rounded-2xl w-fit"
-        style={{ background: "rgba(0,0,0,0.05)" }}
-      >
+      <div className="flex gap-1 p-1 rounded-2xl w-fit" style={{ background: "rgba(0,0,0,0.05)" }}>
         {([
-          { key: "fitur",  label: "Fitur",           icon: Sparkles  },
+          { key: "fitur",  label: "Fitur",          icon: Sparkles  },
           { key: "github", label: "Riwayat GitHub",  icon: GitCommit },
         ] as const).map(({ key, label, icon: Icon }) => (
           <button
@@ -399,14 +614,20 @@ export default function FiturTerbaruPage() {
                         </div>
                         {isAdmin && (
                           <div className="flex gap-1 shrink-0 -mt-1 -mr-1">
-                            <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-primary" onClick={() => setEditing(f)}><Edit className="h-3 w-3" /></Button>
-                            <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-destructive" onClick={() => setDeleteId(f.id)}><Trash2 className="h-3 w-3" /></Button>
+                            <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-primary" onClick={() => setEditing(f)}>
+                              <Edit className="h-3 w-3" />
+                            </Button>
+                            <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-destructive" onClick={() => setDeleteId(f.id)}>
+                              <Trash2 className="h-3 w-3" />
+                            </Button>
                           </div>
                         )}
                       </div>
                       <div className="flex items-center gap-2 flex-wrap">
                         <Badge variant="outline" className="text-[10px]">{f.category}</Badge>
-                        <span className={`text-[10px] font-medium px-2 py-0.5 rounded-full ${statusColors[f.status] ?? ""}`}>{f.status.replace("_", " ")}</span>
+                        <span className={`text-[10px] font-medium px-2 py-0.5 rounded-full ${statusColors[f.status] ?? ""}`}>
+                          {f.status.replace("_", " ")}
+                        </span>
                       </div>
                       <p className="text-xs text-foreground/70">{f.description}</p>
                       <div className="flex items-center justify-between">
@@ -438,7 +659,14 @@ export default function FiturTerbaruPage() {
       <Dialog open={!!editing} onOpenChange={(v) => !v && setEditing(null)}>
         <DialogContent className="max-w-lg">
           <DialogHeader><DialogTitle>Edit Fitur</DialogTitle></DialogHeader>
-          {editing && <FiturForm isAdmin={isAdmin} initial={editing} onClose={() => setEditing(null)} onSave={(d) => updateMutation.mutate({ id: editing.id, data: d })} />}
+          {editing && (
+            <FiturForm
+              isAdmin={isAdmin}
+              initial={editing}
+              onClose={() => setEditing(null)}
+              onSave={(d) => updateMutation.mutate({ id: editing.id, data: d })}
+            />
+          )}
         </DialogContent>
       </Dialog>
       <AlertDialog open={deleteId !== null} onOpenChange={(v) => !v && setDeleteId(null)}>
@@ -449,7 +677,12 @@ export default function FiturTerbaruPage() {
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Batal</AlertDialogCancel>
-            <AlertDialogAction onClick={() => deleteId && deleteMutation.mutate(deleteId)} className="bg-destructive hover:bg-destructive/90">Hapus</AlertDialogAction>
+            <AlertDialogAction
+              onClick={() => deleteId && deleteMutation.mutate(deleteId)}
+              className="bg-destructive hover:bg-destructive/90"
+            >
+              Hapus
+            </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
