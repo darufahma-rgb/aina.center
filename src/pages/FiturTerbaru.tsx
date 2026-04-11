@@ -4,6 +4,8 @@ import {
   Sparkles, Plus, Edit, Trash2, GitCommit, ExternalLink, RefreshCw,
   GitBranch, Clock, User, Wand2, ChevronDown, ChevronUp, Zap,
   Navigation, Copy, Check, MapPin, Loader2,
+  Bot, Palette, DollarSign, Users, Calendar, FileText, Package,
+  Settings, Wrench, Layers, type LucideIcon,
 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -52,6 +54,19 @@ const CATEGORY_ROUTE: Record<string, string> = {
   "Notulensi & Rapat":    "/notulensi",
   "Dokumen & Inventaris": "/inventaris",
   "AI & Laporan Cerdas":  "/ai-report",
+};
+
+const CATEGORY_ICON: Record<string, LucideIcon> = {
+  "AI & Laporan Cerdas":    Bot,
+  "Tampilan & Pengalaman":  Palette,
+  "Keuangan":               DollarSign,
+  "Anggota & Relasi":       Users,
+  "Agenda & Kegiatan":      Calendar,
+  "Notulensi & Rapat":      FileText,
+  "Dokumen & Inventaris":   Package,
+  "Sistem & Infrastruktur": Settings,
+  "Perbaikan & Performa":   Wrench,
+  "Fitur Baru":             Sparkles,
 };
 
 // ─── Feature Tab ────────────────────────────────────────────────────────────
@@ -214,12 +229,17 @@ function FiturOverview() {
               {/* Main body */}
               <div className="p-5">
                 <div className="flex items-start gap-3">
-                  <div
-                    className="h-12 w-12 rounded-2xl flex items-center justify-center text-2xl shrink-0 shadow"
-                    style={{ background: "linear-gradient(135deg, #3E0FA3, #7C3AED)" }}
-                  >
-                    {f.emoji}
-                  </div>
+                  {(() => {
+                    const Icon = CATEGORY_ICON[f.category] ?? Layers;
+                    return (
+                      <div
+                        className="h-10 w-10 rounded-xl flex items-center justify-center shrink-0"
+                        style={{ background: "#F5F0FF", border: "1.5px solid #C4B5FD" }}
+                      >
+                        <Icon className="h-5 w-5" style={{ color: "#7C3AED" }} />
+                      </div>
+                    );
+                  })()}
                   <div className="flex-1 min-w-0 pt-0.5">
                     <div className="flex items-center gap-1.5 flex-wrap mb-1">
                       <span
