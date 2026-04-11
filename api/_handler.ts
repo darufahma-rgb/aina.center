@@ -25,6 +25,23 @@ const pool = new pg.Pool({
   connectionTimeoutMillis: 10000,
 });
 
+async function ensureSessionTable() {
+  if (!connectionString) return;
+  try {
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS "session" (
+        "sid" varchar NOT NULL COLLATE "default",
+        "sess" json NOT NULL,
+        "expire" timestamp(6) NOT NULL,
+        CONSTRAINT "session_pkey" PRIMARY KEY ("sid") NOT DEFERRABLE INITIALLY IMMEDIATE
+      ) WITH (OIDS=FALSE)
+    `);
+    await pool.query(`CREATE INDEX IF NOT EXISTS "IDX_session_expire" ON "session" ("expire")`);
+  } catch (err: any) {
+    console.error("[Session Table]", err?.message);
+  }
+}
+
 app.use(session({
   secret: process.env.SESSION_SECRET ?? "aina-portal-secret-2024",
   resave: false,
@@ -47,9 +64,11 @@ app.use("/uploads", express.static("/tmp/uploads"));
 app.get("/api/health", async (_req, res) => {
   try {
     await pool.query("SELECT 1");
+    const tables = await pool.query(`SELECT tablename FROM pg_tables WHERE schemaname='public' AND tablename='session'`);
     res.json({
       status: "ok",
       db: "connected",
+      sessionTable: tables.rows.length > 0 ? "exists" : "missing",
       env: {
         hasDbUrl: !!process.env.SUPABASE_DATABASE_URL || !!process.env.DATABASE_URL,
         hasSessionSecret: !!process.env.SESSION_SECRET,
@@ -84,6 +103,7 @@ async function seedAdmin() {
   }
 }
 
+ensureSessionTable();
 seedAdmin();
 
 export default app;
