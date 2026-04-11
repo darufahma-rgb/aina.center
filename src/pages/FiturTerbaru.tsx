@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Sparkles, Plus, Edit, Trash2 } from "lucide-react";
+import { Sparkles, Plus, Edit, Trash2, GitCommit, ExternalLink, RefreshCw, GitBranch, Clock, User } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -17,6 +17,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Switch } from "@/components/ui/switch";
 import type { FiturTerbaru } from "../../shared/schema";
 
+const GITHUB_REPO = "darciatemantaraglobal-gif/aina.web";
+
 const statusColors: Record<string, string> = {
   planned:     "bg-muted text-muted-foreground border border-border",
   in_progress: "bg-primary/10 text-primary border border-primary/20",
@@ -27,6 +29,171 @@ const statusColors: Record<string, string> = {
 const impactColors: Record<string, string> = {
   low: "text-muted-foreground", medium: "text-purple-500", high: "text-primary",
 };
+
+function timeAgo(dateStr: string) {
+  const diff = Date.now() - new Date(dateStr).getTime();
+  const mins = Math.floor(diff / 60000);
+  if (mins < 60) return `${mins} menit lalu`;
+  const hrs = Math.floor(mins / 60);
+  if (hrs < 24) return `${hrs} jam lalu`;
+  const days = Math.floor(hrs / 24);
+  if (days < 30) return `${days} hari lalu`;
+  return new Date(dateStr).toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" });
+}
+
+function shortSha(sha: string) {
+  return sha.slice(0, 7);
+}
+
+function cleanMessage(msg: string) {
+  const firstLine = msg.split("\n")[0];
+  return firstLine.length > 80 ? firstLine.slice(0, 77) + "…" : firstLine;
+}
+
+interface GitHubCommit {
+  sha: string;
+  commit: {
+    message: string;
+    author: { name: string; date: string };
+  };
+  html_url: string;
+}
+
+function GitHubTab() {
+  const [perPage, setPerPage] = useState(20);
+
+  const { data: commits, isLoading, isError, refetch, isFetching } = useQuery<GitHubCommit[]>({
+    queryKey: ["github-commits", perPage],
+    queryFn: async () => {
+      const res = await fetch(
+        `https://api.github.com/repos/${GITHUB_REPO}/commits?per_page=${perPage}`,
+        { headers: { Accept: "application/vnd.github+json" } }
+      );
+      if (!res.ok) throw new Error("Gagal mengambil data GitHub");
+      return res.json();
+    },
+    staleTime: 1000 * 60 * 5,
+  });
+
+  if (isLoading) {
+    return (
+      <div className="flex flex-col items-center justify-center py-16 gap-3">
+        <RefreshCw className="h-6 w-6 text-primary animate-spin" />
+        <p className="text-sm text-muted-foreground">Mengambil data dari GitHub...</p>
+      </div>
+    );
+  }
+
+  if (isError) {
+    return (
+      <Card>
+        <CardContent className="p-8 text-center">
+          <p className="text-sm text-destructive font-medium mb-2">Gagal memuat data GitHub</p>
+          <Button size="sm" variant="outline" onClick={() => refetch()}>Coba Lagi</Button>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  return (
+    <div className="space-y-4">
+      {/* Repo info bar */}
+      <div className="flex items-center justify-between flex-wrap gap-2">
+        <div className="flex items-center gap-2">
+          <GitBranch className="h-4 w-4 text-primary" />
+          <a
+            href={`https://github.com/${GITHUB_REPO}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-sm font-semibold text-primary hover:underline flex items-center gap-1"
+          >
+            {GITHUB_REPO}
+            <ExternalLink className="h-3 w-3" />
+          </a>
+          <Badge variant="outline" className="text-[10px]">main</Badge>
+        </div>
+        <Button
+          size="sm"
+          variant="outline"
+          className="gap-1.5 h-7 text-xs"
+          onClick={() => refetch()}
+          disabled={isFetching}
+        >
+          <RefreshCw className={`h-3 w-3 ${isFetching ? "animate-spin" : ""}`} />
+          Refresh
+        </Button>
+      </div>
+
+      {/* Commit list */}
+      <div className="space-y-2">
+        {commits?.map((commit, idx) => (
+          <Card
+            key={commit.sha}
+            className="hover:shadow-sm transition-shadow border border-border/60"
+          >
+            <CardContent className="px-4 py-3">
+              <div className="flex items-start gap-3">
+                <div
+                  className="h-7 w-7 rounded-full flex items-center justify-center shrink-0 mt-0.5"
+                  style={{ background: "linear-gradient(135deg, #3E0FA3, #7C3AED)" }}
+                >
+                  <GitCommit className="h-3.5 w-3.5 text-white" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-[13px] font-medium text-foreground leading-snug">
+                    {cleanMessage(commit.commit.message)}
+                  </p>
+                  <div className="flex items-center gap-3 mt-1.5 flex-wrap">
+                    <a
+                      href={commit.html_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="font-mono text-[11px] text-primary hover:underline flex items-center gap-1"
+                    >
+                      {shortSha(commit.sha)}
+                    </a>
+                    <span className="flex items-center gap-1 text-[11px] text-muted-foreground">
+                      <User className="h-3 w-3" />
+                      {commit.commit.author.name}
+                    </span>
+                    <span className="flex items-center gap-1 text-[11px] text-muted-foreground">
+                      <Clock className="h-3 w-3" />
+                      {timeAgo(commit.commit.author.date)}
+                    </span>
+                  </div>
+                </div>
+                <a
+                  href={commit.html_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="shrink-0 text-muted-foreground hover:text-primary transition-colors"
+                >
+                  <ExternalLink className="h-3.5 w-3.5" />
+                </a>
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+
+      {/* Load more */}
+      {commits && commits.length === perPage && (
+        <div className="flex justify-center pt-2">
+          <Button
+            variant="outline"
+            size="sm"
+            className="gap-1.5"
+            onClick={() => setPerPage(p => p + 20)}
+            disabled={isFetching}
+          >
+            {isFetching ? <RefreshCw className="h-3.5 w-3.5 animate-spin" /> : null}
+            Muat Lebih Banyak
+          </Button>
+        </div>
+      )}
+    </div>
+  );
+}
 
 function FiturForm({ initial, onClose, onSave, isAdmin }: { initial?: Partial<FiturTerbaru>; onClose: () => void; onSave: (data: any) => void; isAdmin: boolean }) {
   const [name, setName] = useState(initial?.name ?? "");
@@ -41,11 +208,11 @@ function FiturForm({ initial, onClose, onSave, isAdmin }: { initial?: Partial<Fi
       <div className="grid grid-cols-2 gap-3">
         <div className="space-y-1.5 col-span-2">
           <Label>Nama Fitur *</Label>
-          <Input value={name} onChange={e => setName(e.target.value)} placeholder="Nama fitur" data-testid="input-fitur-name" />
+          <Input value={name} onChange={e => setName(e.target.value)} placeholder="Nama fitur" />
         </div>
         <div className="space-y-1.5">
           <Label>Kategori *</Label>
-          <Input value={category} onChange={e => setCategory(e.target.value)} placeholder="AI, UX, Backend, dsb" data-testid="input-fitur-category" />
+          <Input value={category} onChange={e => setCategory(e.target.value)} placeholder="AI, UX, Backend, dsb" />
         </div>
         <div className="space-y-1.5">
           <Label>Status</Label>
@@ -72,7 +239,7 @@ function FiturForm({ initial, onClose, onSave, isAdmin }: { initial?: Partial<Fi
         </div>
         <div className="space-y-1.5 col-span-2">
           <Label>Deskripsi *</Label>
-          <Textarea value={description} onChange={e => setDescription(e.target.value)} rows={3} placeholder="Deskripsi fitur..." data-testid="input-fitur-description" />
+          <Textarea value={description} onChange={e => setDescription(e.target.value)} rows={3} placeholder="Deskripsi fitur..." />
         </div>
         {isAdmin && (
           <div className="col-span-2 flex items-center justify-between p-3 rounded-lg border">
@@ -80,13 +247,13 @@ function FiturForm({ initial, onClose, onSave, isAdmin }: { initial?: Partial<Fi
               <p className="text-sm font-medium">Tampilkan di Investor Mode</p>
               <p className="text-xs text-muted-foreground">Fitur ini akan terlihat di halaman investor</p>
             </div>
-            <Switch checked={isInvestorVisible} onCheckedChange={setIsInvestorVisible} data-testid="switch-fitur-investor" />
+            <Switch checked={isInvestorVisible} onCheckedChange={setIsInvestorVisible} />
           </div>
         )}
       </div>
       <DialogFooter>
         <Button variant="outline" onClick={onClose}>Batal</Button>
-        <Button onClick={() => onSave({ name, category, status, description, impact, isInvestorVisible })} disabled={!name || !category || !description} data-testid="button-save-fitur">Simpan</Button>
+        <Button onClick={() => onSave({ name, category, status, description, impact, isInvestorVisible })} disabled={!name || !category || !description}>Simpan</Button>
       </DialogFooter>
     </div>
   );
@@ -95,6 +262,7 @@ function FiturForm({ initial, onClose, onSave, isAdmin }: { initial?: Partial<Fi
 export default function FiturTerbaruPage() {
   const { isAdmin } = useAuth();
   const { toast } = useToast();
+  const [activeTab, setActiveTab] = useState<"fitur" | "github">("fitur");
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editing, setEditing] = useState<FiturTerbaru | null>(null);
   const [deleteId, setDeleteId] = useState<number | null>(null);
@@ -118,56 +286,89 @@ export default function FiturTerbaruPage() {
   });
 
   return (
-    <div className="space-y-6 animate-fade-in">
+    <div className="space-y-5 animate-fade-in">
       <PageHeader title="Fitur Terbaru AINA" description="Product development progress and feature tracking">
-        {isAdmin && (
-          <Button size="sm" className="gap-1.5" data-testid="button-add-fitur" onClick={() => setDialogOpen(true)}>
+        {isAdmin && activeTab === "fitur" && (
+          <Button size="sm" className="gap-1.5" onClick={() => setDialogOpen(true)}>
             <Plus className="h-3.5 w-3.5" /> Tambah Fitur
           </Button>
         )}
       </PageHeader>
 
-      {isLoading ? (
-        <p className="text-muted-foreground text-sm">Memuat...</p>
-      ) : features.length === 0 ? (
-        <Card><CardContent className="p-8 text-center text-muted-foreground text-sm">Belum ada fitur.</CardContent></Card>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {features.map((f) => (
-            <Card key={f.id} className="hover:shadow-md transition-shadow" data-testid={`card-fitur-${f.id}`}>
-              <CardContent className="p-5">
-                <div className="space-y-3">
-                  <div className="flex items-start justify-between">
-                    <div className="flex items-center gap-2">
-                      <Sparkles className="h-4 w-4 text-primary shrink-0" />
-                      <h3 className="font-semibold text-sm leading-tight">{f.name}</h3>
-                    </div>
-                    {isAdmin && (
-                      <div className="flex gap-1 shrink-0 -mt-1 -mr-1">
-                        <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-primary" onClick={() => setEditing(f)} data-testid={`button-edit-fitur-${f.id}`}><Edit className="h-3 w-3" /></Button>
-                        <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-destructive" onClick={() => setDeleteId(f.id)} data-testid={`button-delete-fitur-${f.id}`}><Trash2 className="h-3 w-3" /></Button>
+      {/* Tabs */}
+      <div
+        className="flex gap-1 p-1 rounded-2xl w-fit"
+        style={{ background: "rgba(0,0,0,0.05)" }}
+      >
+        {([
+          { key: "fitur",  label: "Fitur",           icon: Sparkles  },
+          { key: "github", label: "Riwayat GitHub",  icon: GitCommit },
+        ] as const).map(({ key, label, icon: Icon }) => (
+          <button
+            key={key}
+            onClick={() => setActiveTab(key)}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[12px] font-semibold transition-all"
+            style={
+              activeTab === key
+                ? { background: "#fff", color: "#3E0FA3", boxShadow: "0 1px 4px rgba(0,0,0,0.10)" }
+                : { color: "#888" }
+            }
+          >
+            <Icon className="h-3.5 w-3.5" />
+            {label}
+          </button>
+        ))}
+      </div>
+
+      {/* Feature list tab */}
+      {activeTab === "fitur" && (
+        <>
+          {isLoading ? (
+            <p className="text-muted-foreground text-sm">Memuat...</p>
+          ) : features.length === 0 ? (
+            <Card><CardContent className="p-8 text-center text-muted-foreground text-sm">Belum ada fitur.</CardContent></Card>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {features.map((f) => (
+                <Card key={f.id} className="hover:shadow-md transition-shadow">
+                  <CardContent className="p-5">
+                    <div className="space-y-3">
+                      <div className="flex items-start justify-between">
+                        <div className="flex items-center gap-2">
+                          <Sparkles className="h-4 w-4 text-primary shrink-0" />
+                          <h3 className="font-semibold text-sm leading-tight">{f.name}</h3>
+                        </div>
+                        {isAdmin && (
+                          <div className="flex gap-1 shrink-0 -mt-1 -mr-1">
+                            <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-primary" onClick={() => setEditing(f)}><Edit className="h-3 w-3" /></Button>
+                            <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-destructive" onClick={() => setDeleteId(f.id)}><Trash2 className="h-3 w-3" /></Button>
+                          </div>
+                        )}
                       </div>
-                    )}
-                  </div>
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <Badge variant="outline" className="text-[10px]">{f.category}</Badge>
-                    <span className={`text-[10px] font-medium px-2 py-0.5 rounded-full ${statusColors[f.status] ?? ""}`}>{f.status.replace("_", " ")}</span>
-                  </div>
-                  <p className="text-xs text-foreground/70">{f.description}</p>
-                  <div className="flex items-center justify-between">
-                    <p className="text-xs text-muted-foreground">
-                      Impact: <span className={`font-medium capitalize ${impactColors[f.impact]}`}>{f.impact}</span>
-                    </p>
-                    {f.isInvestorVisible && (
-                      <Badge variant="outline" className="text-[10px] border-primary/30 text-primary">Investor</Badge>
-                    )}
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <Badge variant="outline" className="text-[10px]">{f.category}</Badge>
+                        <span className={`text-[10px] font-medium px-2 py-0.5 rounded-full ${statusColors[f.status] ?? ""}`}>{f.status.replace("_", " ")}</span>
+                      </div>
+                      <p className="text-xs text-foreground/70">{f.description}</p>
+                      <div className="flex items-center justify-between">
+                        <p className="text-xs text-muted-foreground">
+                          Impact: <span className={`font-medium capitalize ${impactColors[f.impact]}`}>{f.impact}</span>
+                        </p>
+                        {f.isInvestorVisible && (
+                          <Badge variant="outline" className="text-[10px] border-primary/30 text-primary">Investor</Badge>
+                        )}
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          )}
+        </>
       )}
+
+      {/* GitHub tab */}
+      {activeTab === "github" && <GitHubTab />}
 
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent className="max-w-lg">
