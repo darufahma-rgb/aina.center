@@ -38,9 +38,10 @@ import {
   insertUserSchema,
   insertSponsorSchema,
   commitInsights,
+  commitReads,
 } from "../shared/schema";
 import { db } from "./db";
-import { eq, and } from "drizzle-orm";
+import { eq, and, inArray } from "drizzle-orm";
 import { generateReport, type ReportMode } from "./aiReport";
 import { z } from "zod";
 
@@ -686,6 +687,58 @@ export function registerRoutes(app: Router) {
   app.get("/api/audit", requireAdmin, async (req, res) => {
     const { table, recordId } = req.query;
     res.json(await storage.listAuditLogs(table as string, recordId ? parseInt(recordId as string) : undefined));
+  });
+
+  // ── Commit Reads: per-user read tracking ────────────────────────────────────
+
+  // GET /api/commit-reads?repo=xxx&hashes=sha1,sha2,... → returns set of already-read hashes for current user
+  app.get("/api/commit-reads", requireAuth, async (req, res) => {
+    try {
+      const userId = (req as any).session?.userId;
+      const repo = (req as any).query?.repo as string | undefined;
+      const hashesParam = (req as any).query?.hashes as string | undefined;
+      if (!userId) return res.status(401).json({ error: "Unauthorized" });
+
+      let query = db.select({ commitHash: commitReads.commitHash })
+        .from(commitReads)
+        .where(eq(commitReads.userId, userId));
+
+      const rows = await query;
+      const readSet = new Set(rows.map((r: any) => r.commitHash));
+
+      // If hashes supplied, also return unread count from that list
+      let unreadCount = 0;
+      if (hashesParam) {
+        const hashes = hashesParam.split(",").filter(Boolean);
+        unreadCount = hashes.filter((h) => !readSet.has(h)).length;
+      }
+
+      res.json({ readHashes: Array.from(readSet), unreadCount });
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  // POST /api/commit-reads  { commitHash, repo } → mark as read for current user
+  app.post("/api/commit-reads", requireAuth, async (req, res) => {
+    try {
+      const userId = (req as any).session?.userId;
+      const { commitHash, repo } = req.body as { commitHash: string; repo: string };
+      if (!userId || !commitHash || !repo) return res.status(400).json({ error: "commitHash dan repo diperlukan." });
+
+      // Check if already read (upsert-style: ignore duplicates)
+      const existing = await db.select().from(commitReads)
+        .where(and(eq(commitReads.userId, userId), eq(commitReads.commitHash, commitHash)))
+        .limit(1);
+
+      if (existing.length === 0) {
+        await db.insert(commitReads).values({ userId, commitHash, repoName: repo });
+      }
+
+      res.json({ ok: true });
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
   });
 
   // ── Commit Insights: CRUD ────────────────────────────────────────────────────

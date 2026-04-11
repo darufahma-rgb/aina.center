@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Sparkles, Plus, Edit, Trash2, GitCommit, ExternalLink, RefreshCw,
@@ -95,7 +95,15 @@ interface StoredInsight {
 
 // ─── CommitCard ──────────────────────────────────────────────────────────────
 
-function CommitCard({ commit }: { commit: GitHubCommit }) {
+function CommitCard({
+  commit,
+  isRead,
+  onRead,
+}: {
+  commit: GitHubCommit;
+  isRead: boolean;
+  onRead: (sha: string) => void;
+}) {
   const { isAdmin } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -136,6 +144,16 @@ function CommitCard({ commit }: { commit: GitHubCommit }) {
   async function handleExpand() {
     if (expanded) { setExpanded(false); return; }
     setExpanded(true);
+    // Mark as read when user opens the commit
+    if (!isRead) {
+      onRead(commit.sha);
+      fetch("/api/commit-reads", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ commitHash: commit.sha, repo: GITHUB_REPO }),
+      }).catch(() => {});
+    }
     if (!insightLoaded) await loadInsight();
     if (!detailedExplanation && !loadingDetail) {
       await generateDetailedExplanation();
@@ -210,9 +228,18 @@ function CommitCard({ commit }: { commit: GitHubCommit }) {
 
           <div className="flex-1 min-w-0">
             {/* Commit title + meta */}
-            <p className="text-[13px] font-medium text-foreground leading-snug">
-              {cleanMessage(commit.commit.message)}
-            </p>
+            <div className="flex items-start gap-2">
+              <p className="text-[13px] font-medium text-foreground leading-snug flex-1">
+                {cleanMessage(commit.commit.message)}
+              </p>
+              {!isRead && (
+                <span
+                  className="shrink-0 mt-1 h-2 w-2 rounded-full"
+                  style={{ background: "#7C3AED" }}
+                  title="Belum dibaca"
+                />
+              )}
+            </div>
             <div className="flex items-center gap-3 mt-1.5 flex-wrap">
               <a
                 href={commit.html_url}
@@ -348,8 +375,10 @@ function CommitCard({ commit }: { commit: GitHubCommit }) {
 
 // ─── GitHub Tab ──────────────────────────────────────────────────────────────
 
-function GitHubTab() {
+function GitHubTab({ onUnreadChange }: { onUnreadChange: (n: number) => void }) {
   const [perPage, setPerPage] = useState(20);
+  const [readHashes, setReadHashes] = useState<Set<string>>(new Set());
+  const fetchedReads = useRef(false);
 
   const { data: commits, isLoading, isError, refetch, isFetching } = useQuery<GitHubCommit[]>({
     queryKey: ["github-commits", perPage],
@@ -363,6 +392,34 @@ function GitHubTab() {
     },
     staleTime: 1000 * 60 * 5,
   });
+
+  // Once commits loaded, fetch which ones the current user has already read
+  useEffect(() => {
+    if (!commits || commits.length === 0) return;
+    const hashes = commits.map((c) => c.sha).join(",");
+    fetch(`/api/commit-reads?hashes=${encodeURIComponent(hashes)}`, { credentials: "include" })
+      .then((r) => r.ok ? r.json() : null)
+      .then((data) => {
+        if (!data) return;
+        const set = new Set<string>(data.readHashes ?? []);
+        setReadHashes(set);
+        const unread = commits.filter((c) => !set.has(c.sha)).length;
+        onUnreadChange(unread);
+      })
+      .catch(() => {});
+  }, [commits]);
+
+  // Called by each CommitCard when user opens it
+  function handleRead(sha: string) {
+    setReadHashes((prev) => {
+      if (prev.has(sha)) return prev;
+      const next = new Set(prev);
+      next.add(sha);
+      const unread = (commits ?? []).filter((c) => !next.has(c.sha)).length;
+      onUnreadChange(unread);
+      return next;
+    });
+  }
 
   if (isLoading) {
     return (
@@ -384,6 +441,8 @@ function GitHubTab() {
     );
   }
 
+  const unreadCount = (commits ?? []).filter((c) => !readHashes.has(c.sha)).length;
+
   return (
     <div className="space-y-4">
       {/* Repo info bar */}
@@ -401,16 +460,23 @@ function GitHubTab() {
           </a>
           <Badge variant="outline" className="text-[10px]">main</Badge>
         </div>
-        <Button
-          size="sm"
-          variant="outline"
-          className="gap-1.5 h-7 text-xs"
-          onClick={() => refetch()}
-          disabled={isFetching}
-        >
-          <RefreshCw className={`h-3 w-3 ${isFetching ? "animate-spin" : ""}`} />
-          Refresh
-        </Button>
+        <div className="flex items-center gap-2">
+          {unreadCount > 0 && (
+            <span className="text-[11px] text-purple-600 font-medium">
+              {unreadCount} belum dibaca
+            </span>
+          )}
+          <Button
+            size="sm"
+            variant="outline"
+            className="gap-1.5 h-7 text-xs"
+            onClick={() => refetch()}
+            disabled={isFetching}
+          >
+            <RefreshCw className={`h-3 w-3 ${isFetching ? "animate-spin" : ""}`} />
+            Refresh
+          </Button>
+        </div>
       </div>
 
       {/* Info hint */}
@@ -420,15 +486,20 @@ function GitHubTab() {
       >
         <Wand2 className="h-3.5 w-3.5 mt-0.5 shrink-0" />
         <span>
-          Klik <strong>Jelaskan perubahan</strong> pada setiap commit untuk melihat penjelasan AI.
-          Admin dapat mengaktifkan <strong>AI Jelasin Sederhana</strong> agar bisa dibaca semua anggota.
+          Titik ungu menandakan update yang <strong>belum kamu buka</strong>.
+          Klik <strong>Jelaskan perubahan</strong> untuk membaca dan menandai sudah dilihat.
         </span>
       </div>
 
       {/* Commit list */}
       <div className="space-y-2">
         {commits?.map((commit) => (
-          <CommitCard key={commit.sha} commit={commit} />
+          <CommitCard
+            key={commit.sha}
+            commit={commit}
+            isRead={readHashes.has(commit.sha)}
+            onRead={handleRead}
+          />
         ))}
       </div>
 
@@ -540,6 +611,7 @@ export default function FiturTerbaruPage() {
   const { isAdmin } = useAuth();
   const { toast } = useToast();
   const [activeTab, setActiveTab] = useState<"fitur" | "github">("fitur");
+  const [githubUnreadCount, setGithubUnreadCount] = useState(0);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editing, setEditing] = useState<FiturTerbaru | null>(null);
   const [deleteId, setDeleteId] = useState<number | null>(null);
@@ -590,6 +662,14 @@ export default function FiturTerbaruPage() {
           >
             <Icon className="h-3.5 w-3.5" />
             {label}
+            {key === "github" && githubUnreadCount > 0 && (
+              <span
+                className="flex items-center justify-center h-4 min-w-4 px-1 rounded-full text-[10px] font-bold text-white"
+                style={{ background: "#7C3AED" }}
+              >
+                {githubUnreadCount}
+              </span>
+            )}
           </button>
         ))}
       </div>
@@ -648,7 +728,7 @@ export default function FiturTerbaruPage() {
       )}
 
       {/* GitHub tab */}
-      {activeTab === "github" && <GitHubTab />}
+      {activeTab === "github" && <GitHubTab onUnreadChange={setGithubUnreadCount} />}
 
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent className="max-w-lg">

@@ -15,6 +15,13 @@
       "when": 1775874629949,
       "tag": "0001_commit_insights",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1775874889826,
+      "tag": "0002_commit_reads",
+      "breakpoints": true
     }
   ]
 }

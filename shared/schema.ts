@@ -327,6 +327,18 @@ export const commitInsights = pgTable("commit_insights", {
 
 export type CommitInsight = typeof commitInsights.$inferSelect;
 
+// ─── Commit Reads (per-user read tracking) ────────────────────────────────────
+
+export const commitReads = pgTable("commit_reads", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id),
+  commitHash: text("commit_hash").notNull(),
+  repoName: text("repo_name").notNull(),
+  readAt: timestamp("read_at").notNull().defaultNow(),
+});
+
+export type CommitRead = typeof commitReads.$inferSelect;
+
 // ─── Audit Logs ───────────────────────────────────────────────────────────────
 
 export const auditLogs = pgTable("audit_logs", {
