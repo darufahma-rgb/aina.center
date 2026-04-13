@@ -2,6 +2,13 @@
 
 A secure internal management portal for the AINA organization. Built as a fullstack React + Express application with PostgreSQL. Features a Cloud Dock purple design system, custom two-panel sidebar, and PWA support.
 
+## Key Features
+- **Anggota**: Member management with photo support; "Import dari AINA Web" button syncs team from ainalabs.pro/about (14 members); anggota table now has nullable `email` and `photo_url` columns; members displayed grouped by division
+- **Dashboard**: Progress cards show finalNotulensi/totalNotulensi and agendaCompletedThisCalMonth/agendaThisCalMonth; data from current calendar month
+- **Agenda Berita AIGYPT**: Fetches live news from AIGYPT Supabase (`masisir_news` table); requires `AIGYPT_SUPABASE_URL` + `AIGYPT_SUPABASE_ANON_KEY` env vars
+- **Surat Template**: Visual click-to-place field editor on PNG images; canvas overlay print preview; `surat_templates` DB table
+- **api/index.js**: Must be rebuilt (`npm run build:api`) after any backend changes for Vercel deployment
+
 ## Design System
 
 **Theme**: DoDo-inspired — warm gray background (`hsl(60,8%,88%)`), white sidebar + white main card, dark purple primary (`#5B21B6`), very dark purple (`#1E0A3C`) for help card  

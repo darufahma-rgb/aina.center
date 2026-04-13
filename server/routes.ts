@@ -514,6 +514,48 @@ export function registerRoutes(app: Router) {
     res.json({ message: "Deleted" });
   });
 
+  app.post("/api/anggota/import-from-aina-web", requireAdmin, async (req, res) => {
+    const WEB_MEMBERS = [
+      { name: "Daru Fahmaa Muliawan, Lc.", role: "Founder AIGYPT & AINA", division: "Founder", photoUrl: "https://ainalabs.pro/team/daru.jpg" },
+      { name: "Fairuz Azri Afif Arsyadi", role: "Head of AINA Mesir", division: "Head of AINA Mesir", photoUrl: "https://ainalabs.pro/team/fairuz.jpg" },
+      { name: "Teuku Muhammad Maliki Ishak", role: "Head of AINA Mesir", division: "Head of AINA Mesir", photoUrl: "https://ainalabs.pro/team/maliki.jpg" },
+      { name: "Mohamad Virli Okto", role: "Operations & Admin Lead", division: "Operations & Admin", photoUrl: "https://ainalabs.pro/team/okto.jpg" },
+      { name: "Moch Azriel Putra Novendra", role: "Operations & Admin Lead", division: "Operations & Admin", photoUrl: "https://ainalabs.pro/team/azriel.jpg" },
+      { name: "Adyatma Zaki Rabbani", role: "Community & Growth Lead", division: "Community & Partnership", photoUrl: "https://ainalabs.pro/team/zaki.jpg" },
+      { name: "Muhammad Ariiq Ash Shidiq", role: "External & Partnership Lead", division: "Community & Partnership", photoUrl: "https://ainalabs.pro/team/ariqq.jpg" },
+      { name: "Rifki Haikal", role: "External & Partnership Lead", division: "Community & Partnership", photoUrl: "https://ainalabs.pro/team/rifki.jpg" },
+      { name: "Ilham Mutasim Billah", role: "Developer Assistant", division: "Developer Assistant", photoUrl: "https://ainalabs.pro/team/ilham.jpg" },
+      { name: "Naadir Al Atilla Muklis", role: "Developer Assistant", division: "Developer Assistant", photoUrl: "https://ainalabs.pro/team/naadir.jpg" },
+      { name: "Sulthan Nadzir", role: "Creative & Media Lead", division: "Creative & Media", photoUrl: "https://ainalabs.pro/team/sulthan.jpg" },
+      { name: "Navis Athiyatul Hafidz", role: "Creative & Media", division: "Creative & Media", photoUrl: "https://ainalabs.pro/team/navis.jpg" },
+      { name: "Hafidz Majduddin", role: "Creative & Media", division: "Creative & Media", photoUrl: "https://ainalabs.pro/team/hafidz.jpg" },
+      { name: "Arnaf Hamdan Farros", role: "Creative & Media", division: "Creative & Media", photoUrl: "https://ainalabs.pro/arnaf.png" },
+    ];
+
+    const existing = await storage.listAnggota();
+    const existingNames = new Set(existing.map(m => m.name.toLowerCase().trim()));
+
+    let imported = 0;
+    const skipped: string[] = [];
+    for (const member of WEB_MEMBERS) {
+      if (existingNames.has(member.name.toLowerCase().trim())) {
+        skipped.push(member.name);
+        continue;
+      }
+      await storage.createAnggota({
+        name: member.name,
+        role: member.role,
+        division: member.division,
+        photoUrl: member.photoUrl,
+        status: "active",
+        accessLevel: "user",
+      }, req.session.userId!);
+      imported++;
+    }
+
+    res.json({ imported, skipped: skipped.length, skippedNames: skipped });
+  });
+
   // ── Relasi ──────────────────────────────────────────────────────────────────
 
   app.get("/api/relasi", requireAuth, async (req, res) => {
