@@ -678,7 +678,7 @@ export default function Dashboard() {
               sublabel={`Agenda · ${currentMonthName}`}
               label="Selesai"
               pct={isLoading ? 0 : agendaCalMonthPct}
-              value={isLoading ? "—" : agendaThisCalMonth}
+              value={isLoading ? "—" : `${agendaCompletedThisCalMonth}/${agendaThisCalMonth}`}
               color="#1A1A1A"
               link="/agenda"
             />
