@@ -247,6 +247,37 @@ export const insertSuratSchema = createInsertSchema(surat).omit({
 export type InsertSurat = z.infer<typeof insertSuratSchema>;
 export type Surat = typeof surat.$inferSelect;
 
+// ─── Surat Templates ──────────────────────────────────────────────────────────
+
+export const suratTemplates = pgTable("surat_templates", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  type: text("type").notNull().default("all"), // 'masuk' | 'keluar' | 'all'
+  imageUrl: text("image_url").notNull(),
+  fieldMappings: text("field_mappings").notNull().default("[]"), // JSON string
+  createdBy: integer("created_by").references(() => users.id),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
+export const insertSuratTemplateSchema = createInsertSchema(suratTemplates).omit({
+  id: true, createdAt: true, updatedAt: true, createdBy: true,
+});
+export type InsertSuratTemplate = z.infer<typeof insertSuratTemplateSchema>;
+export type SuratTemplate = typeof suratTemplates.$inferSelect;
+
+export type FieldMapping = {
+  field: "number" | "date" | "title" | "description";
+  label: string;
+  x: number;
+  y: number;
+  fontSize: number;
+  color: string;
+  maxWidth: number;
+  align: "left" | "center" | "right";
+  multiline: boolean;
+};
+
 // ─── Inventaris ───────────────────────────────────────────────────────────────
 
 export const inventaris = pgTable("inventaris", {

@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { Mail, Plus, Edit, Trash2, Search, FileText, ExternalLink, ArrowDownLeft, ArrowUpRight, Archive } from "lucide-react";
+import { Mail, Plus, Edit, Trash2, Search, FileText, ExternalLink, ArrowDownLeft, ArrowUpRight, Archive, Printer } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -15,6 +15,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import type { Surat } from "../../shared/schema";
+import { TemplateManagerSection, TemplatePrintDialog } from "@/components/SuratTemplateManager";
 
 const STATUS_LABEL: Record<string, string> = { draft: "Draft", sent: "Terkirim", received: "Diterima", archived: "Diarsipkan" };
 const STATUS_COLOR: Record<string, string> = {
@@ -98,6 +99,7 @@ export default function SuratPage() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editing, setEditing] = useState<Surat | null>(null);
   const [deleteId, setDeleteId] = useState<number | null>(null);
+  const [printSurat, setPrintSurat] = useState<Surat | null>(null);
   const [search, setSearch] = useState("");
   const [filterType, setFilterType] = useState<string>("all");
   const [filterStatus, setFilterStatus] = useState<string>("all");
@@ -281,12 +283,17 @@ export default function SuratPage() {
                       )}
                     </div>
 
-                    {isAdmin && (
-                      <div className="flex gap-1 shrink-0">
-                        <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-primary" onClick={() => setEditing(item)} data-testid={`button-edit-surat-${item.id}`}><Edit className="h-3.5 w-3.5" /></Button>
-                        <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-destructive" onClick={() => setDeleteId(item.id)} data-testid={`button-delete-surat-${item.id}`}><Trash2 className="h-3.5 w-3.5" /></Button>
-                      </div>
-                    )}
+                    <div className="flex gap-1 shrink-0">
+                      <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-primary" title="Cetak dari Template" onClick={() => setPrintSurat(item)} data-testid={`button-print-surat-${item.id}`}>
+                        <Printer className="h-3.5 w-3.5" />
+                      </Button>
+                      {isAdmin && (
+                        <>
+                          <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-primary" onClick={() => setEditing(item)} data-testid={`button-edit-surat-${item.id}`}><Edit className="h-3.5 w-3.5" /></Button>
+                          <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-destructive" onClick={() => setDeleteId(item.id)} data-testid={`button-delete-surat-${item.id}`}><Trash2 className="h-3.5 w-3.5" /></Button>
+                        </>
+                      )}
+                    </div>
                   </div>
                 </CardContent>
               </Card>
@@ -294,6 +301,9 @@ export default function SuratPage() {
           })}
         </div>
       )}
+
+      {/* Template Manager Section */}
+      <TemplateManagerSection isAdmin={isAdmin} />
 
       {/* Dialogs */}
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
@@ -320,6 +330,14 @@ export default function SuratPage() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {printSurat && (
+        <TemplatePrintDialog
+          surat={printSurat}
+          open={!!printSurat}
+          onClose={() => setPrintSurat(null)}
+        />
+      )}
     </div>
   );
 }

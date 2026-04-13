@@ -576,6 +576,60 @@ export function registerRoutes(app: Router) {
     res.json({ message: "Deleted" });
   });
 
+  // ── Surat Templates ─────────────────────────────────────────────────────────
+
+  const templateUpload = multer({
+    storage: multer.diskStorage({
+      destination: (_req, _file, cb) => cb(null, uploadsDir),
+      filename: (_req, file, cb) => {
+        const ext = path.extname(file.originalname).toLowerCase() || ".png";
+        cb(null, `surat-template-${Date.now()}${ext}`);
+      },
+    }),
+    limits: { fileSize: 10 * 1024 * 1024 },
+    fileFilter: (_req, file, cb) => {
+      const allowed = ["image/png", "image/jpeg", "image/jpg"];
+      cb(null, allowed.includes(file.mimetype));
+    },
+  });
+
+  app.post("/api/surat-templates/upload", requireAdmin, templateUpload.single("image"), async (req, res) => {
+    if (!req.file) return res.status(400).json({ message: "No file uploaded" });
+    const imageUrl = `/uploads/${req.file.filename}`;
+    res.json({ imageUrl });
+  });
+
+  app.get("/api/surat-templates", requireAuth, async (_req, res) => {
+    res.json(await storage.listSuratTemplates());
+  });
+
+  app.post("/api/surat-templates", requireAdmin, async (req, res) => {
+    const { name, type, imageUrl, fieldMappings } = req.body;
+    if (!name || !imageUrl) return res.status(400).json({ message: "name and imageUrl required" });
+    const t = await storage.createSuratTemplate(
+      { name, type: type ?? "all", imageUrl, fieldMappings: typeof fieldMappings === "string" ? fieldMappings : JSON.stringify(fieldMappings ?? []) },
+      req.session.userId!
+    );
+    res.status(201).json(t);
+  });
+
+  app.patch("/api/surat-templates/:id", requireAdmin, async (req, res) => {
+    const { name, type, fieldMappings } = req.body;
+    const data: any = {};
+    if (name !== undefined) data.name = name;
+    if (type !== undefined) data.type = type;
+    if (fieldMappings !== undefined) data.fieldMappings = typeof fieldMappings === "string" ? fieldMappings : JSON.stringify(fieldMappings);
+    const t = await storage.updateSuratTemplate(parseInt(req.params.id), data, req.session.userId!);
+    if (!t) return res.status(404).json({ message: "Not found" });
+    res.json(t);
+  });
+
+  app.delete("/api/surat-templates/:id", requireAdmin, async (req, res) => {
+    const ok = await storage.deleteSuratTemplate(parseInt(req.params.id));
+    if (!ok) return res.status(404).json({ message: "Not found" });
+    res.json({ message: "Deleted" });
+  });
+
   // ── Inventaris ──────────────────────────────────────────────────────────────
 
   app.get("/api/inventaris", requireAuth, async (req, res) => {

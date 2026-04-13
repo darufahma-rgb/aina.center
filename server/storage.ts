@@ -1,7 +1,7 @@
 import { eq, isNull, and, desc } from "drizzle-orm";
 import { db } from "./db";
 import {
-  users, notulensi, fiturTerbaru, keuangan, agenda, anggota, relasi, surat, inventaris, investorContent, auditLogs, sponsor, reports,
+  users, notulensi, fiturTerbaru, keuangan, agenda, anggota, relasi, surat, suratTemplates, inventaris, investorContent, auditLogs, sponsor, reports,
   type User, type SafeUser, type InsertUser,
   type Notulensi, type InsertNotulensi,
   type FiturTerbaru, type InsertFiturTerbaru,
@@ -10,6 +10,7 @@ import {
   type Anggota, type InsertAnggota,
   type Relasi, type InsertRelasi,
   type Surat, type InsertSurat,
+  type SuratTemplate, type InsertSuratTemplate,
   type Inventaris, type InsertInventaris,
   type InvestorContent, type InsertInvestorContent,
   type Sponsor, type InsertSponsor,
@@ -83,6 +84,13 @@ export interface IStorage {
   createSurat(data: InsertSurat, userId: number): Promise<Surat>;
   updateSurat(id: number, data: Partial<InsertSurat>, userId: number): Promise<Surat | undefined>;
   deleteSurat(id: number, userId: number): Promise<boolean>;
+
+  // Surat Templates
+  listSuratTemplates(): Promise<SuratTemplate[]>;
+  getSuratTemplate(id: number): Promise<SuratTemplate | undefined>;
+  createSuratTemplate(data: InsertSuratTemplate, userId: number): Promise<SuratTemplate>;
+  updateSuratTemplate(id: number, data: Partial<InsertSuratTemplate>, userId: number): Promise<SuratTemplate | undefined>;
+  deleteSuratTemplate(id: number): Promise<boolean>;
 
   // Inventaris
   listInventaris(): Promise<Inventaris[]>;
@@ -400,6 +408,32 @@ export class DatabaseStorage implements IStorage {
     const [s] = await db.update(surat).set({ deletedAt: now(), updatedBy: userId }).where(eq(surat.id, id)).returning();
     if (s) await this.createAuditLog("surat", id, "delete", old, null, userId);
     return !!s;
+  }
+
+  // ── Surat Templates ──
+
+  async listSuratTemplates() {
+    return db.select().from(suratTemplates).orderBy(desc(suratTemplates.createdAt));
+  }
+
+  async getSuratTemplate(id: number) {
+    const [t] = await db.select().from(suratTemplates).where(eq(suratTemplates.id, id));
+    return t;
+  }
+
+  async createSuratTemplate(data: InsertSuratTemplate, userId: number) {
+    const [t] = await db.insert(suratTemplates).values({ ...data, createdBy: userId }).returning();
+    return t;
+  }
+
+  async updateSuratTemplate(id: number, data: Partial<InsertSuratTemplate>, userId: number) {
+    const [t] = await db.update(suratTemplates).set({ ...data, updatedAt: now() }).where(eq(suratTemplates.id, id)).returning();
+    return t;
+  }
+
+  async deleteSuratTemplate(id: number) {
+    const result = await db.delete(suratTemplates).where(eq(suratTemplates.id, id));
+    return (result.rowCount ?? 0) > 0;
   }
 
   // ── Inventaris ──
