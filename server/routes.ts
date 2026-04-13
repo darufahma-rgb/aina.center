@@ -1074,10 +1074,11 @@ Aturan:
             messages: [
               {
                 role: "system",
-                content: `Kamu adalah teman yang asik dan suka njelasin hal-hal teknis dengan cara yang gampang dimengerti.
-Tugasmu: ubah catatan teknis pengembangan jadi penjelasan yang santai, seru, dan langsung nyambung — kayak temen yang lagi cerita ke kamu.
-Pakai Bahasa Indonesia gaul tapi tetap sopan. Boleh pakai kata-kata kayak "nah", "jadi gini", "keren kan?", "btw", dll.
-Hindari banget jargon teknis. Fokus ke: apa yang berubah, manfaatnya buat pengguna, dan cara aksesnya.
+                content: `Kamu adalah teman yang super asik, antusias, dan jago njelasin sesuatu yang kompleks jadi gampang dipahami dan seru.
+Tugasmu: ubah catatan teknis pengembangan jadi penjelasan yang DETAIL tapi SERU — kayak temen excited yang lagi nyeritain fitur baru ke sahabatnya.
+Gaya bahasa: gaul tapi sopan, boleh pakai "nah", "jadi gini", "gokil", "mantap", "kebayang kan?", "bayangkan kamu...", analogi kehidupan sehari-hari, dll.
+PENTING: setiap poin harus DETAIL (3-4 kalimat), kasih konteks, kasih contoh konkret atau skenario nyata kalau bisa.
+Hindari jargon teknis. Kalau terpaksa disebut, langsung jelasin dengan kata-kata sehari-hari.
 Balas HANYA dalam format JSON yang diminta.`,
               },
               {
@@ -1100,13 +1101,13 @@ Peta menu AINA Centre (gunakan saat mengisi cara akses):
 
 Untuk setiap kelompok, buatkan:
 1. "title": judul fitur pendek dan catchy (max 5 kata, Bahasa Indonesia)
-2. "explanation": 3 poin dengan format PERSIS berikut (pisahkan dengan karakter • di awal, newline antar poin):
-   • 🔥 Yang baru: <1-2 kalimat casual tentang apa yang berubah, pakai gaya bicara teman>
-   • 💡 Enaknya: <1-2 kalimat tentang manfaat nyata, dengan nada antusias>
-   • 📍 Cara buka: <instruksi singkat berdasarkan peta menu, casual>
+2. "explanation": 3 poin DETAIL dengan format PERSIS berikut (pisahkan dengan karakter • di awal, newline antar poin):
+   • 🔥 Yang baru: <3-4 kalimat DETAIL dan seru tentang apa yang berubah. Kasih konteks kenapa ini penting, boleh pakai analogi atau skenario nyata>
+   • 💡 Enaknya: <3-4 kalimat DETAIL tentang manfaat nyata. Jelasin dengan skenario "misalnya kamu lagi...", tunjukkan perbedaan sebelum vs sesudah>
+   • 📍 Cara buka: <2-3 kalimat: langkah akses yang jelas + satu tips atau hal menarik yang bisa langsung dicoba>
 
-Contoh explanation yang bagus:
-"• 🔥 Yang baru: Sekarang ada fitur buat nyimpan template transaksi — jadi kalau ada pemasukan rutin, gak perlu ngisi ulang dari awal!\n• 💡 Enaknya: Hemat waktu banget, tinggal klik template yang udah disimpen, form langsung terisi otomatis. Praktis!\n• 📍 Cara buka: Buka menu Keuangan di sidebar, terus ke tab Masuk atau Keluar — chipnya ada di atas daftar transaksi."
+Contoh explanation yang detail dan seru:
+"• 🔥 Yang baru: Jadi sekarang kita bisa nyimpan template transaksi buat yang rutin-rutin, misalnya kalau tiap bulan ada pemasukan dari Temantiket. Dulu kita harus ngisi semua field dari awal — nama sumber, tipe, jumlah, kategori, semua! Sekarang cukup sekali isi, terus simpan jadi template, dan next time tinggal klik doang. Ini game changer buat yang transaksinya banyak dan berulang!\n• 💡 Enaknya: Bayangin kamu lagi ngurusin laporan keuangan bulanan — yang biasanya makan waktu karena harus ngisi form panjang satu-satu. Dengan template ini, semua field penting udah keisi otomatis, tinggal konfirmasi tanggalnya aja. Hemat waktu bisa sampai beberapa menit per transaksi, dan kalau transaksinya puluhan, itu lumayan banget! Plus gak ada risiko salah isi kategori karena udah tersimpan dengan benar.\n• 📍 Cara buka: Buka menu Keuangan di sidebar, lalu pilih tab Masuk atau Keluar. Di bagian atas daftar transaksi bakal ada chip-chip ungu bertuliskan nama template yang udah disimpen. Klik salah satunya dan form langsung terbuka pre-filled — tinggal isi tanggal dan submit. Untuk bikin template baru, isi form transaksi seperti biasa, lalu klik tombol 'Simpan Template' di bawah form."
 
 Format JSON:
 {
@@ -1116,8 +1117,8 @@ Format JSON:
 }`,
               },
             ],
-            max_tokens: 1400,
-            temperature: 0.55,
+            max_tokens: 2800,
+            temperature: 0.7,
             response_format: { type: "json_object" },
           });
 
