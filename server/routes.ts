@@ -424,6 +424,40 @@ export function registerRoutes(app: Router) {
     res.json(await storage.listAgenda());
   });
 
+  // Fetch AIGYPT news as completed agenda items from external Supabase
+  app.get("/api/aigypt/berita", requireAuth, async (req, res) => {
+    try {
+      const url  = process.env.AIGYPT_SUPABASE_URL;
+      const key  = process.env.AIGYPT_SUPABASE_ANON_KEY;
+      if (!url || !key) return res.status(503).json({ error: "AIGYPT Supabase not configured." });
+
+      const resp = await fetch(
+        `${url}/rest/v1/masisir_news?is_active=eq.true&order=published_at.desc&limit=50`,
+        { headers: { apikey: key, Authorization: `Bearer ${key}` } }
+      );
+      if (!resp.ok) return res.status(resp.status).json({ error: "Gagal mengambil data berita AIGYPT." });
+
+      const rows: any[] = await resp.json();
+      const items = rows.map((r) => ({
+        id:          r.id,
+        title:       r.title,
+        date:        r.published_at
+          ? new Date(r.published_at).toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" })
+          : "-",
+        published_at: r.published_at,
+        image_url:   r.image_url ?? null,
+        category:    r.category ?? "aigypt",
+        summary:     (r.content as string | null)?.split("\n")[0]?.slice(0, 200) ?? "",
+        status:      "completed" as const,
+        source:      "aigypt",
+      }));
+      res.json(items);
+    } catch (err: any) {
+      console.error("AIGYPT berita error:", err);
+      res.status(500).json({ error: err.message });
+    }
+  });
+
   app.get("/api/agenda/:id", requireAuth, async (req, res) => {
     const a = await storage.getAgenda(parseInt(req.params.id));
     if (!a) return res.status(404).json({ message: "Not found" });
