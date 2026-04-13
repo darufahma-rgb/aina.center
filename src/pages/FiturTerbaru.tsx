@@ -42,9 +42,9 @@ interface ExtractedFeature {
 }
 
 const STATUS_CFG = {
-  baru:         { label: "🆕 Baru",          color: "#5B21B6", bg: "#EDE9FE" },
-  ditingkatkan: { label: "⬆️ Ditingkatkan",  color: "#1D4ED8", bg: "#DBEAFE" },
-  stabil:       { label: "✓ Stabil",         color: "#374151", bg: "#F3F4F6" },
+  baru:         { label: "Baru",         color: "#5B21B6", bg: "#EDE9FE" },
+  ditingkatkan: { label: "Ditingkatkan", color: "#1D4ED8", bg: "#DBEAFE" },
+  stabil:       { label: "Stabil",       color: "#374151", bg: "#F3F4F6" },
 } as const;
 
 const CATEGORY_ROUTE: Record<string, string> = {
@@ -159,8 +159,8 @@ function FiturOverview() {
           className="rounded-2xl px-6 py-4"
           style={{ background: "linear-gradient(135deg, #1E0A3C 0%, #3E0FA3 65%, #7C3AED 100%)" }}
         >
-          <p className="text-white font-bold text-base">Menganalisis riwayat pengembangan AINA...</p>
-          <p className="text-white/60 text-[12px] mt-1">AI sedang membaca dan merangkum semua perubahan 🔍</p>
+          <p className="text-white font-bold text-base">Menganalisis riwayat pengembangan AINA</p>
+          <p className="text-white/60 text-[12px] mt-1">Sistem sedang memproses dan merangkum seluruh perubahan terkini...</p>
         </div>
         {[1, 2, 3, 4, 5].map((i) => <FeatureSkeleton key={i} />)}
       </div>
@@ -170,15 +170,17 @@ function FiturOverview() {
   if (isError || !features.length) {
     return (
       <div className="rounded-2xl border border-border p-8 text-center space-y-3">
-        <p className="text-2xl">😕</p>
-        <p className="font-semibold text-foreground">Tidak dapat memuat data fitur</p>
-        <p className="text-[13px] text-muted-foreground">Pastikan koneksi internet stabil dan coba lagi.</p>
+        <div className="h-10 w-10 rounded-full bg-muted flex items-center justify-center mx-auto">
+          <RefreshCw className="h-4 w-4 text-muted-foreground" />
+        </div>
+        <p className="font-semibold text-foreground">Data tidak dapat dimuat</p>
+        <p className="text-[13px] text-muted-foreground">Periksa koneksi internet dan coba kembali.</p>
         <button
           onClick={() => refetch()}
           className="mt-2 flex items-center gap-1.5 mx-auto text-[12px] font-semibold px-4 py-2 rounded-xl"
           style={{ background: "#EDE9FE", color: "#7C3AED" }}
         >
-          <RefreshCw className="h-3.5 w-3.5" /> Coba Lagi
+          <RefreshCw className="h-3.5 w-3.5" /> Muat Ulang
         </button>
       </div>
     );
@@ -192,9 +194,9 @@ function FiturOverview() {
         style={{ background: "linear-gradient(135deg, #1E0A3C 0%, #3E0FA3 65%, #7C3AED 100%)" }}
       >
         <div className="space-y-1.5">
-          <p className="text-white font-bold text-[18px] leading-tight">Apa saja fitur AINA? 🚀</p>
+          <p className="text-white font-bold text-[18px] leading-tight tracking-tight">Pembaruan AINA Centre</p>
           <p className="text-white/65 text-[13px] leading-relaxed max-w-md">
-            Dirangkum otomatis dari riwayat pengembangan — diubah menjadi penjelasan yang mudah dipahami semua orang.
+            Dirangkum secara otomatis dari riwayat pengembangan — disajikan dalam bahasa yang mudah dipahami seluruh anggota organisasi.
           </p>
         </div>
         <div className="flex items-center gap-2.5 flex-wrap">
@@ -203,30 +205,30 @@ function FiturOverview() {
             style={{ background: "rgba(255,255,255,0.13)" }}
           >
             <p className="text-white font-bold text-xl leading-none">{features.length}</p>
-            <p className="text-white/55 text-[10px] mt-0.5">area fitur</p>
+            <p className="text-white/55 text-[10px] mt-0.5 tracking-wide uppercase">area aktif</p>
           </div>
           <button
             onClick={() => refetch()}
             disabled={isFetching}
             className="h-10 w-10 rounded-xl flex items-center justify-center transition-opacity hover:opacity-75 disabled:opacity-50"
             style={{ background: "rgba(255,255,255,0.13)" }}
-            title="Refresh"
+            title="Perbarui data"
           >
             <RefreshCw className={`h-4 w-4 text-white ${isFetching ? "animate-spin" : ""}`} />
           </button>
         </div>
       </div>
 
-      {/* Info tip */}
+      {/* Info note */}
       <div
-        className="flex items-start gap-2.5 px-4 py-3 rounded-xl"
+        className="flex items-start gap-3 px-4 py-3 rounded-xl"
         style={{ background: "#F0F4FF", border: "1px solid #C7D2FE" }}
       >
-        <span className="text-base leading-none mt-0.5">💡</span>
+        <div className="h-5 w-5 rounded-full flex items-center justify-center shrink-0 mt-0.5" style={{ background: "#C7D2FE" }}>
+          <BrainCircuit className="h-3 w-3" style={{ color: "#3730A3" }} />
+        </div>
         <p className="text-[12px] text-[#3730A3] leading-relaxed">
-          <strong>Cara baca halaman ini:</strong> Setiap kartu mewakili satu area fitur AINA yang
-          sedang aktif dikembangkan. Klik <strong>Lihat Riwayat</strong> untuk melihat perubahan
-          terkait, atau <strong>AI Jelaskan</strong> untuk penjelasan lebih detail.
+          Setiap kartu merepresentasikan satu area pengembangan aktif di AINA Centre. Klik <strong>Riwayat Perubahan</strong> untuk melihat detail teknis, atau <strong>Analisis AI</strong> untuk penjelasan kontekstual.
         </p>
       </div>
 
@@ -333,42 +335,44 @@ function FiturOverview() {
               {/* Expanded: AI explanation */}
               {isEOpen && (
                 <div
-                  className="px-4 pb-4 pt-3 border-t border-purple-100 space-y-3"
-                  style={{ background: "linear-gradient(135deg, #F5F0FF 0%, #EDE9FE 100%)" }}
+                  className="px-5 pb-5 pt-4 border-t space-y-3"
+                  style={{ background: "#FAFAFF", borderColor: "#E0D9F7" }}
                 >
-                  <div className="flex items-center gap-2">
-                    <span className="text-base">🤙</span>
-                    <span className="text-[11px] font-bold text-[#5B21B6]">Nih gue jelasin santai ya~</span>
+                  <div className="flex items-center gap-2 mb-1">
+                    <BrainCircuit className="h-3.5 w-3.5 shrink-0" style={{ color: "#5B21B6" }} />
+                    <span className="text-[11px] font-bold text-[#5B21B6] tracking-wide uppercase">Analisis AI</span>
+                    <span className="ml-auto text-[10px] text-muted-foreground">Berdasarkan riwayat pengembangan</span>
                   </div>
-                  <div className="space-y-2">
+                  <div className="space-y-2.5">
                     {parseBullets(f.explanation).map(({ label, body }, i) => {
-                      const emojiMap: Record<number, string> = { 0: "🔥", 1: "💡", 2: "📍" };
-                      const fallbackEmoji = emojiMap[i] ?? "✅";
-                      // Extract leading emoji from label if present
-                      const labelMatch = label?.match(/^(\p{Emoji})/u);
-                      const displayEmoji = labelMatch ? labelMatch[1] : fallbackEmoji;
-                      const labelText = label?.replace(/^\p{Emoji}\s*/u, "") ?? "";
+                      const cleanLabel = label?.replace(/^\p{Emoji}\s*/u, "").trim() ?? "";
+                      const accentColors = ["#5B21B6", "#1D4ED8", "#0F766E"];
+                      const accent = accentColors[i % accentColors.length];
                       return (
                         <div
                           key={i}
-                          className="flex items-start gap-2.5 rounded-xl px-3 py-2.5"
-                          style={{ background: "rgba(255,255,255,0.6)" }}
+                          className="rounded-xl px-4 py-3"
+                          style={{
+                            background: "#FFFFFF",
+                            border: "1px solid #E9E3F8",
+                            borderLeft: `3px solid ${accent}`,
+                          }}
                         >
-                          <span className="text-base shrink-0 leading-none mt-0.5">{displayEmoji}</span>
-                          <div>
-                            {labelText && (
-                              <span className="text-[11px] font-black text-[#6D28D9] uppercase tracking-wide block leading-tight mb-0.5">
-                                {labelText}
-                              </span>
-                            )}
-                            <p className="text-[12.5px] text-[#3B1F8C] leading-relaxed font-medium">{body}</p>
-                          </div>
+                          {cleanLabel && (
+                            <p
+                              className="text-[10px] font-black uppercase tracking-widest mb-1.5"
+                              style={{ color: accent }}
+                            >
+                              {cleanLabel}
+                            </p>
+                          )}
+                          <p className="text-[13px] text-foreground/80 leading-relaxed">{body}</p>
                         </div>
                       );
                     })}
                   </div>
-                  <p className="text-[10px] text-purple-400 pt-1">
-                    ✍️ Ditulis otomatis oleh AI · dari riwayat pengembangan
+                  <p className="text-[10px] text-muted-foreground/60 pt-1">
+                    Dihasilkan secara otomatis oleh AI berdasarkan aktivitas pengembangan AINA Centre
                   </p>
                 </div>
               )}
@@ -381,7 +385,7 @@ function FiturOverview() {
                   style={{ borderColor: "#C4B5FD", color: "#7C3AED" }}
                 >
                   <GitCommit className="h-3 w-3" />
-                  {isHOpen ? "Tutup Riwayat" : "Lihat Riwayat"}
+                  {isHOpen ? "Tutup Riwayat" : "Riwayat Perubahan"}
                 </button>
                 <button
                   onClick={() => { setExplainOpen(isEOpen ? null : f.id); setHistoryOpen(null); }}
@@ -392,7 +396,7 @@ function FiturOverview() {
                   }}
                 >
                   <Wand2 className="h-3 w-3" />
-                  {isEOpen ? "Tutup" : "Jelasin Dong 🤙"}
+                  {isEOpen ? "Tutup Analisis" : "Analisis AI"}
                 </button>
               </div>
             </div>
@@ -400,8 +404,8 @@ function FiturOverview() {
         })}
       </div>
 
-      <p className="text-[11px] text-center text-muted-foreground pb-2">
-        Dihasilkan otomatis dari riwayat pengembangan · Diperbarui setiap 30 menit
+      <p className="text-[11px] text-center text-muted-foreground/60 pb-2 tracking-wide">
+        Dirangkum otomatis dari riwayat pengembangan AINA · Diperbarui berkala
       </p>
     </div>
   );
