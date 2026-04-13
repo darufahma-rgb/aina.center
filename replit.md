@@ -3,6 +3,7 @@
 A secure internal management portal for the AINA organization. Built as a fullstack React + Express application with PostgreSQL. Features a Cloud Dock purple design system, custom two-panel sidebar, and PWA support.
 
 ## Key Features
+- **Asisten AINA (JARVIS-level)**: AI command engine at `/asisten`; 10 tools: `create_agenda`, `create_notulensi`, `update_agenda_status`, `create_keuangan`, `add_relasi`, `save_surat_template`, `search_portal`, `get_full_briefing`, `generate_document_report`, `add_anggota`; GPT-4o Vision analyzes uploaded surat template images to detect fields automatically; animated thinking dots + status cycling; suggestion chips after each AI response; "Briefing Harian" one-click portal status; gpt-4o-mini for text, gpt-4o for vision
 - **Anggota**: Member management with photo support; "Import dari AINA Web" button syncs team from ainalabs.pro/about (14 members); anggota table now has nullable `email` and `photo_url` columns; members displayed grouped by division
 - **Dashboard**: Progress cards show finalNotulensi/totalNotulensi and agendaCompletedThisCalMonth/agendaThisCalMonth; data from current calendar month
 - **Agenda Berita AIGYPT**: Fetches live news from AIGYPT Supabase (`masisir_news` table); requires `AIGYPT_SUPABASE_URL` + `AIGYPT_SUPABASE_ANON_KEY` env vars
