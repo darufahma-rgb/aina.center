@@ -2,7 +2,7 @@ import { useState } from "react";
 import {
   Wallet, TrendingUp, TrendingDown, Plus, Edit, Trash2,
   Handshake, BarChart3, ArrowUpRight, ArrowDownRight,
-  ExternalLink, Target, CheckCircle2,
+  ExternalLink, Target, CheckCircle2, BookmarkPlus, Zap, X,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -46,6 +46,93 @@ const SPONSOR_STATUS_LABELS: Record<string, string> = {
   prospect: "Prospek", confirmed: "Dikonfirmasi", active: "Aktif",
   completed: "Selesai", withdrawn: "Batal",
 };
+
+// ─── Template Types & Hook ─────────────────────────────────────────────────────
+
+interface KeuanganTemplate {
+  id: string;
+  name: string;
+  type: "income" | "expense";
+  sourceName?: string;
+  sourceType?: string;
+  amount?: string;
+  description?: string;
+  category?: string;
+  paymentMethod?: string;
+  notes?: string;
+  purpose?: string;
+  responsiblePerson?: string;
+}
+
+const LS_KEY = "aina_keuangan_templates";
+
+function useKeuanganTemplates() {
+  const [templates, setTemplates] = useState<KeuanganTemplate[]>(() => {
+    try { return JSON.parse(localStorage.getItem(LS_KEY) ?? "[]"); }
+    catch { return []; }
+  });
+
+  const saveTemplate = (t: KeuanganTemplate) => {
+    const next = [...templates.filter(x => x.id !== t.id), t];
+    setTemplates(next);
+    localStorage.setItem(LS_KEY, JSON.stringify(next));
+  };
+
+  const removeTemplate = (id: string) => {
+    const next = templates.filter(x => x.id !== id);
+    setTemplates(next);
+    localStorage.setItem(LS_KEY, JSON.stringify(next));
+  };
+
+  return { templates, saveTemplate, removeTemplate };
+}
+
+// ─── Template Chips ───────────────────────────────────────────────────────────
+
+function TemplateChips({
+  templates, type, onApply, onDelete,
+}: {
+  templates: KeuanganTemplate[];
+  type: "income" | "expense";
+  onApply: (t: KeuanganTemplate) => void;
+  onDelete: (id: string) => void;
+}) {
+  const filtered = templates.filter(t => t.type === type);
+  if (filtered.length === 0) return null;
+
+  return (
+    <div className="flex items-center gap-2 flex-wrap px-1 py-2">
+      <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-1">
+        <Zap className="h-3 w-3" style={{ color: "#7C3AED" }} />
+        Template:
+      </span>
+      {filtered.map(t => (
+        <div
+          key={t.id}
+          className="group flex items-center gap-1 rounded-full border px-2.5 py-1 text-[11px] font-semibold cursor-pointer transition-all hover:shadow-sm"
+          style={{ borderColor: "#7C3AED", color: "#7C3AED", background: "#F5F3FF" }}
+          onClick={() => onApply(t)}
+          data-testid={`template-chip-${t.id}`}
+        >
+          {t.name}
+          {t.amount && (
+            <span className="text-[9px] text-muted-foreground font-normal ml-0.5">
+              · {formatRp(Number(t.amount))}
+            </span>
+          )}
+          <button
+            className="ml-0.5 opacity-0 group-hover:opacity-100 transition-opacity hover:text-destructive"
+            onClick={e => { e.stopPropagation(); onDelete(t.id); }}
+            title="Hapus template"
+            data-testid={`template-delete-${t.id}`}
+          >
+            <X className="h-3 w-3" />
+          </button>
+        </div>
+      ))}
+    </div>
+  );
+}
 
 // ─── Summary Cards ─────────────────────────────────────────────────────────────
 
@@ -91,7 +178,6 @@ function TrendChart({ items }: { items: Keuangan[] }) {
   const monthMap: Record<string, { income: number; expense: number; label: string }> = {};
   items.forEach(k => {
     const raw = k.date ?? "";
-    // Try to extract year-month from various formats
     let key = raw.slice(0, 7);
     if (!key || key.length < 4) key = "Unknown";
     if (!monthMap[key]) monthMap[key] = { income: 0, expense: 0, label: key };
@@ -149,10 +235,63 @@ function TrendChart({ items }: { items: Keuangan[] }) {
   );
 }
 
+// ─── Save Template Inline ─────────────────────────────────────────────────────
+
+function SaveTemplateInline({ onSave }: { onSave: (name: string) => void }) {
+  const [open, setOpen] = useState(false);
+  const [name, setName] = useState("");
+
+  if (!open) {
+    return (
+      <Button
+        type="button"
+        variant="ghost"
+        size="sm"
+        className="h-8 text-xs gap-1.5 text-muted-foreground hover:text-primary"
+        onClick={() => setOpen(true)}
+        data-testid="button-open-save-template"
+      >
+        <BookmarkPlus className="h-3.5 w-3.5" /> Simpan Template
+      </Button>
+    );
+  }
+
+  return (
+    <div className="flex items-center gap-1.5">
+      <Input
+        autoFocus
+        value={name}
+        onChange={e => setName(e.target.value)}
+        placeholder="Nama template..."
+        className="h-8 text-xs w-36"
+        onKeyDown={e => {
+          if (e.key === "Enter" && name.trim()) { onSave(name.trim()); setOpen(false); setName(""); }
+          if (e.key === "Escape") { setOpen(false); setName(""); }
+        }}
+        data-testid="input-template-name"
+      />
+      <Button
+        type="button"
+        size="sm"
+        className="h-8 text-xs px-2.5"
+        disabled={!name.trim()}
+        onClick={() => { onSave(name.trim()); setOpen(false); setName(""); }}
+        data-testid="button-confirm-save-template"
+      >
+        Simpan
+      </Button>
+      <Button type="button" variant="ghost" size="icon" className="h-8 w-8" onClick={() => { setOpen(false); setName(""); }}>
+        <X className="h-3.5 w-3.5" />
+      </Button>
+    </div>
+  );
+}
+
 // ─── Income Form ──────────────────────────────────────────────────────────────
 
-function IncomeForm({ initial, onClose, onSave, isPending }: {
-  initial?: Partial<Keuangan>; onClose: () => void; onSave: (d: any) => void; isPending?: boolean;
+function IncomeForm({ initial, onClose, onSave, isPending, onSaveTemplate }: {
+  initial?: Partial<Keuangan>; onClose: () => void; onSave: (d: any) => void;
+  isPending?: boolean; onSaveTemplate?: (values: Omit<KeuanganTemplate, "id" | "name">, name: string) => void;
 }) {
   const [date, setDate] = useState(initial?.date ?? "");
   const [sourceName, setSourceName] = useState(initial?.sourceName ?? initial?.counterpart ?? "");
@@ -165,6 +304,10 @@ function IncomeForm({ initial, onClose, onSave, isPending }: {
   const [notes, setNotes] = useState(initial?.notes ?? "");
 
   const valid = date && sourceName && amount && parseFloat(amount) > 0 && description && category;
+
+  const currentValues = (): Omit<KeuanganTemplate, "id" | "name"> => ({
+    type: "income", sourceName, sourceType, amount, description, category, paymentMethod, notes,
+  });
 
   return (
     <div className="space-y-4">
@@ -215,7 +358,12 @@ function IncomeForm({ initial, onClose, onSave, isPending }: {
           <Textarea value={notes} onChange={e => setNotes(e.target.value)} rows={2} placeholder="Catatan tambahan..." data-testid="input-income-notes" />
         </div>
       </div>
-      <DialogFooter>
+      <DialogFooter className="flex-col sm:flex-row gap-2 sm:gap-0">
+        {onSaveTemplate && (
+          <div className="mr-auto">
+            <SaveTemplateInline onSave={(name) => onSaveTemplate(currentValues(), name)} />
+          </div>
+        )}
         <Button variant="outline" onClick={onClose}>Batal</Button>
         <Button onClick={() => onSave({ type: "income", date, sourceName, sourceType, amount, description, category, paymentMethod, proofUrl, notes, counterpart: sourceName })} disabled={!valid || isPending} data-testid="button-save-income">
           {isPending ? "Menyimpan..." : "Simpan"}
@@ -227,8 +375,9 @@ function IncomeForm({ initial, onClose, onSave, isPending }: {
 
 // ─── Expense Form ─────────────────────────────────────────────────────────────
 
-function ExpenseForm({ initial, onClose, onSave, isPending }: {
-  initial?: Partial<Keuangan>; onClose: () => void; onSave: (d: any) => void; isPending?: boolean;
+function ExpenseForm({ initial, onClose, onSave, isPending, onSaveTemplate }: {
+  initial?: Partial<Keuangan>; onClose: () => void; onSave: (d: any) => void;
+  isPending?: boolean; onSaveTemplate?: (values: Omit<KeuanganTemplate, "id" | "name">, name: string) => void;
 }) {
   const [date, setDate] = useState(initial?.date ?? "");
   const [amount, setAmount] = useState(initial?.amount?.toString() ?? "");
@@ -241,6 +390,10 @@ function ExpenseForm({ initial, onClose, onSave, isPending }: {
   const [notes, setNotes] = useState(initial?.notes ?? "");
 
   const valid = date && amount && parseFloat(amount) > 0 && description && category && responsiblePerson;
+
+  const currentValues = (): Omit<KeuanganTemplate, "id" | "name"> => ({
+    type: "expense", amount, description, category, purpose, responsiblePerson, paymentMethod, notes,
+  });
 
   return (
     <div className="space-y-4">
@@ -282,7 +435,12 @@ function ExpenseForm({ initial, onClose, onSave, isPending }: {
           <Textarea value={notes} onChange={e => setNotes(e.target.value)} rows={2} placeholder="Catatan tambahan..." data-testid="input-expense-notes" />
         </div>
       </div>
-      <DialogFooter>
+      <DialogFooter className="flex-col sm:flex-row gap-2 sm:gap-0">
+        {onSaveTemplate && (
+          <div className="mr-auto">
+            <SaveTemplateInline onSave={(name) => onSaveTemplate(currentValues(), name)} />
+          </div>
+        )}
         <Button variant="outline" onClick={onClose}>Batal</Button>
         <Button onClick={() => onSave({ type: "expense", date, amount, description, category, purpose, responsiblePerson, paymentMethod, proofUrl, notes })} disabled={!valid || isPending} data-testid="button-save-expense">
           {isPending ? "Menyimpan..." : "Simpan"}
@@ -347,7 +505,7 @@ function SponsorForm({ initial, onClose, onSave, isPending }: {
         </div>
         <div className="space-y-1.5 col-span-2">
           <Label>Catatan</Label>
-          <Textarea value={notes} onChange={e => setNotes(e.target.value)} rows={2} placeholder="Info tambahan tentang sponsor..." data-testid="input-sponsor-notes" />
+          <Textarea value={notes} onChange={e => setNotes(e.target.value)} rows={2} placeholder="Detail kerjasama, syarat, dsb..." data-testid="input-sponsor-notes" />
         </div>
       </div>
       <DialogFooter>
@@ -419,6 +577,7 @@ function TransactionRow({ item, isAdmin, onEdit, onDelete }: {
 export default function KeuanganPage() {
   const { isAdmin } = useAuth();
   const { toast } = useToast();
+  const { templates, saveTemplate, removeTemplate } = useKeuanganTemplates();
 
   const [incomeDialog, setIncomeDialog] = useState(false);
   const [expenseDialog, setExpenseDialog] = useState(false);
@@ -427,6 +586,12 @@ export default function KeuanganPage() {
   const [editingSponsor, setEditingSponsor] = useState<Sponsor | null>(null);
   const [deleteKeuangan, setDeleteKeuangan] = useState<number | null>(null);
   const [deleteSponsor, setDeleteSponsor] = useState<number | null>(null);
+
+  // Template pre-fill state — key is incremented to force form remount
+  const [incomeInitial, setIncomeInitial] = useState<Partial<Keuangan> | undefined>(undefined);
+  const [expenseInitial, setExpenseInitial] = useState<Partial<Keuangan> | undefined>(undefined);
+  const [incomeKey, setIncomeKey] = useState(0);
+  const [expenseKey, setExpenseKey] = useState(0);
 
   const { data: items = [], isLoading } = useQuery<Keuangan[]>({ queryKey: ["/api/keuangan"] });
   const { data: sponsors = [] } = useQuery<Sponsor[]>({ queryKey: ["/api/sponsor"] });
@@ -440,6 +605,7 @@ export default function KeuanganPage() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/keuangan"] });
       setIncomeDialog(false); setExpenseDialog(false);
+      setIncomeInitial(undefined); setExpenseInitial(undefined);
       toast({ title: "Transaksi ditambahkan" });
     },
     onError: (e: any) => toast({ title: "Gagal", description: e.message, variant: "destructive" }),
@@ -492,15 +658,35 @@ export default function KeuanganPage() {
     onError: (e: any) => toast({ title: "Gagal", description: e.message, variant: "destructive" }),
   });
 
+  // ── Template handlers ──
+  const handleSaveIncomeTemplate = (values: Omit<KeuanganTemplate, "id" | "name">, name: string) => {
+    saveTemplate({ ...values, id: crypto.randomUUID(), name });
+    toast({ title: `Template "${name}" disimpan`, description: "Klik chip template untuk pakai lagi." });
+  };
+  const handleSaveExpenseTemplate = (values: Omit<KeuanganTemplate, "id" | "name">, name: string) => {
+    saveTemplate({ ...values, id: crypto.randomUUID(), name });
+    toast({ title: `Template "${name}" disimpan`, description: "Klik chip template untuk pakai lagi." });
+  };
+  const applyIncomeTemplate = (t: KeuanganTemplate) => {
+    setIncomeInitial({ sourceName: t.sourceName, sourceType: t.sourceType as any, amount: t.amount as any, description: t.description, category: t.category, paymentMethod: t.paymentMethod, notes: t.notes });
+    setIncomeKey(k => k + 1);
+    setIncomeDialog(true);
+  };
+  const applyExpenseTemplate = (t: KeuanganTemplate) => {
+    setExpenseInitial({ amount: t.amount as any, description: t.description, category: t.category, purpose: t.purpose, responsiblePerson: t.responsiblePerson, paymentMethod: t.paymentMethod, notes: t.notes });
+    setExpenseKey(k => k + 1);
+    setExpenseDialog(true);
+  };
+
   return (
     <div className="space-y-3 sm:space-y-6 animate-fade-in">
       <PageHeader title="Keuangan & Sponsor" description="">
         {isAdmin && (
           <div className="flex gap-2">
-            <Button size="sm" variant="outline" className="gap-1.5" onClick={() => setExpenseDialog(true)} data-testid="button-add-expense">
+            <Button size="sm" variant="outline" className="gap-1.5" onClick={() => { setExpenseInitial(undefined); setExpenseDialog(true); }} data-testid="button-add-expense">
               <TrendingDown className="h-3.5 w-3.5 text-purple-700" /> Pengeluaran
             </Button>
-            <Button size="sm" className="gap-1.5" onClick={() => setIncomeDialog(true)} data-testid="button-add-income">
+            <Button size="sm" className="gap-1.5" onClick={() => { setIncomeInitial(undefined); setIncomeDialog(true); }} data-testid="button-add-income">
               <Plus className="h-3.5 w-3.5" /> Pemasukan
             </Button>
           </div>
@@ -557,13 +743,21 @@ export default function KeuanganPage() {
         </TabsContent>
 
         {/* ── Income Tab ── */}
-        <TabsContent value="income" className="mt-4">
+        <TabsContent value="income" className="mt-4 space-y-2">
+          {isAdmin && (
+            <TemplateChips
+              templates={templates}
+              type="income"
+              onApply={applyIncomeTemplate}
+              onDelete={removeTemplate}
+            />
+          )}
           <Card>
             <CardHeader className="pb-2">
               <div className="flex items-center justify-between">
                 <CardTitle className="text-sm">Semua Pemasukan</CardTitle>
                 {isAdmin && (
-                  <Button size="sm" className="h-7 text-xs gap-1" onClick={() => setIncomeDialog(true)} data-testid="button-add-income-tab">
+                  <Button size="sm" className="h-7 text-xs gap-1" onClick={() => { setIncomeInitial(undefined); setIncomeDialog(true); }} data-testid="button-add-income-tab">
                     <Plus className="h-3 w-3" /> Tambah
                   </Button>
                 )}
@@ -590,13 +784,21 @@ export default function KeuanganPage() {
         </TabsContent>
 
         {/* ── Expense Tab ── */}
-        <TabsContent value="expense" className="mt-4">
+        <TabsContent value="expense" className="mt-4 space-y-2">
+          {isAdmin && (
+            <TemplateChips
+              templates={templates}
+              type="expense"
+              onApply={applyExpenseTemplate}
+              onDelete={removeTemplate}
+            />
+          )}
           <Card>
             <CardHeader className="pb-2">
               <div className="flex items-center justify-between">
                 <CardTitle className="text-sm">Semua Pengeluaran</CardTitle>
                 {isAdmin && (
-                  <Button size="sm" variant="outline" className="h-7 text-xs gap-1" onClick={() => setExpenseDialog(true)} data-testid="button-add-expense-tab">
+                  <Button size="sm" variant="outline" className="h-7 text-xs gap-1" onClick={() => { setExpenseInitial(undefined); setExpenseDialog(true); }} data-testid="button-add-expense-tab">
                     <Plus className="h-3 w-3" /> Tambah
                   </Button>
                 )}
@@ -690,18 +892,40 @@ export default function KeuanganPage() {
       </Tabs>
 
       {/* ── Income Dialog ── */}
-      <Dialog open={incomeDialog} onOpenChange={setIncomeDialog}>
+      <Dialog open={incomeDialog} onOpenChange={(v) => { if (!v) { setIncomeInitial(undefined); } setIncomeDialog(v); }}>
         <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
-          <DialogHeader><DialogTitle>Tambah Pemasukan</DialogTitle></DialogHeader>
-          <IncomeForm onClose={() => setIncomeDialog(false)} onSave={d => createK.mutate(d)} isPending={createK.isPending} />
+          <DialogHeader>
+            <DialogTitle>
+              {incomeInitial ? "Pemasukan dari Template" : "Tambah Pemasukan"}
+            </DialogTitle>
+          </DialogHeader>
+          <IncomeForm
+            key={incomeKey}
+            initial={incomeInitial}
+            onClose={() => { setIncomeDialog(false); setIncomeInitial(undefined); }}
+            onSave={d => createK.mutate(d)}
+            isPending={createK.isPending}
+            onSaveTemplate={handleSaveIncomeTemplate}
+          />
         </DialogContent>
       </Dialog>
 
       {/* ── Expense Dialog ── */}
-      <Dialog open={expenseDialog} onOpenChange={setExpenseDialog}>
+      <Dialog open={expenseDialog} onOpenChange={(v) => { if (!v) { setExpenseInitial(undefined); } setExpenseDialog(v); }}>
         <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
-          <DialogHeader><DialogTitle>Tambah Pengeluaran</DialogTitle></DialogHeader>
-          <ExpenseForm onClose={() => setExpenseDialog(false)} onSave={d => createK.mutate(d)} isPending={createK.isPending} />
+          <DialogHeader>
+            <DialogTitle>
+              {expenseInitial ? "Pengeluaran dari Template" : "Tambah Pengeluaran"}
+            </DialogTitle>
+          </DialogHeader>
+          <ExpenseForm
+            key={expenseKey}
+            initial={expenseInitial}
+            onClose={() => { setExpenseDialog(false); setExpenseInitial(undefined); }}
+            onSave={d => createK.mutate(d)}
+            isPending={createK.isPending}
+            onSaveTemplate={handleSaveExpenseTemplate}
+          />
         </DialogContent>
       </Dialog>
 
