@@ -654,10 +654,29 @@ export function registerRoutes(app: Router) {
     // ── Week-over-week notulensi ──
     const notulensiThisWeek = allNotulensi.filter(n => afterDate(n.createdAt, weekAgo)).length;
     const notulensiLastWeek = allNotulensi.filter(n => betweenDate(n.createdAt, twoWeeksAgo, weekAgo)).length;
+    const finalNotulensi = allNotulensi.filter(n => n.status === "final").length;
 
     // ── Month-over-month agenda created ──
     const agendaThisMonth = allAgenda.filter(a => afterDate(a.createdAt, monthAgo)).length;
     const agendaLastMonth = allAgenda.filter(a => betweenDate(a.createdAt, twoMonthsAgo, monthAgo)).length;
+
+    // ── This calendar month agenda (by event date) ──
+    const calYear = now.getFullYear();
+    const calMonth = now.getMonth();
+    const parseAgendaDate = (d: string | null | undefined): Date | null => {
+      if (!d) return null;
+      try {
+        const parsed = new Date(d);
+        if (!isNaN(parsed.getTime())) return parsed;
+      } catch { /* ignore */ }
+      return null;
+    };
+    const agendaThisCalMonthList = allAgenda.filter(a => {
+      const d = parseAgendaDate(a.date);
+      return d && d.getFullYear() === calYear && d.getMonth() === calMonth;
+    });
+    const agendaThisCalMonth = agendaThisCalMonthList.length;
+    const agendaCompletedThisCalMonth = agendaThisCalMonthList.filter(a => a.status === "completed").length;
 
     // ── Feature stats ──
     const fiturThisMonth  = allFitur.filter(f => afterDate(f.createdAt, monthAgo)).length;
@@ -681,8 +700,10 @@ export function registerRoutes(app: Router) {
 
     res.json({
       totalAnggota: allAnggota.filter(a => a.status === "active").length,
+      totalAnggotaAll: allAnggota.length,
       upcomingAgenda: allAgenda.filter(a => a.status === "upcoming").length,
       totalNotulensi: allNotulensi.length,
+      finalNotulensi,
       draftNotulensi: allNotulensi.filter(n => n.status === "draft").length,
       totalSurat: allSurat.length,
       totalInventaris: allInventaris.length,
@@ -692,6 +713,9 @@ export function registerRoutes(app: Router) {
       totalExpense,
       recentNotulensi: allNotulensi.slice(0, 5),
       upcomingAgendaList: allAgenda.filter(a => a.status === "upcoming").slice(0, 5),
+      agendaThisCalMonthList: agendaThisCalMonthList.slice(0, 8),
+      agendaThisCalMonth,
+      agendaCompletedThisCalMonth,
       allAgendaList: allAgenda.slice(0, 10),
       latestFitur: allFitur.slice(0, 5),
       recentKeuangan: allKeuangan.slice(0, 8),
@@ -702,6 +726,8 @@ export function registerRoutes(app: Router) {
         notulensiLastWeek,
         agendaThisMonth,
         agendaLastMonth,
+        agendaThisCalMonth,
+        agendaCompletedThisCalMonth,
         fiturThisMonth,
         completedFitur,
         inProgressFitur,

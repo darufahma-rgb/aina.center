@@ -34,8 +34,10 @@ interface InsightData {
 
 interface DashboardData {
   totalAnggota: number;
+  totalAnggotaAll: number;
   upcomingAgenda: number;
   totalNotulensi: number;
+  finalNotulensi: number;
   draftNotulensi: number;
   totalSurat: number;
   totalInventaris: number;
@@ -43,8 +45,11 @@ interface DashboardData {
   saldoTersedia: number;
   totalIncome: number;
   totalExpense: number;
+  agendaThisCalMonth: number;
+  agendaCompletedThisCalMonth: number;
   recentNotulensi: Notulensi[];
   upcomingAgendaList: Agenda[];
+  agendaThisCalMonthList: Agenda[];
   allAgendaList: Agenda[];
   latestFitur: any[];
   recentKeuangan: any[];
@@ -531,20 +536,42 @@ export default function Dashboard() {
   const { user, isAdmin } = useAuth();
   const { data, isLoading } = useQuery<DashboardData>({ queryKey: ["/api/dashboard"] });
 
-  const total = data?.totalNotulensi ?? 0;
-  const final = (data?.recentNotulensi ?? []).filter(n => n.status === "final").length;
-  const completionPct = total > 0 ? Math.round((final / total) * 100) : 0;
+  // ── Notulensi ──
+  const totalNotulensi = data?.totalNotulensi ?? 0;
+  const finalNotulensi = data?.finalNotulensi ?? 0;
+  const completionPct = totalNotulensi > 0 ? Math.round((finalNotulensi / totalNotulensi) * 100) : 0;
 
   const notulensi = data?.recentNotulensi ?? [];
   const agendaList = data?.upcomingAgendaList ?? [];
 
-  const totalFitur = data?.insights?.totalFitur ?? 0;
-  const completedFitur = data?.insights?.completedFitur ?? 0;
-  const fiturPct = totalFitur > 0 ? Math.round((completedFitur / totalFitur) * 100) : 0;
+  // ── Agenda bulan ini ──
+  const agendaThisCalMonth = data?.agendaThisCalMonth ?? 0;
+  const agendaCompletedThisCalMonth = data?.agendaCompletedThisCalMonth ?? 0;
+  const agendaCalMonthList = data?.agendaThisCalMonthList ?? [];
+  const agendaCalMonthPct = agendaThisCalMonth > 0 ? Math.round((agendaCompletedThisCalMonth / agendaThisCalMonth) * 100) : 0;
+  const currentMonthName = new Date().toLocaleDateString("id-ID", { month: "long" });
 
-  const agendaThisMonth = data?.insights?.agendaThisMonth ?? 0;
+  // ── Fitur (GitHub-based, from shared React Query cache) ──
+  const { data: rawCommits = [], isLoading: loadingCommits } = useQuery<any[]>({
+    queryKey: ["/api/github/commits"],
+    staleTime: 10 * 60 * 1000,
+  });
+  const firstSha = (rawCommits as any[])[0]?.sha ?? "";
+  const { data: githubFeatures = [], isLoading: loadingGithubFeatures } = useQuery<ExtractedFeature[]>({
+    queryKey: ["extract-features", firstSha],
+    queryFn: async () => {
+      const res = await apiRequest("POST", "/api/github/extract-features", { commits: rawCommits.slice(0, 50) });
+      return res.json();
+    },
+    enabled: rawCommits.length > 0,
+    staleTime: 30 * 60 * 1000,
+  });
+  const totalAreas = (githubFeatures as ExtractedFeature[]).length;
+  const activeAreas = (githubFeatures as ExtractedFeature[]).filter(f => f.status === "baru" || f.status === "ditingkatkan").length;
+  const fiturPct = totalAreas > 0 ? Math.round((activeAreas / totalAreas) * 100) : 0;
+  const loadingFitur = loadingCommits || loadingGithubFeatures;
+
   const totalAnggota = data?.totalAnggota ?? 0;
-  const agendaPct = totalAnggota > 0 ? Math.min(100, Math.round((agendaThisMonth / Math.max(totalAnggota, 1)) * 100)) : 0;
 
   const displayName = user?.displayName ?? user?.username ?? "—";
   const today = new Date().toLocaleDateString("id-ID", { weekday: "long", day: "numeric", month: "long" });
@@ -641,39 +668,46 @@ export default function Dashboard() {
           <div className="grid grid-cols-3 gap-2 sm:gap-3">
             <ProgressCard
               sublabel="Notulensi"
-              label="Penyelesaian"
-              pct={completionPct}
-              value={isLoading ? "—" : total}
+              label="Status Final"
+              pct={isLoading ? 0 : completionPct}
+              value={isLoading ? "—" : `${finalNotulensi}/${totalNotulensi}`}
               color="#3E0FA3"
               link="/notulensi"
             />
             <ProgressCard
-              sublabel="Agenda Bulan Ini"
-              label="Kehadiran"
-              pct={isLoading ? 0 : agendaPct}
-              value={isLoading ? "—" : data?.upcomingAgenda ?? 0}
+              sublabel={`Agenda · ${currentMonthName}`}
+              label="Selesai"
+              pct={isLoading ? 0 : agendaCalMonthPct}
+              value={isLoading ? "—" : agendaThisCalMonth}
               color="#1A1A1A"
               link="/agenda"
             />
             <ProgressCard
-              sublabel="Fitur"
-              label="Progress"
-              pct={fiturPct}
-              value={isLoading ? "—" : completedFitur}
+              sublabel="Fitur Aktif"
+              label="Dikembangkan"
+              pct={loadingFitur ? 0 : fiturPct}
+              value={loadingFitur ? "—" : `${activeAreas}/${totalAreas}`}
               color="#3E0FA3"
               link="/fitur"
             />
           </div>
 
-          {/* ── Agenda mendatang ─────────────────────────────────── */}
+          {/* ── Agenda Bulan Ini ─────────────────────────────────── */}
           <div className="rounded-3xl p-5 border border-black/[0.11]" style={{ background: "#F8F9FB", boxShadow: "0 2px 12px rgba(0,0,0,0.07)" }}>
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-[15px] font-bold text-[#1A1A1A]">
-                Agenda Mendatang
-                {!isLoading && agendaList.length > 0 && (
-                  <span className="ml-2 text-[12px] font-semibold text-[#999]">{agendaList.length} item</span>
+              <div>
+                <h3 className="text-[15px] font-bold text-[#1A1A1A]">
+                  Agenda {currentMonthName}
+                  {!isLoading && agendaThisCalMonth > 0 && (
+                    <span className="ml-2 text-[12px] font-semibold text-[#999]">{agendaThisCalMonth} agenda</span>
+                  )}
+                </h3>
+                {!isLoading && agendaThisCalMonth > 0 && (
+                  <p className="text-[11px] text-[#999] mt-0.5">
+                    {agendaCompletedThisCalMonth} selesai · {agendaThisCalMonth - agendaCompletedThisCalMonth} mendatang
+                  </p>
                 )}
-              </h3>
+              </div>
               <Link to="/agenda" className="text-[12px] text-[#999] hover:text-[#1A1A1A] transition-colors flex items-center gap-1">
                 <ArrowRight className="h-3.5 w-3.5" /> Semua
               </Link>
@@ -683,16 +717,25 @@ export default function Dashboard() {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {[1, 2].map(i => <div key={i} className="h-32 rounded-2xl bg-black/[0.04] animate-pulse" />)}
               </div>
-            ) : agendaList.length === 0 ? (
-              <div className="py-10 text-center">
-                <CalendarDays className="h-8 w-8 text-[#ddd] mx-auto mb-2" />
-                <p className="text-[13px] text-[#bbb]">Belum ada agenda mendatang</p>
-              </div>
-            ) : (
+            ) : agendaCalMonthList.length > 0 ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                {agendaList.slice(0, 4).map((a) => (
+                {agendaCalMonthList.slice(0, 4).map((a) => (
                   <AgendaCard key={a.id} item={a} />
                 ))}
+              </div>
+            ) : agendaList.length > 0 ? (
+              <>
+                <p className="text-[11px] text-[#bbb] mb-3">Tidak ada agenda di bulan ini. Menampilkan agenda mendatang:</p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {agendaList.slice(0, 4).map((a) => (
+                    <AgendaCard key={a.id} item={a} />
+                  ))}
+                </div>
+              </>
+            ) : (
+              <div className="py-10 text-center">
+                <CalendarDays className="h-8 w-8 text-[#ddd] mx-auto mb-2" />
+                <p className="text-[13px] text-[#bbb]">Belum ada agenda bulan ini</p>
               </div>
             )}
           </div>
@@ -700,10 +743,21 @@ export default function Dashboard() {
           {/* ── Notulensi terbaru ─────────────────────────────────── */}
           <div className="rounded-3xl p-5 border border-black/[0.11]" style={{ background: "#F8F9FB", boxShadow: "0 2px 12px rgba(0,0,0,0.07)" }}>
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-[15px] font-bold text-[#1A1A1A]">Notulensi Terbaru</h3>
+              <div>
+                <h3 className="text-[15px] font-bold text-[#1A1A1A]">Notulensi Terbaru</h3>
+                {!isLoading && totalNotulensi > 0 && (
+                  <p className="text-[11px] text-[#999] mt-0.5">
+                    <span className="font-semibold text-green-600">{finalNotulensi} final</span>
+                    {" · "}
+                    <span>{data?.draftNotulensi ?? 0} draft</span>
+                    {" · "}
+                    {totalNotulensi} total
+                  </p>
+                )}
+              </div>
               <div className="flex items-center gap-3">
                 <span className="text-[11px] font-semibold px-2 py-0.5 rounded-full" style={{ background: "#3E0FA3", color: "#ffffff" }}>
-                  {isLoading ? "—" : notulensi.length}
+                  {isLoading ? "—" : totalNotulensi}
                 </span>
                 <Link to="/notulensi" className="text-[12px] text-[#999] hover:text-[#1A1A1A] transition-colors flex items-center gap-1">
                   <ArrowRight className="h-3.5 w-3.5" />
@@ -747,9 +801,27 @@ export default function Dashboard() {
             </div>
 
             <div className="space-y-3">
-              <StatBar label="Notulensi" value={isLoading ? "—" : String(total)} pct={completionPct} color="#3E0FA3" icon={FileText} />
-              <StatBar label="Agenda" value={isLoading ? "—" : String(data?.upcomingAgenda ?? 0)} pct={Math.min(100, (data?.upcomingAgenda ?? 0) * 20)} color="#1A1A1A" icon={CalendarDays} />
-              <StatBar label="Fitur Selesai" value={isLoading ? "—" : `${completedFitur}/${totalFitur}`} pct={fiturPct} color="#3E0FA3" icon={Sparkles} />
+              <StatBar
+                label="Notulensi Final"
+                value={isLoading ? "—" : `${finalNotulensi}/${totalNotulensi}`}
+                pct={completionPct}
+                color="#3E0FA3"
+                icon={FileText}
+              />
+              <StatBar
+                label={`Agenda ${currentMonthName}`}
+                value={isLoading ? "—" : `${agendaCompletedThisCalMonth}/${agendaThisCalMonth}`}
+                pct={agendaCalMonthPct}
+                color="#1A1A1A"
+                icon={CalendarDays}
+              />
+              <StatBar
+                label="Fitur Aktif"
+                value={loadingFitur ? "—" : `${activeAreas}/${totalAreas}`}
+                pct={fiturPct}
+                color="#3E0FA3"
+                icon={Sparkles}
+              />
             </div>
           </div>
 
