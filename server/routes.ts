@@ -1048,10 +1048,10 @@ Aturan:
             messages: [
               {
                 role: "system",
-                content: `Kamu adalah asisten produk AINA Centre yang ramah dan komunikatif.
-Tugasmu: ubah kelompok catatan teknis pengembangan menjadi ringkasan fitur yang mudah dipahami siapapun.
-Gunakan Bahasa Indonesia yang hangat, hindari jargon teknis.
-Fokus pada manfaat untuk pengguna, bukan detail implementasi.
+                content: `Kamu adalah teman yang asik dan suka njelasin hal-hal teknis dengan cara yang gampang dimengerti.
+Tugasmu: ubah catatan teknis pengembangan jadi penjelasan yang santai, seru, dan langsung nyambung — kayak temen yang lagi cerita ke kamu.
+Pakai Bahasa Indonesia gaul tapi tetap sopan. Boleh pakai kata-kata kayak "nah", "jadi gini", "keren kan?", "btw", dll.
+Hindari banget jargon teknis. Fokus ke: apa yang berubah, manfaatnya buat pengguna, dan cara aksesnya.
 Balas HANYA dalam format JSON yang diminta.`,
               },
               {
@@ -1060,7 +1060,7 @@ Balas HANYA dalam format JSON yang diminta.`,
 
 ${groupSummary}
 
-Peta menu AINA Centre (gunakan saat mengisi "cara akses"):
+Peta menu AINA Centre (gunakan saat mengisi cara akses):
 - AI & Laporan Cerdas → menu "AI Report" di sidebar
 - Tampilan & Pengalaman → tampil otomatis saat membuka portal
 - Keuangan → menu "Keuangan" di sidebar
@@ -1073,16 +1073,19 @@ Peta menu AINA Centre (gunakan saat mengisi "cara akses"):
 - Fitur Baru → menu "Fitur Terbaru" di sidebar
 
 Untuk setiap kelompok, buatkan:
-1. "title": judul fitur singkat dan menarik (max 5 kata, Bahasa Indonesia)
-2. "explanation": 3 poin singkat dengan format persis berikut (pisahkan dengan \n):
-   • Apa yang berubah: <1 kalimat deskripsi singkat>
-   • Manfaat untuk kamu: <1 kalimat manfaat nyata bagi pengguna>
-   • Cara akses: <instruksi singkat berdasarkan peta menu di atas>
+1. "title": judul fitur pendek dan catchy (max 5 kata, Bahasa Indonesia)
+2. "explanation": 3 poin dengan format PERSIS berikut (pisahkan dengan karakter • di awal, newline antar poin):
+   • 🔥 Yang baru: <1-2 kalimat casual tentang apa yang berubah, pakai gaya bicara teman>
+   • 💡 Enaknya: <1-2 kalimat tentang manfaat nyata, dengan nada antusias>
+   • 📍 Cara buka: <instruksi singkat berdasarkan peta menu, casual>
+
+Contoh explanation yang bagus:
+"• 🔥 Yang baru: Sekarang ada fitur buat nyimpan template transaksi — jadi kalau ada pemasukan rutin, gak perlu ngisi ulang dari awal!\n• 💡 Enaknya: Hemat waktu banget, tinggal klik template yang udah disimpen, form langsung terisi otomatis. Praktis!\n• 📍 Cara buka: Buka menu Keuangan di sidebar, terus ke tab Masuk atau Keluar — chipnya ada di atas daftar transaksi."
 
 Format JSON:
 {
   "features": [
-    { "category": "<nama kategori persis>", "title": "...", "explanation": "• Apa yang berubah: ...\n• Manfaat untuk kamu: ...\n• Cara akses: ..." }
+    { "category": "<nama kategori persis>", "title": "...", "explanation": "• 🔥 Yang baru: ...\n• 💡 Enaknya: ...\n• 📍 Cara buka: ..." }
   ]
 }`,
               },

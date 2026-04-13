@@ -333,31 +333,42 @@ function FiturOverview() {
               {/* Expanded: AI explanation */}
               {isEOpen && (
                 <div
-                  className="px-5 pb-4 pt-3 border-t border-purple-100"
+                  className="px-4 pb-4 pt-3 border-t border-purple-100 space-y-3"
                   style={{ background: "linear-gradient(135deg, #F5F0FF 0%, #EDE9FE 100%)" }}
                 >
-                  <div className="flex items-start gap-2 mb-2">
-                    <span className="text-base shrink-0">✨</span>
-                    <span className="text-[11px] font-bold text-[#5B21B6] uppercase tracking-wide">Penjelasan AI</span>
+                  <div className="flex items-center gap-2">
+                    <span className="text-base">🤙</span>
+                    <span className="text-[11px] font-bold text-[#5B21B6]">Nih gue jelasin santai ya~</span>
                   </div>
-                  <ul className="space-y-2.5 ml-0">
-                    {parseBullets(f.explanation).map(({ label, body }, i) => (
-                      <li key={i} className="flex items-start gap-2.5">
-                        <span
-                          className="mt-0.5 h-5 w-5 rounded-full flex items-center justify-center shrink-0 text-[9px] font-black"
-                          style={{ background: "#7C3AED", color: "#fff" }}
+                  <div className="space-y-2">
+                    {parseBullets(f.explanation).map(({ label, body }, i) => {
+                      const emojiMap: Record<number, string> = { 0: "🔥", 1: "💡", 2: "📍" };
+                      const fallbackEmoji = emojiMap[i] ?? "✅";
+                      // Extract leading emoji from label if present
+                      const labelMatch = label?.match(/^(\p{Emoji})/u);
+                      const displayEmoji = labelMatch ? labelMatch[1] : fallbackEmoji;
+                      const labelText = label?.replace(/^\p{Emoji}\s*/u, "") ?? "";
+                      return (
+                        <div
+                          key={i}
+                          className="flex items-start gap-2.5 rounded-xl px-3 py-2.5"
+                          style={{ background: "rgba(255,255,255,0.6)" }}
                         >
-                          {i + 1}
-                        </span>
-                        <p className="text-[12px] text-[#3E0FA3] leading-relaxed">
-                          {label && <span className="font-bold">{label}:</span>}{" "}
-                          <span className="font-medium">{body}</span>
-                        </p>
-                      </li>
-                    ))}
-                  </ul>
-                  <p className="text-[10px] text-purple-400 mt-3">
-                    Dihasilkan otomatis oleh AI · berdasarkan riwayat pengembangan
+                          <span className="text-base shrink-0 leading-none mt-0.5">{displayEmoji}</span>
+                          <div>
+                            {labelText && (
+                              <span className="text-[11px] font-black text-[#6D28D9] uppercase tracking-wide block leading-tight mb-0.5">
+                                {labelText}
+                              </span>
+                            )}
+                            <p className="text-[12.5px] text-[#3B1F8C] leading-relaxed font-medium">{body}</p>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                  <p className="text-[10px] text-purple-400 pt-1">
+                    ✍️ Ditulis otomatis oleh AI · dari riwayat pengembangan
                   </p>
                 </div>
               )}
@@ -381,7 +392,7 @@ function FiturOverview() {
                   }}
                 >
                   <Wand2 className="h-3 w-3" />
-                  {isEOpen ? "Tutup" : "AI Jelaskan"}
+                  {isEOpen ? "Tutup" : "Jelasin Dong 🤙"}
                 </button>
               </div>
             </div>
