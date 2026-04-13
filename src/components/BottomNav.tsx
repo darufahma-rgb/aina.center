@@ -3,8 +3,8 @@ import { Link, useLocation } from "react-router-dom";
 import {
   LayoutDashboard, CalendarDays, Wallet, FileText,
   Users, Handshake, Mail, Package,
-  Wand2, Presentation, Sparkles, UserCog,
-  LogOut, X, LayoutGrid, Bot,
+  Bot, Presentation, Sparkles, UserCog,
+  LogOut, X, LayoutGrid,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -39,7 +39,7 @@ const SECTIONS = [
   {
     label: "Tools",
     items: [
-      { icon: Wand2,        label: "AI Report",     url: "/ai-report", exact: false },
+      { icon: Bot,          label: "Asisten AINA",  url: "/asisten",   exact: false },
       { icon: Presentation, label: "Investor Mode", url: "/investor",  exact: false },
       { icon: Sparkles,     label: "Fitur Terbaru", url: "/fitur",     exact: false },
     ],

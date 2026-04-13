@@ -3,7 +3,7 @@ import { Link, useLocation } from "react-router-dom";
 import {
   LayoutDashboard, FileText, Wallet, CalendarDays,
   Sparkles, Mail, Package, Users, Handshake, Presentation,
-  Wand2, UserCog, LogOut, Bell, Settings, Plus, HelpCircle,
+  Bot, UserCog, LogOut, Bell, Settings, Plus, HelpCircle,
   ChevronDown, Search, X,
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
@@ -30,7 +30,7 @@ const ORGANISASI_NAV = [
 ];
 
 const TOOLS_NAV = [
-  { title: "AI Report",     url: "/ai-report", icon: Wand2,         exact: false },
+  { title: "Asisten AINA",  url: "/asisten",   icon: Bot,           exact: false },
   { title: "Investor Mode", url: "/investor",  icon: Presentation,  exact: false },
   { title: "Fitur Terbaru", url: "/fitur",     icon: Sparkles,      exact: false },
 ];
@@ -55,7 +55,7 @@ export const NAV_SECTIONS = [
     { title: "Fitur Terbaru", url: "/fitur",      icon: Sparkles,     exact: false },
   ]},
   { label: "Tools", items: [
-    { title: "AI Report", url: "/ai-report", icon: Wand2, exact: false },
+    { title: "Asisten AINA", url: "/asisten", icon: Bot, exact: false },
   ]},
 ];
 

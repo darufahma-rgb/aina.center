@@ -53,7 +53,7 @@ const CATEGORY_ROUTE: Record<string, string> = {
   "Agenda & Kegiatan":    "/agenda",
   "Notulensi & Rapat":    "/notulensi",
   "Dokumen & Inventaris": "/inventaris",
-  "AI & Laporan Cerdas":  "/ai-report",
+  "AI & Laporan Cerdas":  "/asisten",
 };
 
 const CATEGORY_ICON: Record<string, LucideIcon> = {
@@ -422,7 +422,7 @@ const FEATURE_ROUTES: { keywords: string[]; route: string; label: string }[] = [
   { keywords: ["surat", "letter", "dokumen", "document"], route: "/surat", label: "Surat" },
   { keywords: ["inventaris", "inventory", "barang", "aset", "asset"], route: "/inventaris", label: "Inventaris" },
   { keywords: ["investor", "invest"], route: "/investor", label: "Investor Mode" },
-  { keywords: ["report", "laporan", "ai report", "ai-report"], route: "/ai-report", label: "AI Report" },
+  { keywords: ["report", "laporan", "ai report", "ai-report", "asisten", "assistant"], route: "/asisten", label: "Asisten AINA" },
   { keywords: ["fitur", "feature", "terbaru", "changelog", "update"], route: "/fitur", label: "Fitur Terbaru" },
   { keywords: ["dashboard", "home", "beranda"], route: "/", label: "Dashboard" },
 ];

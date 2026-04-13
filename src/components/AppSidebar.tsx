@@ -1,6 +1,6 @@
 import {
   LayoutDashboard, FileText, Sparkles, Wallet, CalendarDays, Users,
-  Handshake, Mail, Package, Presentation, Wand2, LogOut, UserCog,
+  Handshake, Mail, Package, Presentation, Bot, LogOut, UserCog,
 } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useAuth } from "@/contexts/AuthContext";
@@ -49,7 +49,7 @@ const navSections = [
   },
   {
     label: "Tools",
-    items: [{ title: "AI Report Assistant", url: "/ai-report", icon: Wand2 }],
+    items: [{ title: "Asisten AINA", url: "/asisten", icon: Bot }],
   },
 ];
 

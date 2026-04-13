@@ -5,6 +5,8 @@ import path from "path";
 import fs from "fs";
 import { createClient } from "@supabase/supabase-js";
 import { requireAuth, requireAdmin } from "./auth";
+import { runAssistant } from "./assistant";
+import type { ChatMessage } from "./assistant";
 
 function getSupabaseClient() {
   const url = process.env.SUPABASE_URL;
@@ -313,6 +315,37 @@ export function registerRoutes(app: Router) {
     const ok = await storage.deleteSponsor(parseInt(req.params.id), req.session.userId!);
     if (!ok) return res.status(404).json({ message: "Not found" });
     res.json({ message: "Deleted" });
+  });
+
+  // ── Asisten AINA ──────────────────────────────────────────────────────────────
+
+  const memoryUpload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 10 * 1024 * 1024 } });
+
+  app.post("/api/assistant/chat", requireAuth, memoryUpload.single("file"), async (req, res) => {
+    try {
+      const message: string = req.body.message ?? "";
+      const historyRaw: string = req.body.history ?? "[]";
+      if (!message.trim()) return res.status(400).json({ message: "Pesan tidak boleh kosong." });
+
+      let history: ChatMessage[] = [];
+      try { history = JSON.parse(historyRaw); } catch { history = []; }
+
+      const ctx = {
+        storage,
+        userId: req.session.userId!,
+        fileBuffer: req.file?.buffer,
+        fileName: req.file?.originalname,
+        fileMimeType: req.file?.mimetype,
+      };
+
+      const result = await runAssistant(message, history.slice(-10), ctx);
+      res.json(result);
+    } catch (e: any) {
+      console.error("[Asisten AINA]", e?.message?.slice(0, 200));
+      if (e?.status === 401) return res.status(422).json({ message: "API key tidak valid." });
+      if (e?.status === 429) return res.status(429).json({ message: "Batas penggunaan AI tercapai. Coba lagi nanti." });
+      res.status(422).json({ message: e?.message ?? "Gagal menghubungi AI." });
+    }
   });
 
   // ── AI Report ────────────────────────────────────────────────────────────────
