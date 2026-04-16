@@ -150,15 +150,15 @@ function WorldClockDark() {
   ];
 
   return (
-    <div className="flex items-center gap-2">
-      <Globe className="h-3.5 w-3.5 text-purple-300 shrink-0" />
+    <div className="flex min-w-0 items-center gap-1.5 sm:gap-2">
+      <Globe className="h-3.5 w-3.5 shrink-0 text-purple-300" />
       {cities.map(({ city, flag, tz, label }) => (
         <div
           key={tz}
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[12px]"
+          className="flex min-w-[82px] items-center gap-1.5 rounded-full px-2 py-1.5 text-[11px] sm:min-w-[96px] sm:px-3 sm:text-[12px]"
           style={{ background: "rgba(255,255,255,0.14)", border: "1px solid rgba(255,255,255,0.20)" }}
         >
-          <span className="text-[13px]">{flag}</span>
+          <span className="text-[12px] sm:text-[13px]">{flag}</span>
           <div className="flex flex-col leading-none">
             <span className="font-bold text-white tabular-nums tracking-tight">{fmtTime(tz)}</span>
             <span className="text-[9px] font-medium text-white/50 mt-[1px]">{city} · {label}</span>
@@ -871,14 +871,14 @@ export default function Dashboard() {
         {/* Top accent line */}
         <div className="absolute top-0 left-0 right-0 h-px" style={{ background: "linear-gradient(90deg, transparent, rgba(167,139,250,0.6), transparent)" }} />
 
-        <div className="relative z-10 px-3.5 sm:px-5 pt-3.5 sm:pt-5 pb-3 sm:pb-4">
+        <div className="relative z-10 px-4 pb-3.5 pt-4 sm:px-5 sm:pb-4 sm:pt-5">
           {/* Row 1: greeting + PDF button */}
-          <div className="flex items-start justify-between gap-2 sm:gap-3 mb-3 sm:mb-4">
-            <div className="min-w-0">
+          <div className="mb-3 flex items-start justify-between gap-3 sm:mb-4">
+            <div className="min-w-0 flex-1 pr-1">
               {/* Date label */}
               <div className="flex items-center gap-1.5 mb-1.5 sm:mb-2">
-                <div className="h-px w-4" style={{ background: "rgba(167,139,250,0.5)" }} />
-                <p className="text-[10px] font-semibold tracking-[0.15em] uppercase" style={{ color: "rgba(167,139,250,0.7)" }}>{today}</p>
+                <div className="h-px w-4 shrink-0" style={{ background: "rgba(167,139,250,0.5)" }} />
+                <p className="truncate text-[10px] font-semibold uppercase tracking-[0.15em]" style={{ color: "rgba(167,139,250,0.7)" }}>{today}</p>
               </div>
               {/* Greeting */}
               <h1 className="text-xl sm:text-3xl font-black text-white leading-tight tracking-tight">
@@ -893,7 +893,7 @@ export default function Dashboard() {
             <button
               onClick={handleExportPDF}
               disabled={isLoading || !data}
-              className="shrink-0 flex items-center gap-1.5 px-2.5 sm:px-3 h-7 sm:h-8 rounded-xl text-[10px] sm:text-[11px] font-semibold transition-all hover:opacity-80 active:scale-95 disabled:opacity-30 mt-0.5 sm:mt-1"
+              className="mt-0.5 flex h-7 shrink-0 items-center justify-center gap-1.5 rounded-xl px-2.5 text-[10px] font-semibold transition-all hover:opacity-80 active:scale-95 disabled:opacity-30 sm:mt-1 sm:h-8 sm:min-w-[94px] sm:px-3 sm:text-[11px]"
               style={{
                 background: "rgba(139,92,246,0.2)",
                 color: "rgba(196,181,253,0.9)",
@@ -908,11 +908,11 @@ export default function Dashboard() {
           </div>
 
           {/* Divider */}
-          <div className="mb-2.5 sm:mb-3.5" style={{ height: "1px", background: "linear-gradient(90deg, rgba(139,92,246,0.3), rgba(139,92,246,0.05))" }} />
+          <div className="mb-2.5 sm:mb-3.5" style={{ height: "1px", background: "linear-gradient(90deg, rgba(139,92,246,0.32), rgba(139,92,246,0.08), transparent)" }} />
 
           {/* Row 2: World clock + Stats in one line */}
-          <div className="overflow-x-auto -mx-1 px-1 pb-0.5">
-            <div className="flex items-center gap-2 w-max sm:w-auto">
+          <div className="pb-0.5">
+            <div className="flex w-full items-center justify-between gap-3">
               {/* World clock */}
               <WorldClockDark />
 
@@ -920,7 +920,7 @@ export default function Dashboard() {
               <div className="h-5 w-px shrink-0 hidden sm:block" style={{ background: "rgba(255,255,255,0.12)" }} />
 
               {/* Quick stats */}
-              <div className="hidden sm:flex items-center gap-1.5">
+              <div className="hidden shrink-0 items-center gap-1.5 sm:flex">
                 <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-[11px] font-medium" style={{ background: "rgba(255,255,255,0.07)", border: "1px solid rgba(255,255,255,0.10)", color: "rgba(196,181,253,0.9)" }}>
                   <Users className="h-3 w-3" style={{ color: "#A78BFA" }} />
                   {isLoading ? "—" : totalAnggota} Anggota
@@ -940,19 +940,19 @@ export default function Dashboard() {
           </div>
 
           {/* Mobile stats */}
-          <div className="flex items-center gap-1.5 mt-1.5 sm:hidden">
-            <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-[11px] font-medium" style={{ background: "rgba(255,255,255,0.07)", border: "1px solid rgba(255,255,255,0.10)", color: "rgba(196,181,253,0.9)" }}>
+          <div className="mt-2 grid grid-cols-3 gap-1.5 sm:hidden">
+            <div className="flex min-w-0 items-center justify-center gap-1.5 rounded-xl px-2 py-1.5 text-[11px] font-medium" style={{ background: "rgba(255,255,255,0.07)", border: "1px solid rgba(255,255,255,0.10)", color: "rgba(196,181,253,0.9)" }}>
               <Users className="h-3 w-3" style={{ color: "#A78BFA" }} />
               {isLoading ? "—" : totalAnggota}
             </div>
-            <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-[11px] font-medium" style={{ background: "rgba(255,255,255,0.07)", border: "1px solid rgba(255,255,255,0.10)", color: "rgba(196,181,253,0.9)" }}>
+            <div className="flex min-w-0 items-center justify-center gap-1.5 rounded-xl px-2 py-1.5 text-[11px] font-medium" style={{ background: "rgba(255,255,255,0.07)", border: "1px solid rgba(255,255,255,0.10)", color: "rgba(196,181,253,0.9)" }}>
               <CalendarDays className="h-3 w-3" style={{ color: "#A78BFA" }} />
               {isLoading ? "—" : data?.upcomingAgenda ?? 0}
             </div>
             {isAdmin && (
-              <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-[11px] font-medium" style={{ background: "rgba(255,255,255,0.07)", border: "1px solid rgba(255,255,255,0.10)", color: "rgba(196,181,253,0.9)" }}>
+              <div className="flex min-w-0 items-center justify-center gap-1.5 rounded-xl px-2 py-1.5 text-[11px] font-medium" style={{ background: "rgba(255,255,255,0.07)", border: "1px solid rgba(255,255,255,0.10)", color: "rgba(196,181,253,0.9)" }}>
                 <Wallet className="h-3 w-3" style={{ color: "#A78BFA" }} />
-                {isLoading ? "—" : formatRp(data?.saldoTersedia ?? 0)}
+                <span className="truncate">{isLoading ? "—" : formatRp(data?.saldoTersedia ?? 0)}</span>
               </div>
             )}
           </div>
