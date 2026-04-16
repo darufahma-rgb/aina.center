@@ -581,14 +581,12 @@ function JarvisWidget() {
   const [input, setInput] = useState("");
   const [reply, setReply] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-  const [pulse, setPulse] = useState(false);
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
   const send = useCallback(async (msg: string) => {
     if (!msg.trim() || loading) return;
     setLoading(true);
     setReply(null);
-    setPulse(true);
     try {
       const form = new FormData();
       form.append("message", msg.trim());
@@ -600,7 +598,6 @@ function JarvisWidget() {
       setReply("Gagal menghubungi AINA Assistant.");
     } finally {
       setLoading(false);
-      setPulse(false);
     }
   }, [loading]);
 
@@ -610,107 +607,172 @@ function JarvisWidget() {
 
   return (
     <div
-      className="rounded-3xl overflow-hidden mb-5"
+      className="rounded-3xl mb-5 overflow-hidden"
       style={{
-        background: "linear-gradient(160deg, #080C1A 0%, #0D1229 40%, #0F1635 100%)",
-        border: "1px solid rgba(99,102,241,0.2)",
-        boxShadow: "0 0 0 1px rgba(99,102,241,0.08), 0 20px 50px rgba(10,10,30,0.6)",
+        background: "#ffffff",
+        border: "1px solid rgba(99,102,241,0.14)",
+        boxShadow: "0 4px 24px rgba(62,15,163,0.07), 0 1px 3px rgba(0,0,0,0.05)",
       }}
     >
-      {/* Top scanline accent */}
-      <div className="h-px w-full" style={{ background: "linear-gradient(90deg, transparent 0%, rgba(99,102,241,0.6) 30%, rgba(139,92,246,0.8) 50%, rgba(99,102,241,0.6) 70%, transparent 100%)" }} />
+      {/* ── Top accent strip ── */}
+      <div
+        className="h-1 w-full"
+        style={{ background: "linear-gradient(90deg, #4F46E5 0%, #7C3AED 50%, #6366F1 100%)" }}
+      />
 
-      <div className="px-4 pt-4 pb-4">
-        {/* Header */}
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center gap-2.5">
-            {/* Animated orb */}
-            <div className="relative flex items-center justify-center">
-              <div
-                className={`absolute h-9 w-9 rounded-full transition-all duration-700 ${pulse ? "scale-150 opacity-0" : "scale-100 opacity-100"}`}
-                style={{ background: "radial-gradient(circle, rgba(99,102,241,0.4) 0%, transparent 70%)" }}
-              />
-              <div
-                className="h-8 w-8 rounded-full flex items-center justify-center relative z-10"
-                style={{ background: "linear-gradient(135deg, #3730A3, #6366F1)", boxShadow: "0 0 16px rgba(99,102,241,0.5)" }}
-              >
-                <Bot className="h-4 w-4 text-white" />
-              </div>
+      <div className="p-5">
+        {/* ── Header row ── */}
+        <div className="flex items-center justify-between mb-5">
+          <div className="flex items-center gap-3">
+            {/* Icon */}
+            <div
+              className="h-10 w-10 rounded-2xl flex items-center justify-center shrink-0"
+              style={{
+                background: "linear-gradient(135deg, #EDE9FE 0%, #DDD6FE 100%)",
+                boxShadow: "0 2px 8px rgba(99,102,241,0.2)",
+              }}
+            >
+              {loading
+                ? <Loader2 className="h-5 w-5 animate-spin" style={{ color: "#6366F1" }} />
+                : <Sparkles className="h-5 w-5" style={{ color: "#6366F1" }} />
+              }
             </div>
             <div>
-              <p className="text-[13px] font-bold text-white tracking-wide">AINA Assistant</p>
-              <div className="flex items-center gap-1 mt-0.5">
-                <span className={`h-1.5 w-1.5 rounded-full ${loading ? "bg-yellow-400 animate-pulse" : "bg-emerald-400"}`} />
-                <span className="text-[10px] font-medium" style={{ color: loading ? "#facc15" : "#34d399" }}>
-                  {loading ? "Memproses..." : "Online"}
+              <p className="text-[14px] font-bold text-[#1A1A1A] tracking-tight">AINA Assistant</p>
+              <div className="flex items-center gap-1.5 mt-0.5">
+                <span
+                  className={`h-1.5 w-1.5 rounded-full ${loading ? "animate-pulse" : ""}`}
+                  style={{ background: loading ? "#F59E0B" : "#10B981" }}
+                />
+                <span
+                  className="text-[10px] font-semibold uppercase tracking-widest"
+                  style={{ color: loading ? "#F59E0B" : "#10B981" }}
+                >
+                  {loading ? "Memproses" : "Online"}
                 </span>
               </div>
             </div>
           </div>
+
           <Link
             to="/asisten"
-            className="flex items-center gap-1 text-[11px] font-medium transition-opacity hover:opacity-70"
-            style={{ color: "rgba(165,180,252,0.7)" }}
+            className="group flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[11px] font-semibold transition-all hover:opacity-80"
+            style={{
+              background: "rgba(99,102,241,0.08)",
+              color: "#6366F1",
+              border: "1px solid rgba(99,102,241,0.15)",
+            }}
           >
-            Buka penuh <ExternalLink className="h-3 w-3" />
+            Buka penuh
+            <ExternalLink className="h-3 w-3 transition-transform group-hover:translate-x-0.5" />
           </Link>
         </div>
 
-        {/* Quick prompts */}
+        {/* ── Divider ── */}
+        <div className="mb-4" style={{ height: "1px", background: "linear-gradient(90deg, rgba(99,102,241,0.15), rgba(99,102,241,0.03))" }} />
+
+        {/* ── Response / empty state ── */}
         {!reply && !loading && (
-          <div className="flex flex-wrap gap-1.5 mb-3">
-            {JARVIS_PROMPTS.map(({ icon: Icon, label, text }) => (
-              <button
-                key={label}
-                onClick={() => { send(text); }}
-                className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-[11px] font-medium transition-all hover:scale-[1.02] active:scale-95"
-                style={{
-                  background: "rgba(99,102,241,0.12)",
-                  border: "1px solid rgba(99,102,241,0.25)",
-                  color: "rgba(165,180,252,0.9)",
-                }}
-              >
-                <Icon className="h-3 w-3" />
-                {label}
-              </button>
-            ))}
+          <div className="mb-4">
+            <p className="text-[11px] font-semibold uppercase tracking-widest mb-2.5" style={{ color: "#C4B5FD" }}>
+              Coba tanya
+            </p>
+            <div className="flex flex-wrap gap-2">
+              {JARVIS_PROMPTS.map(({ icon: Icon, label, text }) => (
+                <button
+                  key={label}
+                  onClick={() => send(text)}
+                  className="group flex items-center gap-2 px-3 py-2 rounded-xl text-[12px] font-medium transition-all duration-150 hover:-translate-y-px active:scale-95"
+                  style={{
+                    background: "#FAFAFA",
+                    border: "1px solid #E5E7EB",
+                    color: "#374151",
+                  }}
+                  onMouseEnter={e => {
+                    (e.currentTarget as HTMLElement).style.background = "rgba(99,102,241,0.06)";
+                    (e.currentTarget as HTMLElement).style.borderColor = "rgba(99,102,241,0.3)";
+                    (e.currentTarget as HTMLElement).style.color = "#6366F1";
+                  }}
+                  onMouseLeave={e => {
+                    (e.currentTarget as HTMLElement).style.background = "#FAFAFA";
+                    (e.currentTarget as HTMLElement).style.borderColor = "#E5E7EB";
+                    (e.currentTarget as HTMLElement).style.color = "#374151";
+                  }}
+                >
+                  <span
+                    className="h-6 w-6 rounded-lg flex items-center justify-center shrink-0"
+                    style={{ background: "linear-gradient(135deg, #EDE9FE, #DDD6FE)" }}
+                  >
+                    <Icon className="h-3 w-3" style={{ color: "#7C3AED" }} />
+                  </span>
+                  {label}
+                </button>
+              ))}
+            </div>
           </div>
         )}
 
-        {/* Response area */}
-        {(loading || reply) && (
+        {loading && (
           <div
-            className="rounded-2xl p-3.5 mb-3 text-[12px] leading-relaxed min-h-[60px]"
+            className="rounded-2xl p-4 mb-4 flex items-center gap-3"
+            style={{ background: "rgba(99,102,241,0.04)", border: "1px solid rgba(99,102,241,0.10)" }}
+          >
+            <div
+              className="h-7 w-7 rounded-xl flex items-center justify-center shrink-0"
+              style={{ background: "linear-gradient(135deg, #EDE9FE, #DDD6FE)" }}
+            >
+              <Loader2 className="h-3.5 w-3.5 animate-spin" style={{ color: "#6366F1" }} />
+            </div>
+            <div>
+              <p className="text-[12px] font-semibold text-[#1A1A1A]">Menganalisis perintah</p>
+              <p className="text-[11px]" style={{ color: "#9CA3AF" }}>AINA sedang memproses permintaanmu...</p>
+            </div>
+          </div>
+        )}
+
+        {reply && !loading && (
+          <div
+            className="rounded-2xl p-4 mb-4"
             style={{
-              background: "rgba(255,255,255,0.04)",
-              border: "1px solid rgba(99,102,241,0.15)",
-              color: "rgba(199,210,254,0.9)",
-              maxHeight: "180px",
+              background: "linear-gradient(135deg, #FAFBFF 0%, #F5F3FF 100%)",
+              border: "1px solid rgba(99,102,241,0.12)",
+              maxHeight: "200px",
               overflowY: "auto",
             }}
           >
-            {loading ? (
-              <div className="flex items-center gap-2">
-                <Loader2 className="h-3.5 w-3.5 animate-spin" style={{ color: "#818CF8" }} />
-                <span style={{ color: "rgba(165,180,252,0.6)" }}>Menganalisis perintah...</span>
+            <div className="flex items-start gap-2.5">
+              <div
+                className="h-6 w-6 rounded-lg flex items-center justify-center shrink-0 mt-0.5"
+                style={{ background: "linear-gradient(135deg, #EDE9FE, #DDD6FE)" }}
+              >
+                <Sparkles className="h-3 w-3" style={{ color: "#7C3AED" }} />
               </div>
-            ) : (
-              <div>
-                {reply?.split("\n").filter(Boolean).map((line, i) => (
-                  <p key={i} className="mb-1 last:mb-0">{line.replace(/^[#*-]\s?/, "")}</p>
+              <div className="flex-1 min-w-0">
+                {reply.split("\n").filter(Boolean).map((line, i) => (
+                  <p key={i} className="text-[12px] leading-relaxed text-[#374151] mb-1 last:mb-0">
+                    {line.replace(/^[#*-]\s?/, "")}
+                  </p>
                 ))}
               </div>
-            )}
+            </div>
+            <button
+              onClick={() => setReply(null)}
+              className="mt-3 text-[10px] font-semibold transition-opacity hover:opacity-60"
+              style={{ color: "#9CA3AF" }}
+            >
+              Tutup balasan ×
+            </button>
           </div>
         )}
 
-        {/* Input area */}
+        {/* ── Input row ── */}
         <div
-          className="flex items-end gap-2 rounded-2xl px-3 py-2.5"
+          className="flex items-end gap-2.5 rounded-2xl px-4 py-3 transition-all"
           style={{
-            background: "rgba(255,255,255,0.05)",
-            border: "1px solid rgba(99,102,241,0.2)",
+            background: "#F9FAFB",
+            border: "1.5px solid #E5E7EB",
           }}
+          onFocus={() => {}}
         >
           <textarea
             ref={inputRef}
@@ -719,33 +781,31 @@ function JarvisWidget() {
             onKeyDown={handleKey}
             placeholder="Tanya AINA sesuatu... (Enter untuk kirim)"
             rows={1}
-            className="flex-1 bg-transparent resize-none text-[12px] outline-none placeholder:text-white/20 text-white/90 leading-relaxed"
-            style={{ maxHeight: "80px", minHeight: "20px" }}
+            className="flex-1 bg-transparent resize-none text-[13px] outline-none leading-relaxed"
+            style={{
+              maxHeight: "80px",
+              minHeight: "20px",
+              color: "#1A1A1A",
+            }}
             disabled={loading}
           />
           <button
             onClick={() => { send(input); setInput(""); }}
             disabled={!input.trim() || loading}
-            className="h-7 w-7 rounded-xl flex items-center justify-center shrink-0 transition-all active:scale-90 disabled:opacity-30"
-            style={{ background: "linear-gradient(135deg, #4F46E5, #7C3AED)", boxShadow: "0 0 12px rgba(99,102,241,0.4)" }}
+            className="h-8 w-8 rounded-xl flex items-center justify-center shrink-0 transition-all hover:scale-105 active:scale-90 disabled:opacity-30"
+            style={{
+              background: "linear-gradient(135deg, #4F46E5, #7C3AED)",
+              boxShadow: "0 2px 8px rgba(99,102,241,0.35)",
+            }}
           >
-            <Send className="h-3 w-3 text-white" />
+            <Send className="h-3.5 w-3.5 text-white" />
           </button>
         </div>
 
-        {reply && (
-          <button
-            onClick={() => setReply(null)}
-            className="mt-2 text-[10px] transition-opacity hover:opacity-70 block w-full text-center"
-            style={{ color: "rgba(99,102,241,0.5)" }}
-          >
-            Hapus balasan
-          </button>
-        )}
+        <p className="text-[10px] mt-2 text-center" style={{ color: "#D1D5DB" }}>
+          Enter untuk kirim · Shift+Enter untuk baris baru
+        </p>
       </div>
-
-      {/* Bottom scanline */}
-      <div className="h-px w-full" style={{ background: "linear-gradient(90deg, transparent, rgba(99,102,241,0.3), transparent)" }} />
     </div>
   );
 }
