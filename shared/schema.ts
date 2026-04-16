@@ -19,6 +19,8 @@ export const inventarisConditionEnum = pgEnum("inventaris_condition", ["baik", "
 export const auditActionEnum = pgEnum("audit_action", ["create", "update", "delete"]);
 export const reportModeEnum = pgEnum("report_mode", ["notulensi", "progress", "investor", "summary"]);
 export const sponsorStatusEnum = pgEnum("sponsor_status", ["prospect", "confirmed", "active", "completed", "withdrawn"]);
+export const tugasStatusEnum = pgEnum("tugas_status", ["todo", "in_progress", "done"]);
+export const tugasPriorityEnum = pgEnum("tugas_priority", ["low", "medium", "high"]);
 
 // ─── Users ────────────────────────────────────────────────────────────────────
 
@@ -200,6 +202,29 @@ export const insertAnggotaSchema = createInsertSchema(anggota).omit({
 });
 export type InsertAnggota = z.infer<typeof insertAnggotaSchema>;
 export type Anggota = typeof anggota.$inferSelect;
+
+// ─── Tugas ────────────────────────────────────────────────────────────────────
+
+export const tugas = pgTable("tugas", {
+  id: serial("id").primaryKey(),
+  title: text("title").notNull(),
+  description: text("description"),
+  status: tugasStatusEnum("status").notNull().default("todo"),
+  priority: tugasPriorityEnum("priority").notNull().default("medium"),
+  anggotaId: integer("anggota_id").notNull().references(() => anggota.id),
+  dueDate: text("due_date"),
+  createdBy: integer("created_by").references(() => users.id),
+  updatedBy: integer("updated_by").references(() => users.id),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+  deletedAt: timestamp("deleted_at"),
+});
+
+export const insertTugasSchema = createInsertSchema(tugas).omit({
+  id: true, createdAt: true, updatedAt: true, deletedAt: true, createdBy: true, updatedBy: true,
+});
+export type InsertTugas = z.infer<typeof insertTugasSchema>;
+export type Tugas = typeof tugas.$inferSelect;
 
 // ─── Relasi ───────────────────────────────────────────────────────────────────
 

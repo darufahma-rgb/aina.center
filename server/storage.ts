@@ -1,13 +1,14 @@
 import { eq, isNull, and, desc } from "drizzle-orm";
 import { db } from "./db";
 import {
-  users, notulensi, fiturTerbaru, keuangan, agenda, anggota, relasi, surat, suratTemplates, inventaris, investorContent, auditLogs, sponsor, reports,
+  users, notulensi, fiturTerbaru, keuangan, agenda, anggota, tugas, relasi, surat, suratTemplates, inventaris, investorContent, auditLogs, sponsor, reports,
   type User, type SafeUser, type InsertUser,
   type Notulensi, type InsertNotulensi,
   type FiturTerbaru, type InsertFiturTerbaru,
   type Keuangan, type InsertKeuangan,
   type Agenda, type InsertAgenda,
   type Anggota, type InsertAnggota,
+  type Tugas, type InsertTugas,
   type Relasi, type InsertRelasi,
   type Surat, type InsertSurat,
   type SuratTemplate, type InsertSuratTemplate,
@@ -70,6 +71,13 @@ export interface IStorage {
   createAnggota(data: InsertAnggota, userId: number): Promise<Anggota>;
   updateAnggota(id: number, data: Partial<InsertAnggota>, userId: number): Promise<Anggota | undefined>;
   deleteAnggota(id: number, userId: number): Promise<boolean>;
+
+  // Tugas
+  listTugasByAnggota(anggotaId: number): Promise<Tugas[]>;
+  getTugas(id: number): Promise<Tugas | undefined>;
+  createTugas(data: InsertTugas, userId: number): Promise<Tugas>;
+  updateTugas(id: number, data: Partial<InsertTugas>, userId: number): Promise<Tugas | undefined>;
+  deleteTugas(id: number): Promise<boolean>;
 
   // Relasi
   listRelasi(): Promise<Relasi[]>;
@@ -346,6 +354,32 @@ export class DatabaseStorage implements IStorage {
     const [a] = await db.update(anggota).set({ deletedAt: now(), updatedBy: userId }).where(eq(anggota.id, id)).returning();
     if (a) await this.createAuditLog("anggota", id, "delete", old, null, userId);
     return !!a;
+  }
+
+  // ── Tugas ──
+
+  async listTugasByAnggota(anggotaId: number) {
+    return db.select().from(tugas).where(and(eq(tugas.anggotaId, anggotaId), isNull(tugas.deletedAt))).orderBy(desc(tugas.createdAt));
+  }
+
+  async getTugas(id: number) {
+    const [t] = await db.select().from(tugas).where(and(eq(tugas.id, id), isNull(tugas.deletedAt)));
+    return t;
+  }
+
+  async createTugas(data: InsertTugas, userId: number) {
+    const [t] = await db.insert(tugas).values({ ...data, createdBy: userId, updatedBy: userId }).returning();
+    return t;
+  }
+
+  async updateTugas(id: number, data: Partial<InsertTugas>, userId: number) {
+    const [t] = await db.update(tugas).set({ ...data, updatedBy: userId, updatedAt: now() }).where(eq(tugas.id, id)).returning();
+    return t;
+  }
+
+  async deleteTugas(id: number) {
+    const [t] = await db.update(tugas).set({ deletedAt: now() }).where(eq(tugas.id, id)).returning();
+    return !!t;
   }
 
   // ── Relasi ──

@@ -14,6 +14,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { AnggotaProfile } from "@/components/AnggotaProfile";
 import type { Anggota } from "../../shared/schema";
 
 function MemberAvatar({ name, photoUrl, size = "md" }: { name: string; photoUrl?: string | null; size?: "sm" | "md" | "lg" }) {
@@ -114,6 +115,7 @@ export default function AnggotaPage() {
   const [deleteId, setDeleteId] = useState<number | null>(null);
   const [search, setSearch] = useState("");
   const [searchOpen, setSearchOpen] = useState(false);
+  const [selectedProfile, setSelectedProfile] = useState<Anggota | null>(null);
 
   const { data: members = [], isLoading } = useQuery<Anggota[]>({ queryKey: ["/api/anggota"] });
 
@@ -276,13 +278,18 @@ export default function AnggotaPage() {
               {/* Mobile: compact list */}
               <div className="sm:hidden divide-y divide-border rounded-xl border bg-card overflow-hidden">
                 {grouped[division].map((m) => (
-                  <div key={m.id} className="flex items-center gap-3 px-3 py-2.5" data-testid={`card-anggota-${m.id}`}>
+                  <div
+                    key={m.id}
+                    className="flex items-center gap-3 px-3 py-2.5 active:bg-muted/50 cursor-pointer"
+                    data-testid={`card-anggota-${m.id}`}
+                    onClick={() => setSelectedProfile(m)}
+                  >
                     <MemberAvatar name={m.name} photoUrl={m.photoUrl} size="sm" />
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-medium leading-tight truncate">{m.name}</p>
                       <p className="text-[11px] text-muted-foreground truncate mt-0.5">{m.role}</p>
                     </div>
-                    <div className="flex items-center gap-1.5 flex-shrink-0">
+                    <div className="flex items-center gap-1.5 flex-shrink-0" onClick={e => e.stopPropagation()}>
                       <span className={`inline-block h-1.5 w-1.5 rounded-full flex-shrink-0 ${m.status === "active" ? "bg-green-500" : "bg-muted-foreground/40"}`} />
                       {m.accessLevel === "admin" && (
                         <ShieldCheck className="h-3 w-3 text-primary flex-shrink-0" />
@@ -316,13 +323,21 @@ export default function AnggotaPage() {
               {/* Desktop: card grid */}
               <div className="hidden sm:grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
                 {grouped[division].map((m) => (
-                  <Card key={m.id} className="hover:shadow-md transition-shadow group" data-testid={`card-anggota-${m.id}`}>
+                  <Card
+                    key={m.id}
+                    className="hover:shadow-md transition-shadow group cursor-pointer"
+                    data-testid={`card-anggota-${m.id}`}
+                    onClick={() => setSelectedProfile(m)}
+                  >
                     <CardContent className="p-4">
                       <div className="space-y-3">
                         <div className="flex items-start justify-between gap-2">
                           <MemberAvatar name={m.name} photoUrl={m.photoUrl} size="lg" />
                           {isAdmin && (
-                            <div className="flex gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0">
+                            <div
+                              className="flex gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0"
+                              onClick={e => e.stopPropagation()}
+                            >
                               <Button
                                 variant="ghost" size="icon"
                                 className="h-7 w-7 text-muted-foreground hover:text-primary"
@@ -373,6 +388,8 @@ export default function AnggotaPage() {
           ))}
         </div>
       )}
+
+      <AnggotaProfile anggota={selectedProfile} onClose={() => setSelectedProfile(null)} />
 
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent className="max-w-lg">

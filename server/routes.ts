@@ -33,6 +33,7 @@ import {
   insertKeuanganSchema,
   insertAgendaSchema,
   insertAnggotaSchema,
+  insertTugasSchema,
   insertRelasiSchema,
   insertSuratSchema,
   insertInventarisSchema,
@@ -587,6 +588,40 @@ export function registerRoutes(app: Router) {
     }
 
     res.json({ imported, skipped: skipped.length, skippedNames: skipped });
+  });
+
+  // ── Tugas (per anggota) ──────────────────────────────────────────────────────
+
+  app.get("/api/anggota/:id/tugas", requireAuth, async (req, res) => {
+    const tasks = await storage.listTugasByAnggota(parseInt(req.params.id));
+    res.json(tasks);
+  });
+
+  app.post("/api/anggota/:id/tugas", requireAdmin, async (req, res) => {
+    const parsed = insertTugasSchema.safeParse({ ...req.body, anggotaId: parseInt(req.params.id) });
+    if (!parsed.success) return res.status(400).json({ message: parsed.error.message });
+    const t = await storage.createTugas(parsed.data, req.session.userId!);
+    res.status(201).json(t);
+  });
+
+  app.patch("/api/tugas/:id", requireAdmin, async (req, res) => {
+    const t = await storage.updateTugas(parseInt(req.params.id), req.body, req.session.userId!);
+    if (!t) return res.status(404).json({ message: "Not found" });
+    res.json(t);
+  });
+
+  app.delete("/api/tugas/:id", requireAdmin, async (req, res) => {
+    const ok = await storage.deleteTugas(parseInt(req.params.id));
+    if (!ok) return res.status(404).json({ message: "Not found" });
+    res.json({ message: "Deleted" });
+  });
+
+  // Link / unlink user account to anggota
+  app.patch("/api/anggota/:id/link-user", requireAdmin, async (req, res) => {
+    const { userId } = req.body;
+    const a = await storage.updateAnggota(parseInt(req.params.id), { userId: userId ?? null }, req.session.userId!);
+    if (!a) return res.status(404).json({ message: "Not found" });
+    res.json(a);
   });
 
   // ── Relasi ──────────────────────────────────────────────────────────────────
