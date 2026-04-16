@@ -138,10 +138,14 @@ export default function AnggotaPage() {
     mutationFn: () => apiRequest("POST", "/api/anggota/import-from-aina-web", {}),
     onSuccess: (res: any) => {
       queryClient.invalidateQueries({ queryKey: ["/api/anggota"] });
-      toast({
-        title: `Import selesai: ${res.imported} anggota ditambahkan`,
-        description: res.skipped > 0 ? `${res.skipped} sudah ada, dilewati.` : undefined,
-      });
+      if (res.alreadyComplete) {
+        toast({ title: "Semua anggota sudah ada", description: "14 anggota AINA sudah tersimpan di database." });
+      } else {
+        toast({
+          title: `Import selesai: ${res.imported} anggota ditambahkan`,
+          description: res.skipped > 0 ? `${res.skipped} sudah ada sebelumnya, dilewati.` : undefined,
+        });
+      }
     },
     onError: (e: any) => toast({ title: "Gagal import", description: e.message, variant: "destructive" }),
   });

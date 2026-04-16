@@ -566,28 +566,38 @@ export function registerRoutes(app: Router) {
       { name: "Arnaf Hamdan Farros", role: "Creative & Media", division: "Creative & Media", photoUrl: "https://ainalabs.pro/arnaf.png" },
     ];
 
-    const existing = await storage.listAnggota();
-    const existingNames = new Set(existing.map(m => m.name.toLowerCase().trim()));
+    try {
+      const existing = await storage.listAnggota();
+      const existingNames = new Set(existing.map(m => m.name.toLowerCase().trim()));
 
-    let imported = 0;
-    const skipped: string[] = [];
-    for (const member of WEB_MEMBERS) {
-      if (existingNames.has(member.name.toLowerCase().trim())) {
-        skipped.push(member.name);
-        continue;
+      let imported = 0;
+      const skipped: string[] = [];
+      for (const member of WEB_MEMBERS) {
+        if (existingNames.has(member.name.toLowerCase().trim())) {
+          skipped.push(member.name);
+          continue;
+        }
+        await storage.createAnggota({
+          name: member.name,
+          role: member.role,
+          division: member.division,
+          photoUrl: member.photoUrl,
+          status: "active",
+          accessLevel: "user",
+        }, req.session.userId!);
+        imported++;
       }
-      await storage.createAnggota({
-        name: member.name,
-        role: member.role,
-        division: member.division,
-        photoUrl: member.photoUrl,
-        status: "active",
-        accessLevel: "user",
-      }, req.session.userId!);
-      imported++;
-    }
 
-    res.json({ imported, skipped: skipped.length, skippedNames: skipped });
+      res.json({
+        imported,
+        skipped: skipped.length,
+        skippedNames: skipped,
+        alreadyComplete: imported === 0 && skipped.length === WEB_MEMBERS.length,
+      });
+    } catch (e: any) {
+      console.error("Import anggota error:", e);
+      res.status(500).json({ message: e.message ?? "Gagal import anggota" });
+    }
   });
 
   // ── Tugas (per anggota) ──────────────────────────────────────────────────────
