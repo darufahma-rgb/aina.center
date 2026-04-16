@@ -624,6 +624,39 @@ export function registerRoutes(app: Router) {
     res.json(a);
   });
 
+  // Create a new portal account for an anggota (auto-link)
+  app.post("/api/anggota/:id/create-account", requireAdmin, async (req, res) => {
+    const anggotaId = parseInt(req.params.id);
+    const member = await storage.getAnggota(anggotaId);
+    if (!member) return res.status(404).json({ message: "Anggota tidak ditemukan" });
+    if (member.userId) return res.status(400).json({ message: "Anggota sudah memiliki akun" });
+
+    const { username, password, role } = req.body;
+    if (!username || !password || password.length < 6) {
+      return res.status(400).json({ message: "Username dan password (min. 6 karakter) diperlukan" });
+    }
+    try {
+      const email = member.email ?? `${username}@aina.id`;
+      const newUser = await storage.createUser({ username, email, password, role: role ?? "user" });
+      const updated = await storage.updateAnggota(anggotaId, { userId: newUser.id }, req.session.userId!);
+      res.status(201).json({ user: newUser, anggota: updated });
+    } catch (e: any) {
+      res.status(400).json({ message: e.message });
+    }
+  });
+
+  // Reset password for a user linked to anggota
+  app.patch("/api/users/:id/reset-password", requireAdmin, async (req, res) => {
+    const { newPassword } = req.body;
+    if (!newPassword || newPassword.length < 6) {
+      return res.status(400).json({ message: "Password baru minimal 6 karakter" });
+    }
+    const passwordHash = await bcrypt.hash(newPassword, 12);
+    const user = await storage.updateUser(parseInt(req.params.id), { passwordHash } as any);
+    if (!user) return res.status(404).json({ message: "User tidak ditemukan" });
+    res.json({ message: "Password berhasil direset" });
+  });
+
   // ── Relasi ──────────────────────────────────────────────────────────────────
 
   app.get("/api/relasi", requireAuth, async (req, res) => {
