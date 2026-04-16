@@ -12,6 +12,7 @@ import { cn } from "@/lib/utils";
 import { ProfileModal } from "@/components/ProfileModal";
 import AIChatWidget from "@/components/AIChatWidget";
 import { BottomNav } from "@/components/BottomNav";
+import { PWAInstallBanner } from "@/components/PWAInstallBanner";
 
 // ─── Nav config ───────────────────────────────────────────────────────────────
 
@@ -521,6 +522,9 @@ export function PortalLayout({ children }: PortalLayoutProps) {
 
       {/* ── AI Customer Service Chat Widget ──────────────────────────── */}
       <AIChatWidget />
+
+      {/* ── PWA Install Banner (iOS Safari) ──────────────────────────── */}
+      <PWAInstallBanner />
 
       {/* ── Mobile bottom command center ─────────────────────────────── */}
       <BottomNav
