@@ -131,6 +131,43 @@ function WorldClock() {
   );
 }
 
+// ─── World clock dark (for hero banner) ───────────────────────────────────────
+
+function WorldClockDark() {
+  const [now, setNow] = useState(new Date());
+  useEffect(() => {
+    const id = setInterval(() => setNow(new Date()), 1000);
+    return () => clearInterval(id);
+  }, []);
+
+  const fmtTime = (tz: string) =>
+    now.toLocaleTimeString("id-ID", { timeZone: tz, hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: false });
+
+  const cities = [
+    { city: "Jakarta", flag: "🇮🇩", tz: "Asia/Jakarta", label: "WIB" },
+    { city: "Kairo",   flag: "🇪🇬", tz: "Africa/Cairo",  label: "EET" },
+  ];
+
+  return (
+    <div className="flex items-center gap-2">
+      <Globe className="h-3.5 w-3.5 text-purple-300 shrink-0" />
+      {cities.map(({ city, flag, tz, label }) => (
+        <div
+          key={tz}
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[12px]"
+          style={{ background: "rgba(255,255,255,0.14)", border: "1px solid rgba(255,255,255,0.20)" }}
+        >
+          <span className="text-[13px]">{flag}</span>
+          <div className="flex flex-col leading-none">
+            <span className="font-bold text-white tabular-nums tracking-tight">{fmtTime(tz)}</span>
+            <span className="text-[9px] font-medium text-white/50 mt-[1px]">{city} · {label}</span>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 // ─── Progress ring ────────────────────────────────────────────────────────────
 
 function ProgressRing({ pct, size = 56, stroke = 5, color = "#3E0FA3" }: { pct: number; size?: number; stroke?: number; color?: string }) {
@@ -161,7 +198,7 @@ function ProgressCard({
   const inner = (
     <div
       className="flex-1 rounded-2xl p-2.5 sm:p-4 flex flex-col gap-2 sm:gap-3 transition-all duration-150 hover:-translate-y-0.5 cursor-pointer h-full"
-      style={{ background: "rgba(0,0,0,0.04)", border: "1px solid rgba(0,0,0,0.10)" }}
+      style={{ background: "#ffffff", border: "1px solid rgba(103,65,217,0.16)", boxShadow: "0 2px 8px rgba(62,15,163,0.07)" }}
     >
       <div className="min-w-0">
         <p className="text-[8px] sm:text-[10px] font-bold uppercase tracking-wider text-[#999] leading-tight line-clamp-2">{sublabel}</p>
@@ -584,22 +621,32 @@ export default function Dashboard() {
   return (
     <div className="animate-fade-in max-w-full">
 
-      {/* ── Greeting ─────────────────────────────────────────────────── */}
-      <div className="mb-5">
-        {/* Row 1: greeting text */}
-        <div className="flex items-start justify-between gap-2 mb-3">
+      {/* ── Greeting hero ─────────────────────────────────────────────── */}
+      <div
+        className="mb-5 rounded-2xl px-5 py-4 relative overflow-hidden"
+        style={{
+          background: "linear-gradient(135deg, #2D0B7A 0%, #3E0FA3 45%, #6B21A8 100%)",
+          boxShadow: "0 8px 32px rgba(62,15,163,0.28)",
+        }}
+      >
+        {/* Decorative blobs */}
+        <div className="absolute -top-8 -right-8 h-32 w-32 rounded-full opacity-20" style={{ background: "rgba(167,139,250,0.5)" }} />
+        <div className="absolute -bottom-6 right-24 h-20 w-20 rounded-full opacity-10" style={{ background: "rgba(255,255,255,0.6)" }} />
+
+        {/* Row 1: greeting text + PDF button */}
+        <div className="flex items-start justify-between gap-2 mb-3 relative z-10">
           <div className="min-w-0">
-            <p className="text-[11px] text-[#999] mb-0.5">{today}</p>
-            <h1 className="text-xl sm:text-2xl font-black text-[#1A1A1A] leading-tight">
+            <p className="text-[11px] text-white/50 mb-0.5">{today}</p>
+            <h1 className="text-xl sm:text-2xl font-black text-white leading-tight">
               {getGreeting()},{" "}
-              <span style={{ color: "#3E0FA3" }}>{displayName}</span>! 👋
+              <span className="text-purple-200">{displayName}</span>! 👋
             </h1>
           </div>
           <button
             onClick={handleExportPDF}
             disabled={isLoading || !data}
-            className="shrink-0 flex items-center gap-1.5 px-3 h-8 rounded-xl text-[12px] font-semibold text-white transition-all hover:opacity-90 active:scale-95 disabled:opacity-40"
-            style={{ background: "#3E0FA3" }}
+            className="shrink-0 flex items-center gap-1.5 px-3 h-8 rounded-xl text-[12px] font-semibold transition-all hover:opacity-90 active:scale-95 disabled:opacity-40"
+            style={{ background: "rgba(255,255,255,0.18)", color: "#fff", border: "1px solid rgba(255,255,255,0.25)" }}
             title="Download laporan PDF"
           >
             <Download className="h-3.5 w-3.5" />
@@ -608,27 +655,27 @@ export default function Dashboard() {
           </button>
         </div>
 
-        {/* Row 2: World clock — scrollable on mobile */}
-        <div className="overflow-x-auto pb-1 -mx-1 px-1">
+        {/* Row 2: World clock */}
+        <div className="overflow-x-auto pb-1 -mx-1 px-1 relative z-10">
           <div className="flex items-center gap-2 w-max sm:w-auto">
-            <WorldClock />
+            <WorldClockDark />
           </div>
         </div>
 
-        {/* Row 3: Quick stats — scrollable chips */}
-        <div className="overflow-x-auto pb-1 mt-2 -mx-1 px-1">
+        {/* Row 3: Quick stats */}
+        <div className="overflow-x-auto pb-1 mt-2 -mx-1 px-1 relative z-10">
           <div className="flex items-center gap-2 w-max sm:w-auto">
-            <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full border border-black/[0.12] text-[11px] font-medium text-[#555]" style={{ background: "#F8F9FB" }}>
-              <Users className="h-3 w-3 text-[#3E0FA3]" />
+            <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-medium text-white/80" style={{ background: "rgba(255,255,255,0.15)", border: "1px solid rgba(255,255,255,0.20)" }}>
+              <Users className="h-3 w-3 text-purple-200" />
               {isLoading ? "—" : totalAnggota} Anggota
             </div>
-            <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full border border-black/[0.12] text-[11px] font-medium text-[#555]" style={{ background: "#F8F9FB" }}>
-              <CalendarDays className="h-3 w-3 text-[#3E0FA3]" />
+            <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-medium text-white/80" style={{ background: "rgba(255,255,255,0.15)", border: "1px solid rgba(255,255,255,0.20)" }}>
+              <CalendarDays className="h-3 w-3 text-purple-200" />
               {isLoading ? "—" : data?.upcomingAgenda ?? 0} Agenda
             </div>
             {isAdmin && (
-              <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full border border-black/[0.12] text-[11px] font-medium text-[#555]" style={{ background: "#F8F9FB" }}>
-                <Wallet className="h-3 w-3 text-[#3E0FA3]" />
+              <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-medium text-white/80" style={{ background: "rgba(255,255,255,0.15)", border: "1px solid rgba(255,255,255,0.20)" }}>
+                <Wallet className="h-3 w-3 text-purple-200" />
                 {isLoading ? "—" : formatRp(data?.saldoTersedia ?? 0)}
               </div>
             )}
@@ -648,8 +695,17 @@ export default function Dashboard() {
             { icon: Handshake,  label: "Relasi",     value: data?.totalRelasi ?? 0,     url: "/relasi" },
           ].map(({ icon: Icon, label, value, url }) => (
             <Link key={url} to={url}>
-              <div className="rounded-2xl p-3.5 border border-black/[0.11] hover:shadow-md hover:-translate-y-0.5 transition-all cursor-pointer text-center" style={{ background: "#F8F9FB" }}>
-                <Icon className="h-5 w-5 mx-auto mb-1.5 text-[#3E0FA3]" />
+              <div
+                className="rounded-2xl p-3.5 hover:-translate-y-0.5 transition-all cursor-pointer text-center"
+                style={{
+                  background: "#ffffff",
+                  border: "1px solid rgba(103,65,217,0.16)",
+                  boxShadow: "0 2px 10px rgba(62,15,163,0.07)",
+                }}
+              >
+                <div className="h-8 w-8 rounded-xl mx-auto mb-2 flex items-center justify-center" style={{ background: "linear-gradient(135deg, #EDE9FE, #DDD6FE)" }}>
+                  <Icon className="h-4 w-4 text-[#5B21B6]" />
+                </div>
                 <p className="text-xl font-black text-[#1A1A1A]">{value}</p>
                 <p className="text-[10px] text-[#999] font-semibold uppercase tracking-wide mt-0.5">{label}</p>
               </div>
@@ -693,7 +749,7 @@ export default function Dashboard() {
           </div>
 
           {/* ── Agenda Bulan Ini ─────────────────────────────────── */}
-          <div className="rounded-3xl p-5 border border-black/[0.11]" style={{ background: "#F8F9FB", boxShadow: "0 2px 12px rgba(0,0,0,0.07)" }}>
+          <div className="section-card p-5">
             <div className="flex items-center justify-between mb-4">
               <div>
                 <h3 className="text-[15px] font-bold text-[#1A1A1A]">
@@ -741,7 +797,7 @@ export default function Dashboard() {
           </div>
 
           {/* ── Notulensi terbaru ─────────────────────────────────── */}
-          <div className="rounded-3xl p-5 border border-black/[0.11]" style={{ background: "#F8F9FB", boxShadow: "0 2px 12px rgba(0,0,0,0.07)" }}>
+          <div className="section-card p-5">
             <div className="flex items-center justify-between mb-4">
               <div>
                 <h3 className="text-[15px] font-bold text-[#1A1A1A]">Notulensi Terbaru</h3>
@@ -794,7 +850,7 @@ export default function Dashboard() {
         <div className="xl:w-72 space-y-5 shrink-0">
 
           {/* ── Stats summary ──────────────────────────────────────── */}
-          <div className="rounded-3xl p-5 border border-black/[0.11]" style={{ background: "#F8F9FB", boxShadow: "0 2px 12px rgba(0,0,0,0.07)" }}>
+          <div className="section-card p-5">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-[15px] font-bold text-[#1A1A1A]">Ringkasan</h3>
               <MoreHorizontal className="h-4 w-4 text-[#ccc]" />
@@ -827,7 +883,7 @@ export default function Dashboard() {
 
           {/* ── Jadwal Terdekat ────────────────────────────────────── */}
           {agendaList.length > 0 && (
-            <div className="rounded-3xl p-5 border border-black/[0.11]" style={{ background: "#F8F9FB", boxShadow: "0 2px 12px rgba(0,0,0,0.07)" }}>
+            <div className="section-card p-5">
               <h3 className="text-[15px] font-bold text-[#1A1A1A] mb-4">Jadwal Terdekat</h3>
               <div className="space-y-3">
                 {agendaList.slice(0, 3).map((a) => (
@@ -852,7 +908,7 @@ export default function Dashboard() {
 
           {/* ── Keuangan (admin only) ──────────────────────────────── */}
           {isAdmin && (
-            <div className="rounded-3xl p-5 border border-black/[0.11]" style={{ background: "#F8F9FB", boxShadow: "0 2px 12px rgba(0,0,0,0.07)" }}>
+            <div className="section-card p-5">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-[15px] font-bold text-[#1A1A1A]">Keuangan</h3>
                 <Link to="/keuangan" className="text-[11px] font-semibold text-[#3E0FA3] hover:opacity-80 transition-opacity">
@@ -938,8 +994,8 @@ function FiturCard({ f }: { f: ExtractedFeature }) {
   return (
     <Link to="/fitur" className="shrink-0" style={{ width: 260 }}>
       <div
-        className="h-full rounded-2xl p-4 flex flex-col gap-3 transition-all duration-150 hover:-translate-y-1 hover:shadow-lg cursor-pointer border"
-        style={{ background: "#F8F9FB", borderColor: "rgba(0,0,0,0.11)" }}
+        className="h-full rounded-2xl p-4 flex flex-col gap-3 transition-all duration-150 hover:-translate-y-1 cursor-pointer"
+        style={{ background: "#ffffff", border: "1px solid rgba(103,65,217,0.16)", boxShadow: "0 2px 10px rgba(62,15,163,0.08)" }}
       >
         {/* Icon + category */}
         <div className="flex items-center gap-2">
@@ -1012,10 +1068,7 @@ function FiturReviewSection() {
   const activePct = total > 0 ? Math.round(((baru + tingkat) / total) * 100) : 0;
 
   return (
-    <div
-      className="mt-5 rounded-3xl p-5 border border-black/[0.11]"
-      style={{ background: "#ffffff", boxShadow: "0 2px 12px rgba(0,0,0,0.08)" }}
-    >
+    <div className="mt-5 section-card p-5">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-5">
         <div>

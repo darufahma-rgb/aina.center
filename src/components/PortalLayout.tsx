@@ -377,8 +377,8 @@ export function PortalLayout({ children }: PortalLayoutProps) {
       >
         {/* White card wrapper */}
         <div
-          className="flex-1 flex flex-col bg-white lg:rounded-3xl"
-          style={{ overflow: "hidden", border: "1px solid rgba(0,0,0,0.10)" }}
+          className="flex-1 flex flex-col lg:rounded-3xl"
+          style={{ overflow: "hidden", background: "#FDFCFF", border: "1px solid rgba(103,65,217,0.13)" }}
         >
           {/* ── Top bar ──────────────────────────────────────────── */}
           <header className="flex items-center justify-between px-4 py-3 border-b shrink-0" style={{ borderColor: "rgba(0,0,0,0.09)" }}>
