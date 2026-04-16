@@ -623,59 +623,110 @@ export default function Dashboard() {
 
       {/* ── Greeting hero ─────────────────────────────────────────────── */}
       <div
-        className="mb-5 rounded-2xl px-5 py-4 relative overflow-hidden"
+        className="mb-5 rounded-3xl relative overflow-hidden"
         style={{
-          background: "linear-gradient(135deg, #2D0B7A 0%, #3E0FA3 45%, #6B21A8 100%)",
-          boxShadow: "0 8px 32px rgba(62,15,163,0.28)",
+          background: "linear-gradient(135deg, #0F0A1E 0%, #1A0845 35%, #2D0B7A 70%, #1E0654 100%)",
+          boxShadow: "0 20px 60px rgba(62,15,163,0.35), 0 1px 0 rgba(255,255,255,0.08) inset",
         }}
       >
-        {/* Decorative blobs */}
-        <div className="absolute -top-8 -right-8 h-32 w-32 rounded-full opacity-20" style={{ background: "rgba(167,139,250,0.5)" }} />
-        <div className="absolute -bottom-6 right-24 h-20 w-20 rounded-full opacity-10" style={{ background: "rgba(255,255,255,0.6)" }} />
+        {/* Subtle grid texture */}
+        <div
+          className="absolute inset-0 opacity-[0.04]"
+          style={{
+            backgroundImage: "linear-gradient(rgba(255,255,255,1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,1) 1px, transparent 1px)",
+            backgroundSize: "40px 40px",
+          }}
+        />
 
-        {/* Row 1: greeting text + PDF button */}
-        <div className="flex items-start justify-between gap-2 mb-3 relative z-10">
-          <div className="min-w-0">
-            <p className="text-[11px] text-white/50 mb-0.5">{today}</p>
-            <h1 className="text-xl sm:text-2xl font-black text-white leading-tight">
-              {getGreeting()},{" "}
-              <span className="text-purple-200">{displayName}</span>! 👋
-            </h1>
-          </div>
-          <button
-            onClick={handleExportPDF}
-            disabled={isLoading || !data}
-            className="shrink-0 flex items-center gap-1.5 px-3 h-8 rounded-xl text-[12px] font-semibold transition-all hover:opacity-90 active:scale-95 disabled:opacity-40"
-            style={{ background: "rgba(255,255,255,0.18)", color: "#fff", border: "1px solid rgba(255,255,255,0.25)" }}
-            title="Download laporan PDF"
-          >
-            <Download className="h-3.5 w-3.5" />
-            <span className="hidden sm:inline">Export PDF</span>
-            <span className="sm:hidden">PDF</span>
-          </button>
-        </div>
+        {/* Glowing orbs */}
+        <div className="absolute -top-16 -right-16 h-56 w-56 rounded-full" style={{ background: "radial-gradient(circle, rgba(139,92,246,0.25) 0%, transparent 70%)" }} />
+        <div className="absolute -bottom-12 -left-12 h-40 w-40 rounded-full" style={{ background: "radial-gradient(circle, rgba(99,102,241,0.2) 0%, transparent 70%)" }} />
+        <div className="absolute top-1/2 right-1/3 h-32 w-32 rounded-full" style={{ background: "radial-gradient(circle, rgba(167,139,250,0.12) 0%, transparent 70%)" }} />
 
-        {/* Row 2: World clock */}
-        <div className="overflow-x-auto pb-1 -mx-1 px-1 relative z-10">
-          <div className="flex items-center gap-2 w-max sm:w-auto">
-            <WorldClockDark />
-          </div>
-        </div>
+        {/* Top accent line */}
+        <div className="absolute top-0 left-0 right-0 h-px" style={{ background: "linear-gradient(90deg, transparent, rgba(167,139,250,0.6), transparent)" }} />
 
-        {/* Row 3: Quick stats */}
-        <div className="overflow-x-auto pb-1 mt-2 -mx-1 px-1 relative z-10">
-          <div className="flex items-center gap-2 w-max sm:w-auto">
-            <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-medium text-white/80" style={{ background: "rgba(255,255,255,0.15)", border: "1px solid rgba(255,255,255,0.20)" }}>
-              <Users className="h-3 w-3 text-purple-200" />
-              {isLoading ? "—" : totalAnggota} Anggota
+        <div className="relative z-10 px-5 pt-5 pb-4">
+          {/* Row 1: greeting + PDF button */}
+          <div className="flex items-start justify-between gap-3 mb-4">
+            <div className="min-w-0">
+              {/* Date label */}
+              <div className="flex items-center gap-1.5 mb-2">
+                <div className="h-px w-4" style={{ background: "rgba(167,139,250,0.5)" }} />
+                <p className="text-[10px] font-semibold tracking-[0.15em] uppercase" style={{ color: "rgba(167,139,250,0.7)" }}>{today}</p>
+              </div>
+              {/* Greeting */}
+              <h1 className="text-2xl sm:text-3xl font-black text-white leading-tight tracking-tight">
+                {getGreeting()},
+              </h1>
+              <h1 className="text-2xl sm:text-3xl font-black leading-tight tracking-tight" style={{ color: "#C4B5FD" }}>
+                {displayName} 👋
+              </h1>
             </div>
-            <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-medium text-white/80" style={{ background: "rgba(255,255,255,0.15)", border: "1px solid rgba(255,255,255,0.20)" }}>
-              <CalendarDays className="h-3 w-3 text-purple-200" />
-              {isLoading ? "—" : data?.upcomingAgenda ?? 0} Agenda
+
+            {/* PDF button — top right */}
+            <button
+              onClick={handleExportPDF}
+              disabled={isLoading || !data}
+              className="shrink-0 flex items-center gap-1.5 px-3 h-8 rounded-xl text-[11px] font-semibold transition-all hover:opacity-80 active:scale-95 disabled:opacity-30 mt-1"
+              style={{
+                background: "rgba(139,92,246,0.2)",
+                color: "rgba(196,181,253,0.9)",
+                border: "1px solid rgba(139,92,246,0.3)",
+              }}
+              title="Download laporan PDF"
+            >
+              <Download className="h-3.5 w-3.5" />
+              <span className="hidden sm:inline">Export PDF</span>
+              <span className="sm:hidden">PDF</span>
+            </button>
+          </div>
+
+          {/* Divider */}
+          <div className="mb-3.5" style={{ height: "1px", background: "linear-gradient(90deg, rgba(139,92,246,0.3), rgba(139,92,246,0.05))" }} />
+
+          {/* Row 2: World clock + Stats in one line */}
+          <div className="overflow-x-auto -mx-1 px-1 pb-0.5">
+            <div className="flex items-center gap-2 w-max sm:w-auto">
+              {/* World clock */}
+              <WorldClockDark />
+
+              {/* Separator */}
+              <div className="h-5 w-px shrink-0 hidden sm:block" style={{ background: "rgba(255,255,255,0.12)" }} />
+
+              {/* Quick stats */}
+              <div className="hidden sm:flex items-center gap-1.5">
+                <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-[11px] font-medium" style={{ background: "rgba(255,255,255,0.07)", border: "1px solid rgba(255,255,255,0.10)", color: "rgba(196,181,253,0.9)" }}>
+                  <Users className="h-3 w-3" style={{ color: "#A78BFA" }} />
+                  {isLoading ? "—" : totalAnggota} Anggota
+                </div>
+                <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-[11px] font-medium" style={{ background: "rgba(255,255,255,0.07)", border: "1px solid rgba(255,255,255,0.10)", color: "rgba(196,181,253,0.9)" }}>
+                  <CalendarDays className="h-3 w-3" style={{ color: "#A78BFA" }} />
+                  {isLoading ? "—" : data?.upcomingAgenda ?? 0} Agenda
+                </div>
+                {isAdmin && (
+                  <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-[11px] font-medium" style={{ background: "rgba(255,255,255,0.07)", border: "1px solid rgba(255,255,255,0.10)", color: "rgba(196,181,253,0.9)" }}>
+                    <Wallet className="h-3 w-3" style={{ color: "#A78BFA" }} />
+                    {isLoading ? "—" : formatRp(data?.saldoTersedia ?? 0)}
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* Mobile stats */}
+          <div className="flex items-center gap-1.5 mt-2 sm:hidden">
+            <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-[11px] font-medium" style={{ background: "rgba(255,255,255,0.07)", border: "1px solid rgba(255,255,255,0.10)", color: "rgba(196,181,253,0.9)" }}>
+              <Users className="h-3 w-3" style={{ color: "#A78BFA" }} />
+              {isLoading ? "—" : totalAnggota}
+            </div>
+            <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-[11px] font-medium" style={{ background: "rgba(255,255,255,0.07)", border: "1px solid rgba(255,255,255,0.10)", color: "rgba(196,181,253,0.9)" }}>
+              <CalendarDays className="h-3 w-3" style={{ color: "#A78BFA" }} />
+              {isLoading ? "—" : data?.upcomingAgenda ?? 0}
             </div>
             {isAdmin && (
-              <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-medium text-white/80" style={{ background: "rgba(255,255,255,0.15)", border: "1px solid rgba(255,255,255,0.20)" }}>
-                <Wallet className="h-3 w-3 text-purple-200" />
+              <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-[11px] font-medium" style={{ background: "rgba(255,255,255,0.07)", border: "1px solid rgba(255,255,255,0.10)", color: "rgba(196,181,253,0.9)" }}>
+                <Wallet className="h-3 w-3" style={{ color: "#A78BFA" }} />
                 {isLoading ? "—" : formatRp(data?.saldoTersedia ?? 0)}
               </div>
             )}
