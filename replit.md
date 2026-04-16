@@ -26,13 +26,13 @@ A secure internal management portal for the AINA organization. Built as a fullst
 
 **Frontend**: React + TypeScript + Vite + TailwindCSS + shadcn/ui  
 **Backend**: Express.js + TypeScript (tsx)  
-**Database**: PostgreSQL via Neon (Drizzle ORM)  
+**Database**: PostgreSQL via Replit Database or external Postgres (Drizzle ORM)  
 **Auth**: Session-based (express-session + bcryptjs)  
 **State**: TanStack Query v5
 
 ## Running
 
-The app starts via `npx tsx server/index.ts` which runs Express (port 5000) with Vite as middleware in dev mode.
+The Replit workflow runs `npm start`, which starts `tsx server/index.ts` on port 5000. In development, Express serves Vite as middleware and accepts the Replit preview host. The database schema has been synced to the Replit PostgreSQL database using `npm run db:push`.
 
 ## Roles
 
@@ -66,7 +66,7 @@ The app starts via `npx tsx server/index.ts` which runs Express (port 5000) with
 - `server/routes.ts` — All API routes
 - `server/storage.ts` — Database CRUD (IStorage interface)
 - `server/auth.ts` — requireAuth/requireAdmin middleware
-- `server/db.ts` — Neon database connection
+- `server/db.ts` — PostgreSQL connection using `SUPABASE_DATABASE_URL` or `DATABASE_URL`
 - `src/contexts/AuthContext.tsx` — Frontend auth state
 - `src/lib/queryClient.ts` — TanStack Query client with session credentials
 
