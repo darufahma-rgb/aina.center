@@ -99,9 +99,16 @@
 @layer utilities {
   /* ── Active nav pill ──────────────────────────────────────────────── */
   .nav-active {
-    background: #ffffff;
-    color: #3E0FA3;
+    background: rgba(139,92,246,0.18);
+    color: #ffffff;
     font-weight: 700;
+    border-color: rgba(167,139,250,0.32);
+    box-shadow: 0 10px 26px rgba(15,10,30,0.18), inset 0 1px 0 rgba(255,255,255,0.08);
+  }
+
+  .sidebar-panel > :not(.sidebar-bg) {
+    position: relative;
+    z-index: 1;
   }
 
   /* ── Standard card ────────────────────────────────────────────────── */

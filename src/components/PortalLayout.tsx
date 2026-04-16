@@ -69,6 +69,7 @@ export const ADMIN_SECTION = {
 const SIDEBAR_W      = 200;
 const SIDEBAR_MARGIN = 12;
 const ACCENT         = "#3E0FA3";
+const HERO_BG        = "linear-gradient(135deg, #0F0A1E 0%, #1A0845 35%, #2D0B7A 70%, #1E0654 100%)";
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -92,10 +93,10 @@ function NavItem({
       to={item.url}
       onClick={onClick}
       className={cn(
-        "flex items-center gap-3 px-3 h-10 rounded-2xl text-[13px] font-medium w-full transition-all duration-150 group",
+        "flex items-center gap-3 px-3 h-10 rounded-2xl text-[13px] font-medium w-full transition-all duration-150 group border border-transparent",
         active
           ? "nav-active"
-          : "text-white/75 hover:bg-white/[0.12] hover:text-white",
+          : "text-white/70 hover:bg-white/[0.09] hover:border-white/[0.10] hover:text-white",
       )}
     >
       <item.icon
@@ -161,8 +162,8 @@ function Sidebar({
       {/* Sidebar panel */}
       <aside
         className={cn(
-          "sidebar-panel fixed z-[70] flex flex-col",
-          !isMobile && "top-0 bottom-0 transition-transform duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] lg:translate-x-0",
+          "sidebar-panel fixed z-[70] flex flex-col relative overflow-hidden",
+          !isMobile && "top-0 bottom-0 transition-transform duration-300 ease-out lg:translate-x-0",
           !isMobile && (mobileOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"),
         )}
         style={isMobile ? {
@@ -171,8 +172,9 @@ function Sidebar({
           bottom: "6%",
           width: SIDEBAR_W,
           borderRadius: 24,
-          background: ACCENT,
-          border: "none",
+          background: HERO_BG,
+          border: "1px solid rgba(167,139,250,0.18)",
+          boxShadow: "0 20px 60px rgba(62,15,163,0.35), 0 1px 0 rgba(255,255,255,0.08) inset",
           transition: "left 0.3s cubic-bezier(0.32,0.72,0,1)",
         } : {
           left: SIDEBAR_MARGIN,
@@ -181,16 +183,28 @@ function Sidebar({
           width: SIDEBAR_W,
           height: `calc(100vh - ${SIDEBAR_MARGIN * 2}px)`,
           borderRadius: 24,
-          background: ACCENT,
-          border: "1px solid rgba(255,255,255,0.15)",
+          background: HERO_BG,
+          border: "1px solid rgba(167,139,250,0.18)",
+          boxShadow: "0 20px 60px rgba(62,15,163,0.35), 0 1px 0 rgba(255,255,255,0.08) inset",
         }}
       >
+        <div
+          className="sidebar-bg absolute inset-0 opacity-[0.045]"
+          style={{
+            backgroundImage: "linear-gradient(rgba(255,255,255,1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,1) 1px, transparent 1px)",
+            backgroundSize: "34px 34px",
+          }}
+        />
+        <div className="sidebar-bg absolute -top-16 -right-20 h-48 w-48 rounded-full" style={{ background: "radial-gradient(circle, rgba(139,92,246,0.30) 0%, transparent 70%)" }} />
+        <div className="sidebar-bg absolute -bottom-14 -left-20 h-44 w-44 rounded-full" style={{ background: "radial-gradient(circle, rgba(99,102,241,0.22) 0%, transparent 70%)" }} />
+        <div className="sidebar-bg absolute top-1/3 -right-16 h-28 w-28 rounded-full" style={{ background: "radial-gradient(circle, rgba(196,181,253,0.13) 0%, transparent 70%)" }} />
+        <div className="sidebar-bg absolute top-0 left-0 right-0 h-px" style={{ background: "linear-gradient(90deg, transparent, rgba(167,139,250,0.65), transparent)" }} />
         {/* ── Logo ─────────────────────────────────────────────────── */}
         <div className="px-5 pt-5 pb-4 shrink-0">
           <Link to="/" className="flex items-center gap-2.5">
             <div
               className="h-8 w-8 rounded-xl flex items-center justify-center shrink-0"
-              style={{ background: "rgba(255,255,255,0.18)" }}
+              style={{ background: "rgba(139,92,246,0.20)", border: "1px solid rgba(167,139,250,0.25)" }}
             >
               <img
                 src="/logo.png"
@@ -208,7 +222,7 @@ function Sidebar({
           <button
             onClick={onProfileOpen}
             className="h-[72px] w-[72px] rounded-full flex items-center justify-center text-white text-xl font-bold mb-2.5 shrink-0 overflow-hidden hover:opacity-90 transition-opacity active:scale-95"
-            style={{ background: ACCENT }}
+            style={{ background: "linear-gradient(135deg, rgba(139,92,246,0.45), rgba(62,15,163,0.45))", border: "1px solid rgba(196,181,253,0.26)", boxShadow: "0 12px 34px rgba(62,15,163,0.35)" }}
             title="Edit Profil"
           >
             {user?.avatarUrl ? (
@@ -224,17 +238,17 @@ function Sidebar({
             <p className="text-[14px] font-semibold text-white">{displayName}</p>
             <ChevronDown className="h-3.5 w-3.5 text-white/50" />
           </button>
-          <p className="text-[12px] text-white/60 mt-0.5">{isAdmin ? "Administrator" : "Anggota"}</p>
+          <p className="text-[12px] text-[#C4B5FD]/70 mt-0.5">{isAdmin ? "Administrator" : "Anggota"}</p>
         </div>
 
         {/* ── Divider ──────────────────────────────────────────────── */}
-        <div className="mx-4 border-t border-white/[0.15] mb-2 shrink-0" />
+        <div className="mx-4 mb-2 shrink-0" style={{ height: "1px", background: "linear-gradient(90deg, rgba(139,92,246,0.30), rgba(139,92,246,0.05))" }} />
 
         {/* ── Nav ──────────────────────────────────────────────────── */}
         <div className="flex-1 overflow-y-auto px-3 py-1" style={{ scrollbarWidth: "none" }}>
 
           {/* Pantau */}
-          <p className="text-[10px] font-bold uppercase tracking-widest text-white/40 px-3 mb-1.5 mt-1">Pantau</p>
+          <p className="text-[10px] font-bold uppercase tracking-widest text-[#A78BFA]/60 px-3 mb-1.5 mt-1">Pantau</p>
           <div className="space-y-0.5">
             {PANTAU_NAV.map((item) => (
               <NavItem key={item.url} item={item} onClick={onMobileClose} />
@@ -242,7 +256,7 @@ function Sidebar({
           </div>
 
           {/* Organisasi */}
-          <p className="text-[10px] font-bold uppercase tracking-widest text-white/40 px-3 mb-1.5 mt-4">Organisasi</p>
+          <p className="text-[10px] font-bold uppercase tracking-widest text-[#A78BFA]/60 px-3 mb-1.5 mt-4">Organisasi</p>
           <div className="space-y-0.5">
             {ORGANISASI_NAV.map((item) => (
               <NavItem key={item.url} item={item} onClick={onMobileClose} />
@@ -250,7 +264,7 @@ function Sidebar({
           </div>
 
           {/* Tools */}
-          <p className="text-[10px] font-bold uppercase tracking-widest text-white/40 px-3 mb-1.5 mt-4">Tools</p>
+          <p className="text-[10px] font-bold uppercase tracking-widest text-[#A78BFA]/60 px-3 mb-1.5 mt-4">Tools</p>
           <div className="space-y-0.5">
             {TOOLS_NAV.map((item) => (
               <NavItem key={item.url} item={item} onClick={onMobileClose} />
@@ -260,7 +274,7 @@ function Sidebar({
           {/* Admin */}
           {isAdmin && (
             <>
-              <p className="text-[10px] font-bold uppercase tracking-widest text-white/40 px-3 mb-1.5 mt-4">Admin</p>
+              <p className="text-[10px] font-bold uppercase tracking-widest text-[#A78BFA]/60 px-3 mb-1.5 mt-4">Admin</p>
               <div className="space-y-0.5 pb-2">
                 {ADMIN_NAV.map((item) => (
                   <NavItem key={item.url} item={item} onClick={onMobileClose} />
@@ -273,7 +287,7 @@ function Sidebar({
         {/* ── Help center dark card ─────────────────────────────────── */}
         {!helpDismissed && (
           <div className="p-3 pb-4 shrink-0">
-            <div className="p-4 relative rounded-2xl" style={{ background: "rgba(255,255,255,0.15)", border: "1px solid rgba(255,255,255,0.20)" }}>
+            <div className="p-4 relative rounded-2xl overflow-hidden" style={{ background: "rgba(139,92,246,0.14)", border: "1px solid rgba(167,139,250,0.22)", boxShadow: "0 12px 30px rgba(15,10,30,0.18)" }}>
               {/* Dismiss button */}
               <button
                 onClick={dismissHelp}
@@ -286,19 +300,19 @@ function Sidebar({
               {/* Question circle */}
               <div
                 className="h-8 w-8 rounded-full flex items-center justify-center mb-3 shrink-0"
-                style={{ background: "rgba(255,255,255,0.25)" }}
+                style={{ background: "rgba(139,92,246,0.24)", border: "1px solid rgba(196,181,253,0.20)" }}
               >
                 <HelpCircle className="h-4 w-4 text-white" />
               </div>
 
               <p className="text-[13px] font-semibold text-white mb-1 leading-tight">Bantuan Portal</p>
-              <p className="text-[11px] text-white/60 mb-3 leading-relaxed">Ada pertanyaan? Hubungi admin atau lihat panduan.</p>
+              <p className="text-[11px] text-[#C4B5FD]/70 mb-3 leading-relaxed">Ada pertanyaan? Hubungi admin atau lihat panduan.</p>
 
               <button
                 onClick={onLogout}
                 data-testid="button-logout"
                 className="w-full h-8 rounded-xl text-[12px] font-semibold text-white flex items-center justify-center gap-1.5 transition-all hover:bg-white/20 active:scale-95"
-                style={{ background: "rgba(255,255,255,0.18)" }}
+                style={{ background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.10)" }}
               >
                 <LogOut className="h-3.5 w-3.5" />
                 Keluar
