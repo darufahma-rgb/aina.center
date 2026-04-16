@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import {
   FileText, CalendarDays, Users, TrendingUp,
   CheckCircle2, AlertCircle, Sparkles, Clock,
@@ -7,6 +7,7 @@ import {
   ListTodo, PlayCircle, Target, Globe,
   BrainCircuit, Paintbrush2, Landmark, UsersRound, CalendarCheck,
   ClipboardList, Archive, Server, Hammer, Rocket, Layers,
+  Send, ExternalLink, Loader2, Bot, Search, BarChart3,
   type LucideIcon,
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
@@ -567,6 +568,188 @@ function generatePDF(data: DashboardData, userName: string) {
   doc.save(filename);
 }
 
+// ─── Jarvis Widget ────────────────────────────────────────────────────────────
+
+const JARVIS_PROMPTS = [
+  { icon: Zap,          label: "Briefing",   text: "Berikan briefing lengkap status portal AINA saat ini" },
+  { icon: CalendarDays, label: "Agenda",     text: "Tampilkan agenda mendatang yang perlu diperhatikan" },
+  { icon: Search,       label: "Cari",       text: "Cari semua rapat koordinasi terbaru" },
+  { icon: BarChart3,    label: "Analisis",   text: "Analisis kondisi keuangan dan perkembangan bulan ini" },
+];
+
+function JarvisWidget() {
+  const [input, setInput] = useState("");
+  const [reply, setReply] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [pulse, setPulse] = useState(false);
+  const inputRef = useRef<HTMLTextAreaElement>(null);
+
+  const send = useCallback(async (msg: string) => {
+    if (!msg.trim() || loading) return;
+    setLoading(true);
+    setReply(null);
+    setPulse(true);
+    try {
+      const form = new FormData();
+      form.append("message", msg.trim());
+      form.append("history", "[]");
+      const res = await fetch("/api/assistant/chat", { method: "POST", body: form, credentials: "include" });
+      const json = await res.json();
+      setReply(json.reply ?? "Tidak ada respons.");
+    } catch {
+      setReply("Gagal menghubungi AINA Assistant.");
+    } finally {
+      setLoading(false);
+      setPulse(false);
+    }
+  }, [loading]);
+
+  const handleKey = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(input); setInput(""); }
+  };
+
+  return (
+    <div
+      className="rounded-3xl overflow-hidden mb-5"
+      style={{
+        background: "linear-gradient(160deg, #080C1A 0%, #0D1229 40%, #0F1635 100%)",
+        border: "1px solid rgba(99,102,241,0.2)",
+        boxShadow: "0 0 0 1px rgba(99,102,241,0.08), 0 20px 50px rgba(10,10,30,0.6)",
+      }}
+    >
+      {/* Top scanline accent */}
+      <div className="h-px w-full" style={{ background: "linear-gradient(90deg, transparent 0%, rgba(99,102,241,0.6) 30%, rgba(139,92,246,0.8) 50%, rgba(99,102,241,0.6) 70%, transparent 100%)" }} />
+
+      <div className="px-4 pt-4 pb-4">
+        {/* Header */}
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-2.5">
+            {/* Animated orb */}
+            <div className="relative flex items-center justify-center">
+              <div
+                className={`absolute h-9 w-9 rounded-full transition-all duration-700 ${pulse ? "scale-150 opacity-0" : "scale-100 opacity-100"}`}
+                style={{ background: "radial-gradient(circle, rgba(99,102,241,0.4) 0%, transparent 70%)" }}
+              />
+              <div
+                className="h-8 w-8 rounded-full flex items-center justify-center relative z-10"
+                style={{ background: "linear-gradient(135deg, #3730A3, #6366F1)", boxShadow: "0 0 16px rgba(99,102,241,0.5)" }}
+              >
+                <Bot className="h-4 w-4 text-white" />
+              </div>
+            </div>
+            <div>
+              <p className="text-[13px] font-bold text-white tracking-wide">AINA Assistant</p>
+              <div className="flex items-center gap-1 mt-0.5">
+                <span className={`h-1.5 w-1.5 rounded-full ${loading ? "bg-yellow-400 animate-pulse" : "bg-emerald-400"}`} />
+                <span className="text-[10px] font-medium" style={{ color: loading ? "#facc15" : "#34d399" }}>
+                  {loading ? "Memproses..." : "Online"}
+                </span>
+              </div>
+            </div>
+          </div>
+          <Link
+            to="/asisten"
+            className="flex items-center gap-1 text-[11px] font-medium transition-opacity hover:opacity-70"
+            style={{ color: "rgba(165,180,252,0.7)" }}
+          >
+            Buka penuh <ExternalLink className="h-3 w-3" />
+          </Link>
+        </div>
+
+        {/* Quick prompts */}
+        {!reply && !loading && (
+          <div className="flex flex-wrap gap-1.5 mb-3">
+            {JARVIS_PROMPTS.map(({ icon: Icon, label, text }) => (
+              <button
+                key={label}
+                onClick={() => { send(text); }}
+                className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-[11px] font-medium transition-all hover:scale-[1.02] active:scale-95"
+                style={{
+                  background: "rgba(99,102,241,0.12)",
+                  border: "1px solid rgba(99,102,241,0.25)",
+                  color: "rgba(165,180,252,0.9)",
+                }}
+              >
+                <Icon className="h-3 w-3" />
+                {label}
+              </button>
+            ))}
+          </div>
+        )}
+
+        {/* Response area */}
+        {(loading || reply) && (
+          <div
+            className="rounded-2xl p-3.5 mb-3 text-[12px] leading-relaxed min-h-[60px]"
+            style={{
+              background: "rgba(255,255,255,0.04)",
+              border: "1px solid rgba(99,102,241,0.15)",
+              color: "rgba(199,210,254,0.9)",
+              maxHeight: "180px",
+              overflowY: "auto",
+            }}
+          >
+            {loading ? (
+              <div className="flex items-center gap-2">
+                <Loader2 className="h-3.5 w-3.5 animate-spin" style={{ color: "#818CF8" }} />
+                <span style={{ color: "rgba(165,180,252,0.6)" }}>Menganalisis perintah...</span>
+              </div>
+            ) : (
+              <div>
+                {reply?.split("\n").filter(Boolean).map((line, i) => (
+                  <p key={i} className="mb-1 last:mb-0">{line.replace(/^[#*-]\s?/, "")}</p>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Input area */}
+        <div
+          className="flex items-end gap-2 rounded-2xl px-3 py-2.5"
+          style={{
+            background: "rgba(255,255,255,0.05)",
+            border: "1px solid rgba(99,102,241,0.2)",
+          }}
+        >
+          <textarea
+            ref={inputRef}
+            value={input}
+            onChange={e => setInput(e.target.value)}
+            onKeyDown={handleKey}
+            placeholder="Tanya AINA sesuatu... (Enter untuk kirim)"
+            rows={1}
+            className="flex-1 bg-transparent resize-none text-[12px] outline-none placeholder:text-white/20 text-white/90 leading-relaxed"
+            style={{ maxHeight: "80px", minHeight: "20px" }}
+            disabled={loading}
+          />
+          <button
+            onClick={() => { send(input); setInput(""); }}
+            disabled={!input.trim() || loading}
+            className="h-7 w-7 rounded-xl flex items-center justify-center shrink-0 transition-all active:scale-90 disabled:opacity-30"
+            style={{ background: "linear-gradient(135deg, #4F46E5, #7C3AED)", boxShadow: "0 0 12px rgba(99,102,241,0.4)" }}
+          >
+            <Send className="h-3 w-3 text-white" />
+          </button>
+        </div>
+
+        {reply && (
+          <button
+            onClick={() => setReply(null)}
+            className="mt-2 text-[10px] transition-opacity hover:opacity-70 block w-full text-center"
+            style={{ color: "rgba(99,102,241,0.5)" }}
+          >
+            Hapus balasan
+          </button>
+        )}
+      </div>
+
+      {/* Bottom scanline */}
+      <div className="h-px w-full" style={{ background: "linear-gradient(90deg, transparent, rgba(99,102,241,0.3), transparent)" }} />
+    </div>
+  );
+}
+
 // ─── Dashboard ────────────────────────────────────────────────────────────────
 
 export default function Dashboard() {
@@ -764,6 +947,9 @@ export default function Dashboard() {
           ))}
         </div>
       )}
+
+      {/* ── Jarvis Widget ────────────────────────────────────────────── */}
+      <JarvisWidget />
 
       {/* ── Main grid ────────────────────────────────────────────────── */}
       <div className="flex flex-col xl:flex-row gap-5">
