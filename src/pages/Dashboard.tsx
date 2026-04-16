@@ -672,39 +672,22 @@ function JarvisWidget() {
         <div className="mb-4" style={{ height: "1px", background: "linear-gradient(90deg, rgba(99,102,241,0.15), rgba(99,102,241,0.03))" }} />
 
         {/* ── Response / empty state ── */}
-        {!reply && !loading && (
-          <div className="mb-4">
-            <p className="text-[11px] font-semibold uppercase tracking-widest mb-2.5" style={{ color: "#C4B5FD" }}>
-              Coba tanya
-            </p>
-            <div className="flex flex-wrap gap-2">
+        {/* Quick prompts — always visible as compact scrollable strip */}
+        {!loading && (
+          <div className="overflow-x-auto -mx-1 px-1 pb-0.5 mb-3">
+            <div className="flex items-center gap-1.5 w-max">
               {JARVIS_PROMPTS.map(({ icon: Icon, label, text }) => (
                 <button
                   key={label}
-                  onClick={() => send(text)}
-                  className="group flex items-center gap-2 px-3 py-2 rounded-xl text-[12px] font-medium transition-all duration-150 hover:-translate-y-px active:scale-95"
+                  onClick={() => { send(text); setReply(null); }}
+                  className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-[11px] font-medium transition-all active:scale-95 shrink-0"
                   style={{
-                    background: "#FAFAFA",
-                    border: "1px solid #E5E7EB",
-                    color: "#374151",
-                  }}
-                  onMouseEnter={e => {
-                    (e.currentTarget as HTMLElement).style.background = "rgba(99,102,241,0.06)";
-                    (e.currentTarget as HTMLElement).style.borderColor = "rgba(99,102,241,0.3)";
-                    (e.currentTarget as HTMLElement).style.color = "#6366F1";
-                  }}
-                  onMouseLeave={e => {
-                    (e.currentTarget as HTMLElement).style.background = "#FAFAFA";
-                    (e.currentTarget as HTMLElement).style.borderColor = "#E5E7EB";
-                    (e.currentTarget as HTMLElement).style.color = "#374151";
+                    background: "#F5F3FF",
+                    border: "1px solid rgba(99,102,241,0.2)",
+                    color: "#6366F1",
                   }}
                 >
-                  <span
-                    className="h-6 w-6 rounded-lg flex items-center justify-center shrink-0"
-                    style={{ background: "linear-gradient(135deg, #EDE9FE, #DDD6FE)" }}
-                  >
-                    <Icon className="h-3 w-3" style={{ color: "#7C3AED" }} />
-                  </span>
+                  <Icon className="h-3 w-3 shrink-0" style={{ color: "#7C3AED" }} />
                   {label}
                 </button>
               ))}
@@ -736,7 +719,7 @@ function JarvisWidget() {
             style={{
               background: "linear-gradient(135deg, #FAFBFF 0%, #F5F3FF 100%)",
               border: "1px solid rgba(99,102,241,0.12)",
-              maxHeight: "200px",
+              maxHeight: "320px",
               overflowY: "auto",
             }}
           >
@@ -767,12 +750,11 @@ function JarvisWidget() {
 
         {/* ── Input row ── */}
         <div
-          className="flex items-end gap-2.5 rounded-2xl px-4 py-3 transition-all"
+          className="flex items-end gap-2.5 rounded-2xl px-4 py-3.5 transition-all"
           style={{
             background: "#F9FAFB",
             border: "1.5px solid #E5E7EB",
           }}
-          onFocus={() => {}}
         >
           <textarea
             ref={inputRef}
@@ -780,11 +762,11 @@ function JarvisWidget() {
             onChange={e => setInput(e.target.value)}
             onKeyDown={handleKey}
             placeholder="Tanya AINA sesuatu... (Enter untuk kirim)"
-            rows={1}
+            rows={3}
             className="flex-1 bg-transparent resize-none text-[13px] outline-none leading-relaxed"
             style={{
-              maxHeight: "80px",
-              minHeight: "20px",
+              maxHeight: "140px",
+              minHeight: "64px",
               color: "#1A1A1A",
             }}
             disabled={loading}
