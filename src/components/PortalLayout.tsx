@@ -395,13 +395,13 @@ export function PortalLayout({ children }: PortalLayoutProps) {
           style={{ overflow: "hidden", background: "#FDFCFF", border: "1px solid rgba(103,65,217,0.13)" }}
         >
           {/* ── Top bar ──────────────────────────────────────────── */}
-          <header className="flex items-center justify-between px-4 py-3 border-b shrink-0" style={{ borderColor: "rgba(0,0,0,0.09)" }}>
+          <header className="flex items-center justify-between px-3 py-2 sm:px-4 sm:py-3 border-b shrink-0" style={{ borderColor: "rgba(0,0,0,0.09)" }}>
 
             {/* Left: profile avatar (mobile) + page tabs (desktop) */}
             <div className="flex items-center gap-2">
               {/* Mobile: profile avatar */}
               <button
-                className="lg:hidden h-8 w-8 rounded-full flex items-center justify-center text-white text-[11px] font-bold shrink-0 overflow-hidden"
+                className="lg:hidden h-7 w-7 sm:h-8 sm:w-8 rounded-full flex items-center justify-center text-white text-[10px] sm:text-[11px] font-bold shrink-0 overflow-hidden"
                 style={{ background: ACCENT }}
                 onClick={() => setProfileOpen(true)}
                 title="Profil"
@@ -452,8 +452,8 @@ export function PortalLayout({ children }: PortalLayoutProps) {
                 />
               </div>
 
-              <button className="h-8 w-8 rounded-xl flex items-center justify-center text-[#999] hover:bg-black/[0.05] transition-all">
-                <Bell className="h-4 w-4" />
+              <button className="h-7 w-7 sm:h-8 sm:w-8 rounded-xl flex items-center justify-center text-[#999] hover:bg-black/[0.05] transition-all">
+                <Bell className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
               </button>
 
               <button
@@ -468,7 +468,7 @@ export function PortalLayout({ children }: PortalLayoutProps) {
               <div className="relative">
                 <button
                   onClick={() => setQuickOpen(v => !v)}
-                  className="h-8 w-8 sm:w-auto sm:px-3.5 rounded-xl text-[12px] font-semibold text-white flex items-center justify-center gap-1.5 transition-all hover:opacity-90 active:scale-95"
+                  className="h-7 w-7 sm:h-8 sm:w-auto sm:px-3.5 rounded-xl text-[12px] font-semibold text-white flex items-center justify-center gap-1.5 transition-all hover:opacity-90 active:scale-95"
                   style={{ background: ACCENT }}
                 >
                   <Plus className="h-3.5 w-3.5 shrink-0" />
@@ -509,7 +509,7 @@ export function PortalLayout({ children }: PortalLayoutProps) {
           </header>
 
           {/* ── Page content ──────────────────────────────────────── */}
-          <main className="flex-1 p-4 sm:p-5 pb-24 lg:pb-10 overflow-y-auto overflow-x-hidden min-w-0">
+          <main className="mobile-compact-main flex-1 p-2.5 sm:p-5 pb-[84px] lg:pb-10 overflow-y-auto overflow-x-hidden min-w-0">
             {children}
           </main>
         </div>

@@ -227,10 +227,10 @@ function AgendaCard({ item }: { item: Agenda }) {
   return (
     <Link to="/agenda">
       <div
-        className="rounded-2xl p-4 transition-all duration-150 hover:shadow-md cursor-pointer"
+        className="rounded-2xl p-3 sm:p-4 transition-all duration-150 hover:shadow-md cursor-pointer"
         style={{ background: "#1A1A1A" }}
       >
-        <div className="flex items-start justify-between mb-3">
+        <div className="flex items-start justify-between mb-2 sm:mb-3">
           <span className="chip" style={{ background: "rgba(167,139,250,0.20)", color: "#A78BFA" }}>{item.status ?? "Mendatang"}</span>
           <span className="text-[11px] text-white/40 flex items-center gap-1">
             <Clock className="h-3 w-3" />
@@ -240,7 +240,7 @@ function AgendaCard({ item }: { item: Agenda }) {
         <p className="text-[13px] font-semibold text-white leading-snug mb-1 line-clamp-2">{item.title}</p>
         <p className="text-[11px] text-white/45 leading-relaxed line-clamp-2">{item.description ?? ""}</p>
         {item.pic && (
-          <div className="mt-3 flex items-center gap-2">
+          <div className="mt-2 sm:mt-3 flex items-center gap-2">
             <div className="h-5 w-5 rounded-full bg-white/10 flex items-center justify-center text-[9px] font-bold text-white/60">
               {item.pic.slice(0, 1).toUpperCase()}
             </div>
@@ -258,11 +258,11 @@ function NotulensiRow({ item, index }: { item: Notulensi; index: number }) {
   return (
     <Link to="/notulensi">
       <div className={cn(
-        "flex items-center gap-4 py-3 px-2 rounded-2xl transition-all hover:bg-black/[0.03] cursor-pointer",
+        "flex items-center gap-2.5 sm:gap-4 py-2.5 sm:py-3 px-1.5 sm:px-2 rounded-2xl transition-all hover:bg-black/[0.03] cursor-pointer",
         index > 0 && "border-t border-black/[0.08]",
       )}>
         <div
-          className="h-9 w-9 rounded-xl flex items-center justify-center text-[10px] font-bold shrink-0"
+          className="h-8 w-8 sm:h-9 sm:w-9 rounded-xl flex items-center justify-center text-[9px] sm:text-[10px] font-bold shrink-0"
           style={{ background: "#3E0FA3", color: "#ffffff" }}
         >
           {String(index + 1).padStart(2, "0")}
@@ -607,7 +607,7 @@ function JarvisWidget() {
 
   return (
     <div
-      className="rounded-3xl mb-5 overflow-hidden"
+      className="rounded-2xl sm:rounded-3xl mb-3 sm:mb-5 overflow-hidden"
       style={{
         background: "#ffffff",
         border: "1px solid rgba(99,102,241,0.14)",
@@ -620,25 +620,25 @@ function JarvisWidget() {
         style={{ background: "linear-gradient(90deg, #4F46E5 0%, #7C3AED 50%, #6366F1 100%)" }}
       />
 
-      <div className="p-5">
+      <div className="p-3 sm:p-5">
         {/* ── Header row ── */}
-        <div className="flex items-center justify-between mb-5">
-          <div className="flex items-center gap-3">
+        <div className="flex items-center justify-between mb-3 sm:mb-5">
+          <div className="flex items-center gap-2.5 sm:gap-3">
             {/* Icon */}
             <div
-              className="h-10 w-10 rounded-2xl flex items-center justify-center shrink-0"
+              className="h-8 w-8 sm:h-10 sm:w-10 rounded-2xl flex items-center justify-center shrink-0"
               style={{
                 background: "linear-gradient(135deg, #EDE9FE 0%, #DDD6FE 100%)",
                 boxShadow: "0 2px 8px rgba(99,102,241,0.2)",
               }}
             >
               {loading
-                ? <Loader2 className="h-5 w-5 animate-spin" style={{ color: "#6366F1" }} />
-                : <Sparkles className="h-5 w-5" style={{ color: "#6366F1" }} />
+                ? <Loader2 className="h-4 w-4 sm:h-5 sm:w-5 animate-spin" style={{ color: "#6366F1" }} />
+                : <Sparkles className="h-4 w-4 sm:h-5 sm:w-5" style={{ color: "#6366F1" }} />
               }
             </div>
             <div>
-              <p className="text-[14px] font-bold text-[#1A1A1A] tracking-tight">AINA Assistant</p>
+              <p className="text-[13px] sm:text-[14px] font-bold text-[#1A1A1A] tracking-tight">AINA Assistant</p>
               <div className="flex items-center gap-1.5 mt-0.5">
                 <span
                   className={`h-1.5 w-1.5 rounded-full ${loading ? "animate-pulse" : ""}`}
@@ -656,7 +656,7 @@ function JarvisWidget() {
 
           <Link
             to="/asisten"
-            className="group flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[11px] font-semibold transition-all hover:opacity-80"
+            className="group flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl text-[10px] sm:text-[11px] font-semibold transition-all hover:opacity-80"
             style={{
               background: "rgba(99,102,241,0.08)",
               color: "#6366F1",
@@ -669,7 +669,7 @@ function JarvisWidget() {
         </div>
 
         {/* ── Divider ── */}
-        <div className="mb-4" style={{ height: "1px", background: "linear-gradient(90deg, rgba(99,102,241,0.15), rgba(99,102,241,0.03))" }} />
+        <div className="mb-3 sm:mb-4" style={{ height: "1px", background: "linear-gradient(90deg, rgba(99,102,241,0.15), rgba(99,102,241,0.03))" }} />
 
         {/* ── Response / empty state ── */}
         {/* Quick prompts — always visible as compact scrollable strip */}
@@ -848,7 +848,7 @@ export default function Dashboard() {
 
       {/* ── Greeting hero ─────────────────────────────────────────────── */}
       <div
-        className="mb-5 rounded-3xl relative overflow-hidden"
+        className="mb-3 sm:mb-5 rounded-2xl sm:rounded-3xl relative overflow-hidden"
         style={{
           background: "linear-gradient(135deg, #0F0A1E 0%, #1A0845 35%, #2D0B7A 70%, #1E0654 100%)",
           boxShadow: "0 20px 60px rgba(62,15,163,0.35), 0 1px 0 rgba(255,255,255,0.08) inset",
@@ -871,20 +871,20 @@ export default function Dashboard() {
         {/* Top accent line */}
         <div className="absolute top-0 left-0 right-0 h-px" style={{ background: "linear-gradient(90deg, transparent, rgba(167,139,250,0.6), transparent)" }} />
 
-        <div className="relative z-10 px-5 pt-5 pb-4">
+        <div className="relative z-10 px-3.5 sm:px-5 pt-3.5 sm:pt-5 pb-3 sm:pb-4">
           {/* Row 1: greeting + PDF button */}
-          <div className="flex items-start justify-between gap-3 mb-4">
+          <div className="flex items-start justify-between gap-2 sm:gap-3 mb-3 sm:mb-4">
             <div className="min-w-0">
               {/* Date label */}
-              <div className="flex items-center gap-1.5 mb-2">
+              <div className="flex items-center gap-1.5 mb-1.5 sm:mb-2">
                 <div className="h-px w-4" style={{ background: "rgba(167,139,250,0.5)" }} />
                 <p className="text-[10px] font-semibold tracking-[0.15em] uppercase" style={{ color: "rgba(167,139,250,0.7)" }}>{today}</p>
               </div>
               {/* Greeting */}
-              <h1 className="text-2xl sm:text-3xl font-black text-white leading-tight tracking-tight">
+              <h1 className="text-xl sm:text-3xl font-black text-white leading-tight tracking-tight">
                 {getGreeting()},
               </h1>
-              <h1 className="text-2xl sm:text-3xl font-black leading-tight tracking-tight" style={{ color: "#C4B5FD" }}>
+              <h1 className="text-xl sm:text-3xl font-black leading-tight tracking-tight" style={{ color: "#C4B5FD" }}>
                 {displayName} 👋
               </h1>
             </div>
@@ -893,7 +893,7 @@ export default function Dashboard() {
             <button
               onClick={handleExportPDF}
               disabled={isLoading || !data}
-              className="shrink-0 flex items-center gap-1.5 px-3 h-8 rounded-xl text-[11px] font-semibold transition-all hover:opacity-80 active:scale-95 disabled:opacity-30 mt-1"
+              className="shrink-0 flex items-center gap-1.5 px-2.5 sm:px-3 h-7 sm:h-8 rounded-xl text-[10px] sm:text-[11px] font-semibold transition-all hover:opacity-80 active:scale-95 disabled:opacity-30 mt-0.5 sm:mt-1"
               style={{
                 background: "rgba(139,92,246,0.2)",
                 color: "rgba(196,181,253,0.9)",
@@ -908,7 +908,7 @@ export default function Dashboard() {
           </div>
 
           {/* Divider */}
-          <div className="mb-3.5" style={{ height: "1px", background: "linear-gradient(90deg, rgba(139,92,246,0.3), rgba(139,92,246,0.05))" }} />
+          <div className="mb-2.5 sm:mb-3.5" style={{ height: "1px", background: "linear-gradient(90deg, rgba(139,92,246,0.3), rgba(139,92,246,0.05))" }} />
 
           {/* Row 2: World clock + Stats in one line */}
           <div className="overflow-x-auto -mx-1 px-1 pb-0.5">
@@ -940,7 +940,7 @@ export default function Dashboard() {
           </div>
 
           {/* Mobile stats */}
-          <div className="flex items-center gap-1.5 mt-2 sm:hidden">
+          <div className="flex items-center gap-1.5 mt-1.5 sm:hidden">
             <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-[11px] font-medium" style={{ background: "rgba(255,255,255,0.07)", border: "1px solid rgba(255,255,255,0.10)", color: "rgba(196,181,253,0.9)" }}>
               <Users className="h-3 w-3" style={{ color: "#A78BFA" }} />
               {isLoading ? "—" : totalAnggota}
@@ -961,7 +961,7 @@ export default function Dashboard() {
 
       {/* ── 6 stat pills ─────────────────────────────────────────────── */}
       {!isLoading && (
-        <div className="grid grid-cols-3 lg:grid-cols-6 gap-3 mb-6">
+        <div className="grid grid-cols-3 lg:grid-cols-6 gap-2 sm:gap-3 mb-4 sm:mb-6">
           {[
             { icon: FileText,   label: "Notulensi",  value: data?.totalNotulensi ?? 0,  url: "/notulensi" },
             { icon: CalendarDays, label: "Agenda",   value: data?.upcomingAgenda ?? 0,  url: "/agenda" },
@@ -972,18 +972,18 @@ export default function Dashboard() {
           ].map(({ icon: Icon, label, value, url }) => (
             <Link key={url} to={url}>
               <div
-                className="rounded-2xl p-3.5 hover:-translate-y-0.5 transition-all cursor-pointer text-center"
+                className="rounded-2xl p-2 sm:p-3.5 hover:-translate-y-0.5 transition-all cursor-pointer text-center"
                 style={{
                   background: "#ffffff",
                   border: "1px solid rgba(103,65,217,0.16)",
                   boxShadow: "0 2px 10px rgba(62,15,163,0.07)",
                 }}
               >
-                <div className="h-8 w-8 rounded-xl mx-auto mb-2 flex items-center justify-center" style={{ background: "linear-gradient(135deg, #EDE9FE, #DDD6FE)" }}>
-                  <Icon className="h-4 w-4 text-[#5B21B6]" />
+                <div className="h-7 w-7 sm:h-8 sm:w-8 rounded-xl mx-auto mb-1.5 sm:mb-2 flex items-center justify-center" style={{ background: "linear-gradient(135deg, #EDE9FE, #DDD6FE)" }}>
+                  <Icon className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-[#5B21B6]" />
                 </div>
-                <p className="text-xl font-black text-[#1A1A1A]">{value}</p>
-                <p className="text-[10px] text-[#999] font-semibold uppercase tracking-wide mt-0.5">{label}</p>
+                <p className="text-lg sm:text-xl font-black text-[#1A1A1A]">{value}</p>
+                <p className="text-[8.5px] sm:text-[10px] text-[#999] font-semibold uppercase tracking-wide mt-0.5">{label}</p>
               </div>
             </Link>
           ))}
@@ -994,10 +994,10 @@ export default function Dashboard() {
       <JarvisWidget />
 
       {/* ── Main grid ────────────────────────────────────────────────── */}
-      <div className="flex flex-col xl:flex-row gap-5">
+      <div className="flex flex-col xl:flex-row gap-3 sm:gap-5">
 
         {/* ── Left column ────────────────────────────────────────────── */}
-        <div className="flex-1 min-w-0 space-y-5">
+        <div className="flex-1 min-w-0 space-y-3 sm:space-y-5">
 
           {/* ── Progress cards row ─────────────────────────────────── */}
           <div className="grid grid-cols-3 gap-2 sm:gap-3">
@@ -1028,8 +1028,8 @@ export default function Dashboard() {
           </div>
 
           {/* ── Agenda Bulan Ini ─────────────────────────────────── */}
-          <div className="section-card p-5">
-            <div className="flex items-center justify-between mb-4">
+          <div className="section-card p-3 sm:p-5">
+            <div className="flex items-center justify-between mb-3 sm:mb-4">
               <div>
                 <h3 className="text-[15px] font-bold text-[#1A1A1A]">
                   Agenda {currentMonthName}
@@ -1076,8 +1076,8 @@ export default function Dashboard() {
           </div>
 
           {/* ── Notulensi terbaru ─────────────────────────────────── */}
-          <div className="section-card p-5">
-            <div className="flex items-center justify-between mb-4">
+          <div className="section-card p-3 sm:p-5">
+            <div className="flex items-center justify-between mb-3 sm:mb-4">
               <div>
                 <h3 className="text-[15px] font-bold text-[#1A1A1A]">Notulensi Terbaru</h3>
                 {!isLoading && totalNotulensi > 0 && (
@@ -1126,11 +1126,11 @@ export default function Dashboard() {
         </div>
 
         {/* ── Right column ───────────────────────────────────────────── */}
-        <div className="xl:w-72 space-y-5 shrink-0">
+        <div className="xl:w-72 space-y-3 sm:space-y-5 shrink-0">
 
           {/* ── Stats summary ──────────────────────────────────────── */}
-          <div className="section-card p-5">
-            <div className="flex items-center justify-between mb-4">
+          <div className="section-card p-3 sm:p-5">
+            <div className="flex items-center justify-between mb-3 sm:mb-4">
               <h3 className="text-[15px] font-bold text-[#1A1A1A]">Ringkasan</h3>
               <MoreHorizontal className="h-4 w-4 text-[#ccc]" />
             </div>
@@ -1162,7 +1162,7 @@ export default function Dashboard() {
 
           {/* ── Jadwal Terdekat ────────────────────────────────────── */}
           {agendaList.length > 0 && (
-            <div className="section-card p-5">
+            <div className="section-card p-3 sm:p-5">
               <h3 className="text-[15px] font-bold text-[#1A1A1A] mb-4">Jadwal Terdekat</h3>
               <div className="space-y-3">
                 {agendaList.slice(0, 3).map((a) => (
@@ -1187,7 +1187,7 @@ export default function Dashboard() {
 
           {/* ── Keuangan (admin only) ──────────────────────────────── */}
           {isAdmin && (
-            <div className="section-card p-5">
+            <div className="section-card p-3 sm:p-5">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-[15px] font-bold text-[#1A1A1A]">Keuangan</h3>
                 <Link to="/keuangan" className="text-[11px] font-semibold text-[#3E0FA3] hover:opacity-80 transition-opacity">
@@ -1347,7 +1347,7 @@ function FiturReviewSection() {
   const activePct = total > 0 ? Math.round(((baru + tingkat) / total) * 100) : 0;
 
   return (
-    <div className="mt-5 section-card p-5">
+    <div className="mt-3 sm:mt-5 section-card p-3 sm:p-5">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-5">
         <div>

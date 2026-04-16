@@ -83,7 +83,7 @@ export function BottomNav({ user, isAdmin, onLogout, onProfileOpen }: BottomNavP
   const displayName = user?.displayName || user?.username || "—";
   const initials = displayName.slice(0, 2).toUpperCase();
 
-  const SHEET_HEIGHT = "82svh";
+  const SHEET_HEIGHT = "78svh";
 
   return (
     <>
@@ -101,10 +101,10 @@ export function BottomNav({ user, isAdmin, onLogout, onProfileOpen }: BottomNavP
           onClick={handleAI}
           className="lg:hidden fixed z-50 flex items-center justify-center rounded-full transition-all active:scale-90"
           style={{
-            bottom: 84,
-            right: 16,
-            width: 40,
-            height: 40,
+            bottom: 72,
+            right: 14,
+            width: 36,
+            height: 36,
             background: aiOpen ? ACCENT : "#fff",
             boxShadow: aiOpen
               ? `0 4px 18px ${ACCENT}55`
@@ -114,7 +114,7 @@ export function BottomNav({ user, isAdmin, onLogout, onProfileOpen }: BottomNavP
           aria-label="AI Asisten"
         >
           <Bot
-            className="h-[18px] w-[18px]"
+            className="h-4 w-4"
             style={{ color: aiOpen ? "#fff" : ACCENT }}
           />
         </button>
@@ -130,7 +130,7 @@ export function BottomNav({ user, isAdmin, onLogout, onProfileOpen }: BottomNavP
       >
         {/* ── Expanded panel (scrollable content above bar) ── */}
         <div
-          className="absolute inset-0 bottom-[68px] bg-white overflow-y-auto"
+          className="absolute inset-0 bottom-[60px] bg-white overflow-y-auto"
           style={{
             borderRadius: "20px 20px 0 0",
             borderTop: "1px solid rgba(0,0,0,0.08)",
@@ -143,12 +143,12 @@ export function BottomNav({ user, isAdmin, onLogout, onProfileOpen }: BottomNavP
         >
           {/* ── User header ── */}
           <div
-            className="flex items-center gap-3 px-5 py-4"
+            className="flex items-center gap-2.5 px-4 py-3"
             style={{ borderBottom: "1px solid rgba(0,0,0,0.07)" }}
           >
             <button
               onClick={() => { setOpen(false); onProfileOpen?.(); }}
-              className="h-10 w-10 rounded-full flex items-center justify-center text-white text-sm font-bold shrink-0 overflow-hidden"
+              className="h-9 w-9 rounded-full flex items-center justify-center text-white text-xs font-bold shrink-0 overflow-hidden"
               style={{ background: ACCENT }}
             >
               {user?.avatarUrl
@@ -156,12 +156,12 @@ export function BottomNav({ user, isAdmin, onLogout, onProfileOpen }: BottomNavP
                 : initials}
             </button>
             <div className="flex-1 min-w-0">
-              <p className="text-[14px] font-semibold text-gray-900 truncate">{displayName}</p>
+              <p className="text-[13px] font-semibold text-gray-900 truncate">{displayName}</p>
               <p className="text-[11px] text-gray-400">{isAdmin ? "Administrator" : "Anggota"}</p>
             </div>
             <button
               onClick={onLogout}
-              className="flex items-center gap-1.5 text-[12px] text-red-500 font-medium px-3 py-1.5 rounded-xl hover:bg-red-50 transition-colors"
+              className="flex items-center gap-1.5 text-[11px] text-red-500 font-medium px-2.5 py-1.5 rounded-xl hover:bg-red-50 transition-colors"
             >
               <LogOut className="h-3.5 w-3.5" />
               Keluar
@@ -169,13 +169,13 @@ export function BottomNav({ user, isAdmin, onLogout, onProfileOpen }: BottomNavP
           </div>
 
           {/* ── Nav sections ── */}
-          <div className="px-5 pt-4 pb-6 space-y-5">
+          <div className="px-4 pt-3 pb-5 space-y-4">
             {SECTIONS.map((section) => (
               <div key={section.label}>
-                <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-gray-400 mb-2.5">
+                <p className="text-[9px] font-bold uppercase tracking-[0.15em] text-gray-400 mb-2">
                   {section.label}
                 </p>
-                <div className="grid grid-cols-4 gap-2">
+                <div className="grid grid-cols-4 gap-1.5">
                   {section.items.map((item) => {
                     const active = isActive(item.url, item.exact);
                     return (
@@ -183,18 +183,18 @@ export function BottomNav({ user, isAdmin, onLogout, onProfileOpen }: BottomNavP
                         key={item.url}
                         to={item.url}
                         onClick={() => setOpen(false)}
-                        className="flex flex-col items-center gap-1.5 py-3 rounded-2xl transition-all active:scale-95"
+                        className="flex flex-col items-center gap-1 py-2.5 rounded-2xl transition-all active:scale-95"
                         style={{
                           background: active ? `${ACCENT}12` : "rgba(0,0,0,0.03)",
                           border: active ? `1.5px solid ${ACCENT}30` : "1.5px solid transparent",
                         }}
                       >
                         <item.icon
-                          className="h-5 w-5"
+                          className="h-[18px] w-[18px]"
                           style={{ color: active ? ACCENT : "#888" }}
                         />
                         <span
-                          className="text-[10px] font-semibold text-center leading-tight"
+                          className="text-[9px] font-semibold text-center leading-tight"
                           style={{ color: active ? ACCENT : "#666" }}
                         >
                           {item.label}
@@ -209,10 +209,10 @@ export function BottomNav({ user, isAdmin, onLogout, onProfileOpen }: BottomNavP
             {/* Admin section */}
             {isAdmin && (
               <div>
-                <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-gray-400 mb-2.5">
+                <p className="text-[9px] font-bold uppercase tracking-[0.15em] text-gray-400 mb-2">
                   Admin
                 </p>
-                <div className="grid grid-cols-4 gap-2">
+                <div className="grid grid-cols-4 gap-1.5">
                   {ADMIN_ITEMS.map((item) => {
                     const active = isActive(item.url, item.exact);
                     return (
@@ -220,14 +220,14 @@ export function BottomNav({ user, isAdmin, onLogout, onProfileOpen }: BottomNavP
                         key={item.url}
                         to={item.url}
                         onClick={() => setOpen(false)}
-                        className="flex flex-col items-center gap-1.5 py-3 rounded-2xl transition-all active:scale-95"
+                        className="flex flex-col items-center gap-1 py-2.5 rounded-2xl transition-all active:scale-95"
                         style={{
                           background: active ? `${ACCENT}12` : "rgba(0,0,0,0.03)",
                           border: active ? `1.5px solid ${ACCENT}30` : "1.5px solid transparent",
                         }}
                       >
-                        <item.icon className="h-5 w-5" style={{ color: active ? ACCENT : "#888" }} />
-                        <span className="text-[10px] font-semibold text-center leading-tight" style={{ color: active ? ACCENT : "#666" }}>
+                        <item.icon className="h-[18px] w-[18px]" style={{ color: active ? ACCENT : "#888" }} />
+                        <span className="text-[9px] font-semibold text-center leading-tight" style={{ color: active ? ACCENT : "#666" }}>
                           {item.label}
                         </span>
                       </Link>
@@ -239,23 +239,23 @@ export function BottomNav({ user, isAdmin, onLogout, onProfileOpen }: BottomNavP
 
             {/* AI Asisten shortcut */}
             <div>
-              <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-gray-400 mb-2.5">
+              <p className="text-[9px] font-bold uppercase tracking-[0.15em] text-gray-400 mb-2">
                 AI
               </p>
-              <div className="grid grid-cols-4 gap-2">
+              <div className="grid grid-cols-4 gap-1.5">
                 <button
                   onClick={() => { setOpen(false); handleAI(); }}
-                  className="flex flex-col items-center gap-1.5 py-3 rounded-2xl transition-all active:scale-95"
+                  className="flex flex-col items-center gap-1 py-2.5 rounded-2xl transition-all active:scale-95"
                   style={{
                     background: aiOpen ? `${ACCENT}12` : "rgba(0,0,0,0.03)",
                     border: aiOpen ? `1.5px solid ${ACCENT}30` : "1.5px solid transparent",
                   }}
                 >
                   <Bot
-                    className="h-5 w-5"
+                    className="h-[18px] w-[18px]"
                     style={{ color: aiOpen ? ACCENT : "#888" }}
                   />
-                  <span className="text-[10px] font-semibold" style={{ color: aiOpen ? ACCENT : "#666" }}>
+                  <span className="text-[9px] font-semibold" style={{ color: aiOpen ? ACCENT : "#666" }}>
                     AI Asisten
                   </span>
                 </button>
@@ -268,7 +268,7 @@ export function BottomNav({ user, isAdmin, onLogout, onProfileOpen }: BottomNavP
         <div
           className="absolute left-0 right-0 bottom-0 flex items-center justify-around bg-white"
           style={{
-            height: 68,
+            height: 60,
             paddingBottom: "env(safe-area-inset-bottom)",
             borderTop: "1px solid rgba(0,0,0,0.09)",
           }}
@@ -280,20 +280,20 @@ export function BottomNav({ user, isAdmin, onLogout, onProfileOpen }: BottomNavP
                 key={url}
                 to={url}
                 onClick={() => setOpen(false)}
-                className="flex flex-col items-center gap-[3px] py-2 px-3 min-w-0 relative"
+                className="flex flex-col items-center gap-[2px] py-1.5 px-2.5 min-w-0 relative"
               >
                 {active && (
                   <span
-                    className="absolute top-1 left-1/2 -translate-x-1/2 h-0.5 w-5 rounded-full"
+                    className="absolute top-1 left-1/2 -translate-x-1/2 h-0.5 w-4 rounded-full"
                     style={{ background: ACCENT }}
                   />
                 )}
                 <Icon
-                  className="h-[22px] w-[22px] shrink-0 mt-1"
+                  className="h-5 w-5 shrink-0 mt-1"
                   style={{ color: active ? ACCENT : "#bbb" }}
                 />
                 <span
-                  className="text-[9px] font-bold tracking-wide"
+                  className="text-[8.5px] font-bold tracking-wide"
                   style={{ color: active ? ACCENT : "#bbb" }}
                 >
                   {label}
@@ -305,17 +305,17 @@ export function BottomNav({ user, isAdmin, onLogout, onProfileOpen }: BottomNavP
           {/* Menu / Close toggle */}
           <button
             onClick={() => setOpen((v) => !v)}
-            className="flex flex-col items-center gap-[3px] py-2 px-3 min-w-0 transition-all active:scale-90"
+            className="flex flex-col items-center gap-[2px] py-1.5 px-2.5 min-w-0 transition-all active:scale-90"
           >
             {open ? (
               <>
-                <X className="h-[22px] w-[22px] mt-1" style={{ color: ACCENT }} />
-                <span className="text-[9px] font-bold tracking-wide" style={{ color: ACCENT }}>Tutup</span>
+                <X className="h-5 w-5 mt-1" style={{ color: ACCENT }} />
+                <span className="text-[8.5px] font-bold tracking-wide" style={{ color: ACCENT }}>Tutup</span>
               </>
             ) : (
               <>
-                <LayoutGrid className="h-[22px] w-[22px] shrink-0 mt-1" style={{ color: "#bbb" }} />
-                <span className="text-[9px] font-bold tracking-wide" style={{ color: "#bbb" }}>Menu</span>
+                <LayoutGrid className="h-5 w-5 shrink-0 mt-1" style={{ color: "#bbb" }} />
+                <span className="text-[8.5px] font-bold tracking-wide" style={{ color: "#bbb" }}>Menu</span>
               </>
             )}
           </button>

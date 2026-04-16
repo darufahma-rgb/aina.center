@@ -17,7 +17,7 @@ A secure internal management portal for the AINA organization. Built as a fullst
 **Layout**: Fixed sidebar (200px, always visible, floating pill style with 12px margin); main content is a white rounded card to the right; sidebar has user profile (purple avatar, clickable to edit profile), nav with purple active pills, and dismissible dark help/logout card at bottom  
 **Login**: Split-panel (dark `#1C1C1C` left with purple accent glows + warm gray right form panel)  
 **Dashboard**: DoDo-style — greeting with purple word highlight, 3 progress ring cards, agenda cards (dark), notulensi table rows, right panel with summary + calendar + finance (admin)  
-**PWA**: `public/manifest.json` + full PWA meta tags in `index.html`  
+**PWA**: `public/manifest.json`, full PWA meta tags in `index.html`, and a production service worker at `public/sw.js`  
 **UI Components**: shadcn/ui with `.neo-card`, `.dark-card`, `.nav-active`, `.chip-*` utility classes; dark purple as primary, dark card is very dark purple  
 **Profile**: Users can edit display name and avatar URL via ProfileModal (click avatar or Settings icon); stored in `display_name` and `avatar_url` columns in the users table; API: `PATCH /api/auth/profile`  
 **Help card**: Dismissible via X button; state stored in `localStorage`; when dismissed, a simple logout button row is shown instead

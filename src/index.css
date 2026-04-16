@@ -111,6 +111,18 @@
     z-index: 1;
   }
 
+  @media (max-width: 640px) {
+    .mobile-compact-main .section-card,
+    .mobile-compact-main .neo-card {
+      border-radius: 18px;
+    }
+
+    .mobile-compact-main .chip {
+      font-size: 9px;
+      padding: 1px 6px;
+    }
+  }
+
   /* ── Standard card ────────────────────────────────────────────────── */
   .neo-card {
     @apply rounded-2xl border;
