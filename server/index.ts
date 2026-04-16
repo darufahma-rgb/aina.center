@@ -2,12 +2,12 @@ import express from "express";
 import session from "express-session";
 import { createServer } from "http";
 import path from "path";
-import MemoryStore from "memorystore";
+import connectPgSimple from "connect-pg-simple";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic } from "./vite";
 import { storage } from "./storage";
 import bcrypt from "bcryptjs";
-import { db } from "./db";
+import { db, pool } from "./db";
 import { users } from "../shared/schema";
 import { eq } from "drizzle-orm";
 
@@ -21,16 +21,23 @@ app.use(express.urlencoded({ extended: false }));
 
 app.use("/uploads", express.static(path.join(process.cwd(), "public/uploads")));
 
-const MStore = MemoryStore(session);
+const isProd = process.env.NODE_ENV === "production";
+const PgSession = connectPgSimple(session);
+
 app.use(session({
   secret: process.env.SESSION_SECRET ?? "aina-portal-secret-2024",
   resave: false,
   saveUninitialized: false,
-  store: new MStore({ checkPeriod: 86400000 }),
+  store: new PgSession({
+    pool,
+    tableName: "session",
+    createTableIfMissing: true,
+  }),
   cookie: {
-    secure: false,
+    secure: isProd,
     httpOnly: true,
     maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+    sameSite: isProd ? "lax" : false,
   },
 }));
 
