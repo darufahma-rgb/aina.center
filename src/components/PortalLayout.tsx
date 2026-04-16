@@ -181,7 +181,7 @@ function Sidebar({
           top: SIDEBAR_MARGIN,
           bottom: SIDEBAR_MARGIN,
           width: SIDEBAR_W,
-          height: `calc(100vh - ${SIDEBAR_MARGIN * 2}px)`,
+          height: `calc(100dvh - ${SIDEBAR_MARGIN * 2}px)`,
           borderRadius: 24,
           background: HERO_BG,
           border: "1px solid rgba(167,139,250,0.18)",
@@ -371,7 +371,7 @@ export function PortalLayout({ children }: PortalLayoutProps) {
   const contentLeft = SIDEBAR_W + SIDEBAR_MARGIN * 2;
 
   return (
-    <div className="min-h-screen bg-background flex" style={{ overflowX: "clip", maxWidth: "100vw" }}>
+    <div className="bg-background flex" style={{ overflowX: "clip", maxWidth: "100vw", minHeight: "100dvh" }}>
 
       {/* ── Sidebar (desktop only) ──────────────────────────────────── */}
       {!isMobile && (
@@ -387,7 +387,8 @@ export function PortalLayout({ children }: PortalLayoutProps) {
 
       {/* ── Main content — white card ────────────────────────────────── */}
       <div
-        className="flex-1 flex flex-col min-h-screen transition-none lg:ml-[224px] lg:mr-3 lg:mt-3 lg:mb-3"
+        className="flex-1 flex flex-col transition-none lg:ml-[224px] lg:mr-3 lg:mt-3 lg:mb-3"
+        style={{ minHeight: "100dvh" }}
       >
         {/* White card wrapper */}
         <div
@@ -395,7 +396,7 @@ export function PortalLayout({ children }: PortalLayoutProps) {
           style={{ overflow: "hidden", background: "#FDFCFF", border: "1px solid rgba(103,65,217,0.13)" }}
         >
           {/* ── Top bar ──────────────────────────────────────────── */}
-          <header className="flex items-center justify-between px-3 py-2 sm:px-4 sm:py-3 border-b shrink-0" style={{ borderColor: "rgba(0,0,0,0.09)" }}>
+          <header className="flex items-center justify-between px-3 py-2 sm:px-4 sm:py-3 border-b shrink-0" style={{ borderColor: "rgba(0,0,0,0.09)", paddingTop: "max(0.5rem, env(safe-area-inset-top))" }}>
 
             {/* Left: profile avatar (mobile) + page tabs (desktop) */}
             <div className="flex items-center gap-2">
@@ -509,7 +510,7 @@ export function PortalLayout({ children }: PortalLayoutProps) {
           </header>
 
           {/* ── Page content ──────────────────────────────────────── */}
-          <main className="mobile-compact-main flex-1 p-2.5 sm:p-5 pb-[84px] lg:pb-10 overflow-y-auto overflow-x-hidden min-w-0">
+          <main className="mobile-compact-main flex-1 p-2.5 sm:p-5 pb-[84px] lg:pb-10 overflow-y-auto overflow-x-hidden min-w-0 safe-area-pb">
             {children}
           </main>
         </div>

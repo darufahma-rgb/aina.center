@@ -101,7 +101,7 @@ export function BottomNav({ user, isAdmin, onLogout, onProfileOpen }: BottomNavP
           onClick={handleAI}
           className="lg:hidden fixed z-50 flex items-center justify-center rounded-full transition-all active:scale-90"
           style={{
-            bottom: 72,
+            bottom: "calc(72px + env(safe-area-inset-bottom))",
             right: 14,
             width: 36,
             height: 36,
@@ -266,9 +266,9 @@ export function BottomNav({ user, isAdmin, onLogout, onProfileOpen }: BottomNavP
 
         {/* ── Bottom bar (always visible) ── */}
         <div
-          className="absolute left-0 right-0 bottom-0 flex items-center justify-around bg-white"
+          className="absolute left-0 right-0 bottom-0 flex items-end justify-around bg-white"
           style={{
-            height: 60,
+            height: "calc(60px + env(safe-area-inset-bottom))",
             paddingBottom: "env(safe-area-inset-bottom)",
             borderTop: "1px solid rgba(0,0,0,0.09)",
           }}
