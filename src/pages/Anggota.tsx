@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Users, Plus, Edit, Trash2, Mail, ShieldCheck, Shield, Download, Loader2, Search, MoreVertical, X } from "lucide-react";
+import { Users, Plus, Edit, Trash2, Mail, ShieldCheck, Shield, Download, FileDown, Loader2, Search, MoreVertical, X } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -170,6 +170,28 @@ export default function AnggotaPage() {
 
   const activeCount = members.filter(m => m.status === "active").length;
 
+  function handleExportCSV() {
+    const headers = ["Nama", "Role/Jabatan", "Divisi", "Email", "Status", "Level Akses"];
+    const rows = members.map(m => [
+      m.name,
+      m.role,
+      m.division,
+      m.email ?? "",
+      m.status,
+      m.accessLevel,
+    ]);
+    const csvContent = [headers, ...rows]
+      .map(row => row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(","))
+      .join("\n");
+    const blob = new Blob(["\uFEFF" + csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `anggota-aina-${new Date().toISOString().slice(0, 10)}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
   return (
     <div className="space-y-4 animate-fade-in">
       <PageHeader title="Anggota" description="Tim orang-orang di balik AINA">
@@ -193,6 +215,25 @@ export default function AnggotaPage() {
               disabled={importMutation.isPending}
             >
               {importMutation.isPending ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Download className="h-3.5 w-3.5" />}
+            </Button>
+            <Button
+              size="sm"
+              variant="outline"
+              className="gap-1.5 hidden sm:flex"
+              onClick={handleExportCSV}
+              disabled={members.length === 0}
+            >
+              <FileDown className="h-3.5 w-3.5" />
+              Export CSV
+            </Button>
+            <Button
+              size="icon"
+              variant="outline"
+              className="h-8 w-8 sm:hidden"
+              onClick={handleExportCSV}
+              disabled={members.length === 0}
+            >
+              <FileDown className="h-3.5 w-3.5" />
             </Button>
             <Button size="sm" className="gap-1.5 hidden sm:flex" data-testid="button-add-anggota" onClick={() => setDialogOpen(true)}>
               <Plus className="h-3.5 w-3.5" /> Tambah
