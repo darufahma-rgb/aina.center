@@ -8,6 +8,7 @@ import {
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
+import { usePresence } from "@/hooks/usePresence";
 import { cn } from "@/lib/utils";
 import { ProfileModal } from "@/components/ProfileModal";
 import AIChatWidget from "@/components/AIChatWidget";
@@ -380,6 +381,7 @@ interface PortalLayoutProps { children: ReactNode; }
 export function PortalLayout({ children }: PortalLayoutProps) {
   const { user, isAdmin, logout } = useAuth();
   const { toast } = useToast();
+  usePresence();
   const { pathname } = useLocation();
   const [searchVal, setSearchVal] = useState("");
   const [profileOpen, setProfileOpen] = useState(false);

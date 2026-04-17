@@ -8,6 +8,25 @@ import { requireAuth, requireAdmin } from "./auth";
 import { runAssistant } from "./assistant";
 import type { ChatMessage } from "./assistant";
 
+// ─── In-memory presence store ─────────────────────────────────────────────────
+interface PresenceEntry {
+  userId: number;
+  username: string;
+  fullName: string | null;
+  avatarUrl: string | null;
+  lastSeen: Date;
+  currentPage: string;
+}
+const presenceStore = new Map<number, PresenceEntry>();
+
+// Auto-cleanup stale entries every 2 minutes
+setInterval(() => {
+  const cutoff = Date.now() - 90_000;
+  for (const [id, entry] of presenceStore) {
+    if (entry.lastSeen.getTime() < cutoff) presenceStore.delete(id);
+  }
+}, 120_000);
+
 function getSupabaseClient() {
   const url = process.env.SUPABASE_URL;
   const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -1460,5 +1479,43 @@ Format JSON:
       console.error("AI Chat error:", err);
       res.status(500).json({ error: err.message ?? "Terjadi kesalahan." });
     }
+  });
+
+  // ── Presence / online users ──────────────────────────────────────────────────
+
+  app.post("/api/presence/ping", requireAuth, async (req, res) => {
+    try {
+      const userId = req.session.userId!;
+      const user = await storage.getUserById(userId);
+      if (!user) return res.status(404).json({ error: "User not found" });
+      const { page = "/" } = req.body as { page?: string };
+      presenceStore.set(userId, {
+        userId,
+        username: user.username,
+        fullName: (user as any).fullName ?? null,
+        avatarUrl: (user as any).avatarUrl ?? null,
+        lastSeen: new Date(),
+        currentPage: page,
+      });
+      res.json({ ok: true });
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  app.get("/api/presence/online", requireAuth, async (_req, res) => {
+    const cutoff = Date.now() - 75_000;
+    const online = Array.from(presenceStore.values())
+      .filter(e => e.lastSeen.getTime() >= cutoff)
+      .sort((a, b) => b.lastSeen.getTime() - a.lastSeen.getTime())
+      .map(e => ({
+        userId: e.userId,
+        username: e.username,
+        fullName: e.fullName,
+        avatarUrl: e.avatarUrl,
+        lastSeen: e.lastSeen.toISOString(),
+        currentPage: e.currentPage,
+      }));
+    res.json({ online, count: online.length });
   });
 }

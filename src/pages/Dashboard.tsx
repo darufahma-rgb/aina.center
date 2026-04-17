@@ -1006,6 +1006,146 @@ function JarvisWidget() {
   );
 }
 
+// ─── Online Users Card ────────────────────────────────────────────────────────
+
+interface OnlineUser {
+  userId: number;
+  username: string;
+  fullName: string | null;
+  avatarUrl: string | null;
+  lastSeen: string;
+  currentPage: string;
+}
+
+const PAGE_LABEL: Record<string, string> = {
+  "/":           "Dashboard",
+  "/notulensi":  "Notulensi",
+  "/agenda":     "Agenda",
+  "/anggota":    "Anggota",
+  "/keuangan":   "Keuangan",
+  "/surat":      "Surat",
+  "/inventaris": "Inventaris",
+  "/asisten":    "Asisten AINA",
+  "/fitur":      "Fitur Terbaru",
+  "/investor":   "Investor Mode",
+};
+
+function getPageLabel(page: string) {
+  for (const [prefix, label] of Object.entries(PAGE_LABEL)) {
+    if (page === prefix || (prefix !== "/" && page.startsWith(prefix))) return label;
+  }
+  return "Portal";
+}
+
+function timeAgo(iso: string) {
+  const diff = Math.floor((Date.now() - new Date(iso).getTime()) / 1000);
+  if (diff < 10) return "baru saja";
+  if (diff < 60) return `${diff}d yang lalu`;
+  return `${Math.floor(diff / 60)}m yang lalu`;
+}
+
+function UserAvatar({ user }: { user: OnlineUser }) {
+  const initials = (user.fullName ?? user.username)
+    .split(" ").map(w => w[0]).slice(0, 2).join("").toUpperCase();
+  if (user.avatarUrl) {
+    return (
+      <img
+        src={user.avatarUrl}
+        alt={user.username}
+        className="h-8 w-8 rounded-xl object-cover"
+      />
+    );
+  }
+  const colors = ["#3E0FA3", "#1D4ED8", "#047857", "#B45309", "#0284C7", "#BE185D"];
+  const color = colors[user.userId % colors.length];
+  return (
+    <div
+      className="h-8 w-8 rounded-xl flex items-center justify-center text-white text-[11px] font-bold shrink-0"
+      style={{ background: color }}
+    >
+      {initials}
+    </div>
+  );
+}
+
+function OnlineUsersCard() {
+  const { data, isLoading } = useQuery<{ online: OnlineUser[]; count: number }>({
+    queryKey: ["/api/presence/online"],
+    refetchInterval: 30_000,
+  });
+
+  const online = data?.online ?? [];
+
+  return (
+    <div className="section-card p-3 sm:p-4">
+      <div className="flex items-center justify-between mb-3">
+        <div className="flex items-center gap-2">
+          <h3 className="text-[15px] font-bold text-[#1A1A1A]">Sedang Online</h3>
+          {!isLoading && (
+            <span
+              className="h-5 px-2 rounded-full text-[10px] font-bold flex items-center"
+              style={{ background: online.length > 0 ? "#D1FAE5" : "#F3F4F6", color: online.length > 0 ? "#047857" : "#9CA3AF" }}
+            >
+              {online.length}
+            </span>
+          )}
+        </div>
+        <div className="flex items-center gap-1.5">
+          <span
+            className="h-2 w-2 rounded-full"
+            style={{ background: "#10B981", boxShadow: "0 0 0 3px rgba(16,185,129,0.2)", animation: "pulse 2s infinite" }}
+          />
+          <span className="text-[10px] text-[#6B7280] font-medium">Live</span>
+        </div>
+      </div>
+
+      {isLoading ? (
+        <div className="space-y-2.5">
+          {[1, 2].map(i => (
+            <div key={i} className="flex items-center gap-2.5 animate-pulse">
+              <div className="h-8 w-8 rounded-xl bg-gray-100 shrink-0" />
+              <div className="flex-1 space-y-1.5">
+                <div className="h-2.5 bg-gray-100 rounded-full w-2/3" />
+                <div className="h-2 bg-gray-100 rounded-full w-1/2" />
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : online.length === 0 ? (
+        <div className="py-4 text-center">
+          <p className="text-[12px] text-[#bbb]">Tidak ada yang online saat ini</p>
+        </div>
+      ) : (
+        <div className="space-y-2">
+          {online.map((u) => (
+            <div key={u.userId} className="flex items-center gap-2.5 py-1">
+              <div className="relative shrink-0">
+                <UserAvatar user={u} />
+                <span
+                  className="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full border-2 border-white"
+                  style={{ background: "#10B981" }}
+                />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-[12px] font-semibold text-[#1A1A1A] truncate">
+                  {u.fullName ?? u.username}
+                </p>
+                <p className="text-[10px] text-[#9CA3AF] flex items-center gap-1 truncate">
+                  <span
+                    className="inline-block h-1.5 w-1.5 rounded-full shrink-0"
+                    style={{ background: "#A78BFA" }}
+                  />
+                  {getPageLabel(u.currentPage)} · {timeAgo(u.lastSeen)}
+                </p>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 // ─── Dashboard ────────────────────────────────────────────────────────────────
 
 export default function Dashboard() {
@@ -1358,6 +1498,9 @@ export default function Dashboard() {
               ))}
             </div>
           </div>
+
+          {/* ── Online Users ───────────────────────────────────────── */}
+          <OnlineUsersCard />
 
           {/* ── Jadwal Terdekat ────────────────────────────────────── */}
           {agendaList.length > 0 && (
