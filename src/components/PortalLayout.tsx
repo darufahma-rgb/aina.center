@@ -67,7 +67,7 @@ export const ADMIN_SECTION = {
 
 // ─── Sidebar width ────────────────────────────────────────────────────────────
 
-const SIDEBAR_W      = 176;
+const SIDEBAR_W      = 220;
 const SIDEBAR_MARGIN = 8;
 const ACCENT         = "#3E0FA3";
 const HERO_BG        = "linear-gradient(135deg, #0F0A1E 0%, #1A0845 35%, #2D0B7A 70%, #1E0654 100%)";
@@ -127,6 +127,7 @@ function Sidebar({
   mobileOpen,
   onMobileClose,
   onProfileOpen,
+  desktopInline = false,
 }: {
   user: any;
   isAdmin: boolean;
@@ -134,6 +135,7 @@ function Sidebar({
   mobileOpen: boolean;
   onMobileClose: () => void;
   onProfileOpen: () => void;
+  desktopInline?: boolean;
 }) {
   const displayName = user?.displayName || user?.username || "??";
   const initials = displayName.slice(0, 2).toUpperCase();
@@ -163,9 +165,14 @@ function Sidebar({
       {/* Sidebar panel */}
       <aside
         className={cn(
-          "sidebar-panel fixed z-[70] flex flex-col relative overflow-hidden",
-          !isMobile && "top-0 bottom-0 transition-transform duration-300 ease-out lg:translate-x-0",
-          !isMobile && (mobileOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"),
+          "sidebar-panel flex flex-col relative overflow-hidden",
+          /* mobile overlay: fixed z-[70] */
+          isMobile && "fixed z-[70]",
+          /* desktop fixed (legacy): only when NOT inline */
+          !isMobile && !desktopInline && "fixed z-[70] top-0 bottom-0 transition-transform duration-300 ease-out lg:translate-x-0",
+          !isMobile && !desktopInline && (mobileOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"),
+          /* desktop inline: no fixed positioning */
+          !isMobile && desktopInline && "w-full",
         )}
         style={isMobile ? {
           left: mobileOpen ? 12 : -(SIDEBAR_W + 20),
@@ -177,6 +184,14 @@ function Sidebar({
           border: "1px solid rgba(167,139,250,0.18)",
           boxShadow: "0 20px 60px rgba(62,15,163,0.35), 0 1px 0 rgba(255,255,255,0.08) inset",
           transition: "left 0.3s cubic-bezier(0.32,0.72,0,1)",
+        } : desktopInline ? {
+          margin: SIDEBAR_MARGIN,
+          marginRight: 2,
+          height: `calc(100dvh - ${SIDEBAR_MARGIN * 2}px)`,
+          borderRadius: 24,
+          background: HERO_BG,
+          border: "1px solid rgba(167,139,250,0.18)",
+          boxShadow: "0 20px 60px rgba(62,15,163,0.35), 0 1px 0 rgba(255,255,255,0.08) inset",
         } : {
           left: SIDEBAR_MARGIN,
           top: SIDEBAR_MARGIN,
@@ -374,21 +389,33 @@ export function PortalLayout({ children }: PortalLayoutProps) {
   return (
     <div className="bg-background flex" style={{ overflowX: "clip", maxWidth: "100vw", minHeight: "100dvh" }}>
 
-      {/* ── Sidebar (desktop only) ──────────────────────────────────── */}
+      {/* ── Sidebar desktop: sticky in flex flow ────────────────────── */}
       {!isMobile && (
-        <Sidebar
-          user={user}
-          isAdmin={isAdmin}
-          onLogout={handleLogout}
-          mobileOpen={false}
-          onMobileClose={() => {}}
-          onProfileOpen={() => setProfileOpen(true)}
-        />
+        <div
+          className="hidden lg:block shrink-0"
+          style={{
+            width: SIDEBAR_W + SIDEBAR_MARGIN + 2,
+            position: "sticky",
+            top: 0,
+            height: "100dvh",
+            zIndex: 10,
+          }}
+        >
+          <Sidebar
+            user={user}
+            isAdmin={isAdmin}
+            onLogout={handleLogout}
+            mobileOpen={false}
+            onMobileClose={() => {}}
+            onProfileOpen={() => setProfileOpen(true)}
+            desktopInline={true}
+          />
+        </div>
       )}
 
       {/* ── Main content — white card ────────────────────────────────── */}
       <div
-        className="flex-1 flex flex-col transition-none lg:ml-[186px] lg:mr-2 lg:mt-2 lg:mb-2"
+        className="flex-1 flex flex-col transition-none lg:mr-2 lg:mt-2 lg:mb-2"
         style={{ minHeight: "100dvh" }}
       >
         {/* White card wrapper */}
