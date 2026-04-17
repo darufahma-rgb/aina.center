@@ -67,8 +67,8 @@ export const ADMIN_SECTION = {
 
 // ─── Sidebar width ────────────────────────────────────────────────────────────
 
-const SIDEBAR_W      = 200;
-const SIDEBAR_MARGIN = 12;
+const SIDEBAR_W      = 176;
+const SIDEBAR_MARGIN = 10;
 const ACCENT         = "#3E0FA3";
 const HERO_BG        = "linear-gradient(135deg, #0F0A1E 0%, #1A0845 35%, #2D0B7A 70%, #1E0654 100%)";
 
@@ -201,29 +201,29 @@ function Sidebar({
         <div className="sidebar-bg absolute top-1/3 -right-16 h-28 w-28 rounded-full" style={{ background: "radial-gradient(circle, rgba(196,181,253,0.13) 0%, transparent 70%)" }} />
         <div className="sidebar-bg absolute top-0 left-0 right-0 h-px" style={{ background: "linear-gradient(90deg, transparent, rgba(167,139,250,0.65), transparent)" }} />
         {/* ── Logo ─────────────────────────────────────────────────── */}
-        <div className="px-5 pt-5 pb-4 shrink-0">
-          <Link to="/" className="flex items-center gap-2.5">
+        <div className="px-4 pt-4 pb-3 shrink-0">
+          <Link to="/" className="flex items-center gap-2">
             <div
-              className="h-8 w-8 rounded-xl flex items-center justify-center shrink-0"
+              className="h-7 w-7 rounded-xl flex items-center justify-center shrink-0"
               style={{ background: "rgba(139,92,246,0.20)", border: "1px solid rgba(167,139,250,0.25)" }}
             >
               <img
                 src="/logo.png"
                 alt="AINA"
-                className="h-5 w-5 object-contain"
+                className="h-4 w-4 object-contain"
                 style={{ filter: "brightness(0) invert(1)" }}
               />
             </div>
-            <span className="font-bold text-[15px] text-white leading-none">AINA Centre</span>
+            <span className="font-bold text-[14px] text-white leading-none">AINA Centre</span>
           </Link>
         </div>
 
         {/* ── User profile ─────────────────────────────────────────── */}
-        <div className="px-4 pb-5 shrink-0 flex flex-col items-center text-center">
+        <div className="px-3 pb-4 shrink-0 flex flex-col items-center text-center">
           <button
             onClick={onProfileOpen}
-            className="h-[72px] w-[72px] rounded-full flex items-center justify-center text-white text-xl font-bold mb-2.5 shrink-0 overflow-hidden hover:opacity-90 transition-opacity active:scale-95"
-            style={{ background: "linear-gradient(135deg, rgba(139,92,246,0.45), rgba(62,15,163,0.45))", border: "1px solid rgba(196,181,253,0.26)", boxShadow: "0 12px 34px rgba(62,15,163,0.35)" }}
+            className="h-[58px] w-[58px] rounded-full flex items-center justify-center text-white text-lg font-bold mb-2 shrink-0 overflow-hidden hover:opacity-90 transition-opacity active:scale-95"
+            style={{ background: "linear-gradient(135deg, rgba(139,92,246,0.45), rgba(62,15,163,0.45))", border: "1px solid rgba(196,181,253,0.26)", boxShadow: "0 10px 28px rgba(62,15,163,0.35)" }}
             title="Edit Profil"
           >
             {user?.avatarUrl ? (
@@ -236,10 +236,10 @@ function Sidebar({
             onClick={onProfileOpen}
             className="flex items-center gap-1 hover:opacity-70 transition-opacity"
           >
-            <p className="text-[14px] font-semibold text-white">{displayName}</p>
-            <ChevronDown className="h-3.5 w-3.5 text-white/50" />
+            <p className="text-[13px] font-semibold text-white">{displayName}</p>
+            <ChevronDown className="h-3 w-3 text-white/50" />
           </button>
-          <p className="text-[12px] text-[#C4B5FD]/70 mt-0.5">{isAdmin ? "Administrator" : "Anggota"}</p>
+          <p className="text-[11px] text-[#C4B5FD]/70 mt-0.5">{isAdmin ? "Administrator" : "Anggota"}</p>
         </div>
 
         {/* ── Divider ──────────────────────────────────────────────── */}
@@ -287,8 +287,8 @@ function Sidebar({
 
         {/* ── Help center dark card ─────────────────────────────────── */}
         {!helpDismissed && (
-          <div className="p-3 pb-4 shrink-0">
-            <div className="p-4 relative rounded-2xl overflow-hidden" style={{ background: "rgba(139,92,246,0.14)", border: "1px solid rgba(167,139,250,0.22)", boxShadow: "0 12px 30px rgba(15,10,30,0.18)" }}>
+          <div className="p-2.5 pb-3 shrink-0">
+            <div className="p-3 relative rounded-2xl overflow-hidden" style={{ background: "rgba(139,92,246,0.14)", border: "1px solid rgba(167,139,250,0.22)", boxShadow: "0 12px 30px rgba(15,10,30,0.18)" }}>
               {/* Dismiss button */}
               <button
                 onClick={dismissHelp}
@@ -388,7 +388,7 @@ export function PortalLayout({ children }: PortalLayoutProps) {
 
       {/* ── Main content — white card ────────────────────────────────── */}
       <div
-        className="flex-1 flex flex-col transition-none lg:ml-[214px] lg:mr-2 lg:mt-2 lg:mb-2"
+        className="flex-1 flex flex-col transition-none lg:ml-[190px] lg:mr-2 lg:mt-2 lg:mb-2"
         style={{ minHeight: "100dvh" }}
       >
         {/* White card wrapper */}
