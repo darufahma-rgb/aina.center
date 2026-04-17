@@ -4,34 +4,24 @@ import { useAuth } from "@/contexts/AuthContext";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { Lock, User, Eye, EyeOff } from "lucide-react";
+import ainaInternalLogo from "@assets/aina_center_internal_logo_1776425398825.png";
 
-function AinaLoginMark({ variant }: { variant: "mobile" | "desktop" }) {
+function AinaLoginLogo({ variant }: { variant: "mobile" | "desktop" }) {
   const isMobile = variant === "mobile";
 
   return (
     <div
-      className={`rounded-3xl flex items-center justify-center shrink-0 ${isMobile ? "mb-8" : ""}`}
+      className={`flex items-center justify-center shrink-0 ${isMobile ? "mb-8" : ""}`}
       style={{
-        height: isMobile ? 160 : 36,
-        width: isMobile ? 160 : 36,
-        background: isMobile
-          ? "linear-gradient(135deg, rgba(124,58,237,0.95), rgba(62,15,163,0.95))"
-          : "rgba(255,255,255,0.12)",
-        backdropFilter: "blur(8px)",
-        border: "1px solid rgba(255,255,255,0.18)",
-        boxShadow: isMobile ? "0 24px 80px rgba(62,15,163,0.42)" : undefined,
+        height: isMobile ? 170 : 40,
+        width: isMobile ? 170 : 40,
       }}
     >
-      <span
-        className="font-black text-white"
-        style={{
-          fontSize: isMobile ? 76 : 18,
-          letterSpacing: "-0.08em",
-          lineHeight: 1,
-        }}
-      >
-        A
-      </span>
+      <img
+        src={ainaInternalLogo}
+        alt="AINA Centre Internal"
+        className="h-full w-full object-contain"
+      />
     </div>
   );
 }
@@ -94,7 +84,7 @@ export default function Login() {
           style={{ paddingTop: "env(safe-area-inset-top, 0px)" }}
         >
           {/* Logo */}
-          <AinaLoginMark variant="mobile" />
+          <AinaLoginLogo variant="mobile" />
 
           {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-3 w-full">
@@ -216,7 +206,7 @@ export default function Login() {
           />
 
           <div className="relative z-10 flex items-center gap-3 p-10 login-logo-enter">
-            <AinaLoginMark variant="desktop" />
+            <AinaLoginLogo variant="desktop" />
             <div>
               <p className="font-semibold text-white text-sm tracking-tight">AINA Centre</p>
               <p className="text-[10px] font-medium tracking-[0.22em] uppercase text-white/45">Management</p>
