@@ -292,27 +292,30 @@ export function BottomNav({ user, isAdmin, onLogout, onProfileOpen }: BottomNavP
           })}
 
           {/* CENTER — prominent MENU button */}
-          <div className="flex flex-col items-center justify-center flex-1 py-1">
+          <div className="flex flex-col items-center justify-center flex-1 py-1 gap-[3px]">
             <button
               onClick={() => setOpen((v) => !v)}
-              className="flex items-center gap-1.5 px-4 py-1.5 rounded-2xl transition-all active:scale-95"
+              className="flex items-center justify-center rounded-full transition-all active:scale-90"
               style={{
+                width: 38,
+                height: 38,
                 background: open
-                  ? `${ACCENT}`
+                  ? ACCENT
                   : `linear-gradient(135deg, #5B21B6 0%, ${ACCENT} 100%)`,
-                boxShadow: open
-                  ? `0 2px 12px ${ACCENT}55`
-                  : `0 3px 14px ${ACCENT}55`,
+                boxShadow: `0 3px 14px ${ACCENT}55`,
               }}
             >
               {open
-                ? <X className="h-[15px] w-[15px] text-white" />
-                : <LayoutGrid className="h-[15px] w-[15px] text-white" />
+                ? <X className="h-[17px] w-[17px] text-white" />
+                : <LayoutGrid className="h-[17px] w-[17px] text-white" />
               }
-              <span className="text-[11px] font-extrabold tracking-widest text-white uppercase">
-                {open ? "Tutup" : "Menu"}
-              </span>
             </button>
+            <span
+              className="text-[9px] font-extrabold tracking-widest uppercase"
+              style={{ color: ACCENT }}
+            >
+              {open ? "Tutup" : "Menu"}
+            </span>
           </div>
 
           {/* RIGHT items */}
