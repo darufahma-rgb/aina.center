@@ -340,15 +340,15 @@ export default function AgendaPage() {
             </p>
           </div>
           {loadingBerita ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 stagger-list">
               {[1,2,3,4,5,6].map(i => (
-                <div key={i} className="h-56 rounded-2xl bg-muted animate-pulse" />
+                <div key={i} className="h-56 rounded-2xl skeleton-shimmer" />
               ))}
             </div>
           ) : beritaItems.length === 0 ? (
             <Card><CardContent className="p-8 text-center text-muted-foreground text-sm">Belum ada berita dari AIGYPT.</CardContent></Card>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 stagger-list">
               {beritaItems.map((item) => (
                 <BeritaCard key={item.id} item={item} onClick={() => setSelectedBerita(item)} />
               ))}
@@ -384,7 +384,7 @@ export default function AgendaPage() {
               </CardContent>
             </Card>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 stagger-list">
               {manualItems.map((item) => (
                 <AgendaCard
                   key={item.id}

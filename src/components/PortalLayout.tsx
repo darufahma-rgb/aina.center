@@ -94,14 +94,24 @@ function NavItem({
       to={item.url}
       onClick={onClick}
       className={cn(
-        "flex items-center gap-3 px-3 h-10 rounded-2xl text-[13px] font-medium w-full transition-all duration-150 group border border-transparent",
+        "relative flex items-center gap-3 px-3 h-10 rounded-2xl text-[13px] font-medium w-full transition-all duration-200 group border border-transparent",
         active
-          ? "nav-active"
+          ? "nav-active nav-active-animate"
           : "text-white/70 hover:bg-white/[0.09] hover:border-white/[0.10] hover:text-white",
       )}
     >
+      {/* C. Sliding left indicator bar */}
+      {active && (
+        <span
+          className="nav-indicator absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-5 rounded-r-full"
+          style={{ background: "linear-gradient(to bottom, #c4b5fd, #7c3aed)" }}
+        />
+      )}
       <item.icon
-        className={cn("h-[17px] w-[17px] shrink-0 transition-colors", active ? "text-[#3E0FA3]" : "text-white/50 group-hover:text-white")}
+        className={cn(
+          "h-[17px] w-[17px] shrink-0 transition-all duration-200",
+          active ? "text-white scale-110" : "text-white/50 group-hover:text-white",
+        )}
       />
       <span className="truncate">{item.title}</span>
     </Link>
@@ -538,7 +548,10 @@ export function PortalLayout({ children }: PortalLayoutProps) {
 
           {/* ── Page content ──────────────────────────────────────── */}
           <main className="mobile-compact-main flex-1 p-2.5 sm:p-5 lg:py-6 lg:px-8 pb-[84px] lg:pb-8 overflow-y-auto overflow-x-hidden min-w-0 safe-area-pb">
-            {children}
+            {/* A. Page transition — keyed by pathname so it re-triggers on nav */}
+            <div key={pathname} className="page-enter">
+              {children}
+            </div>
           </main>
         </div>
       </div>
