@@ -979,7 +979,6 @@ export default function Dashboard() {
         className="mb-2 sm:mb-3 rounded-2xl sm:rounded-3xl relative overflow-hidden"
         style={{
           background: "linear-gradient(135deg, #0F0A1E 0%, #1A0845 35%, #2D0B7A 70%, #1E0654 100%)",
-          boxShadow: "0 20px 60px rgba(62,15,163,0.35), 0 1px 0 rgba(255,255,255,0.08) inset",
         }}
       >
         {/* Subtle grid texture */}
