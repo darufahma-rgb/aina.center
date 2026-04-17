@@ -219,14 +219,13 @@ function Sidebar({
         <div className="px-4 pt-4 pb-3 shrink-0">
           <Link to="/" className="flex items-center gap-2">
             <div
-              className="h-7 w-7 rounded-xl flex items-center justify-center shrink-0"
+              className="h-8 w-8 rounded-xl flex items-center justify-center shrink-0 overflow-hidden"
               style={{ background: "rgba(139,92,246,0.20)", border: "1px solid rgba(167,139,250,0.25)" }}
             >
               <img
-                src="/logo.png"
+                src="/aigypt-logo.png"
                 alt="AINA"
-                className="h-4 w-4 object-contain"
-                style={{ filter: "brightness(0) invert(1)" }}
+                className="h-7 w-7 object-contain"
               />
             </div>
             <span className="font-bold text-[14px] text-white leading-none">AINA Centre</span>
@@ -538,7 +537,7 @@ export function PortalLayout({ children }: PortalLayoutProps) {
           </header>
 
           {/* ── Page content ──────────────────────────────────────── */}
-          <main className="mobile-compact-main flex-1 p-2.5 sm:p-5 lg:p-4 pb-[84px] lg:pb-8 overflow-y-auto overflow-x-hidden min-w-0 safe-area-pb">
+          <main className="mobile-compact-main flex-1 p-2.5 sm:p-5 lg:py-6 lg:px-8 pb-[84px] lg:pb-8 overflow-y-auto overflow-x-hidden min-w-0 safe-area-pb">
             {children}
           </main>
         </div>

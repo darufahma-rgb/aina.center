@@ -282,3 +282,8 @@
     padding-bottom: calc(84px + env(safe-area-inset-bottom)) !important;
   }
 }
+
+@keyframes blink-cursor {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0; }
+}

@@ -154,18 +154,66 @@ function AgendaCard({ item, isAdmin, onEdit, onDelete }: {
   );
 }
 
+// ─── AIGYPT Berita Detail Dialog ──────────────────────────────────────────────
+
+function BeritaDetailDialog({ item, onClose }: { item: AIGYPTBerita; onClose: () => void }) {
+  return (
+    <Dialog open onOpenChange={(v) => !v && onClose()}>
+      <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle className="text-base leading-snug pr-6">{item.title}</DialogTitle>
+        </DialogHeader>
+        {item.image_url && (
+          <div className="w-full rounded-xl overflow-hidden bg-muted" style={{ maxHeight: 280 }}>
+            <img
+              src={item.image_url}
+              alt={item.title}
+              className="w-full h-full object-cover"
+              onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
+            />
+          </div>
+        )}
+        <div className="flex items-center gap-2 flex-wrap">
+          <span
+            className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full"
+            style={{ background: "#F0FDF4", color: "#16A34A" }}
+          >
+            <CheckCircle2 className="h-3 w-3" />
+            Selesai
+          </span>
+          <span
+            className="text-[9px] font-bold px-1.5 py-0.5 rounded uppercase tracking-wide"
+            style={{ background: "#EDE9FE", color: "#7C3AED" }}
+          >
+            AIGYPT
+          </span>
+          <span className="text-[11px] text-muted-foreground ml-auto">{item.date}</span>
+        </div>
+        {item.summary ? (
+          <p className="text-sm text-foreground/80 leading-relaxed">{item.summary}</p>
+        ) : (
+          <p className="text-sm text-muted-foreground italic">Tidak ada ringkasan tersedia.</p>
+        )}
+      </DialogContent>
+    </Dialog>
+  );
+}
+
 // ─── AIGYPT Berita Card ───────────────────────────────────────────────────────
 
-function BeritaCard({ item }: { item: AIGYPTBerita }) {
+function BeritaCard({ item, onClick }: { item: AIGYPTBerita; onClick: () => void }) {
   return (
-    <Card className="hover:shadow-md transition-shadow overflow-hidden">
+    <Card
+      className="hover:shadow-md transition-shadow overflow-hidden cursor-pointer group"
+      onClick={onClick}
+    >
       <CardContent className="p-0">
         {item.image_url && (
           <div className="h-36 w-full overflow-hidden bg-muted">
             <img
               src={item.image_url}
               alt={item.title}
-              className="w-full h-full object-cover"
+              className="w-full h-full object-cover group-hover:scale-[1.02] transition-transform duration-300"
               onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
             />
           </div>
@@ -182,7 +230,7 @@ function BeritaCard({ item }: { item: AIGYPTBerita }) {
             </span>
             <span className="text-[10px] text-muted-foreground ml-auto">{item.date}</span>
           </div>
-          <h3 className="font-semibold text-sm leading-snug line-clamp-2">{item.title}</h3>
+          <h3 className="font-semibold text-sm leading-snug line-clamp-2 group-hover:text-[#7C3AED] transition-colors">{item.title}</h3>
           {item.summary && (
             <p className="text-xs text-muted-foreground leading-relaxed line-clamp-3">{item.summary}</p>
           )}
@@ -193,6 +241,7 @@ function BeritaCard({ item }: { item: AIGYPTBerita }) {
             >
               AIGYPT
             </span>
+            <span className="text-[9px] text-muted-foreground ml-auto group-hover:text-[#7C3AED] transition-colors font-medium">Lihat detail →</span>
           </div>
         </div>
       </CardContent>
@@ -209,10 +258,11 @@ type Tab = "manual" | "aigypt";
 export default function AgendaPage() {
   const { isAdmin } = useAuth();
   const { toast } = useToast();
-  const [tab,       setTab]       = useState<Tab>("aigypt");
-  const [dialogOpen, setDialogOpen] = useState(false);
-  const [editing,   setEditing]   = useState<Agenda | null>(null);
-  const [deleteId,  setDeleteId]  = useState<number | null>(null);
+  const [tab,           setTab]           = useState<Tab>("aigypt");
+  const [dialogOpen,    setDialogOpen]    = useState(false);
+  const [editing,       setEditing]       = useState<Agenda | null>(null);
+  const [deleteId,      setDeleteId]      = useState<number | null>(null);
+  const [selectedBerita, setSelectedBerita] = useState<AIGYPTBerita | null>(null);
 
   const { data: manualItems = [], isLoading: loadingManual } = useQuery<Agenda[]>({
     queryKey: ["/api/agenda"],
@@ -300,7 +350,7 @@ export default function AgendaPage() {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {beritaItems.map((item) => (
-                <BeritaCard key={item.id} item={item} />
+                <BeritaCard key={item.id} item={item} onClick={() => setSelectedBerita(item)} />
               ))}
             </div>
           )}
@@ -347,6 +397,11 @@ export default function AgendaPage() {
             </div>
           )}
         </>
+      )}
+
+      {/* ── Berita Detail Popup ── */}
+      {selectedBerita && (
+        <BeritaDetailDialog item={selectedBerita} onClose={() => setSelectedBerita(null)} />
       )}
 
       {/* ── Dialogs ── */}

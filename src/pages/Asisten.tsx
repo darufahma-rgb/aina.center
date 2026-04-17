@@ -30,6 +30,54 @@ interface ChatMessage {
   suggestions?: string[];
   file?: { name: string; size: number; preview?: string };
   timestamp: Date;
+  typing?: boolean;
+}
+
+// ─── Typewriter Effect ────────────────────────────────────────────────────────
+
+function TypewriterText({ text, speed = 18, onDone }: { text: string; speed?: number; onDone?: () => void }) {
+  const [displayed, setDisplayed] = useState("");
+  const [done, setDone] = useState(false);
+  const idxRef = useRef(0);
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const onDoneRef = useRef(onDone);
+  onDoneRef.current = onDone;
+
+  useEffect(() => {
+    idxRef.current = 0;
+    setDisplayed("");
+    setDone(false);
+
+    function tick() {
+      if (idxRef.current < text.length) {
+        idxRef.current += 1;
+        setDisplayed(text.slice(0, idxRef.current));
+        const nextSpeed = text[idxRef.current - 1] === "\n" ? speed * 3 : speed;
+        timerRef.current = setTimeout(tick, nextSpeed);
+      } else {
+        setDone(true);
+        onDoneRef.current?.();
+      }
+    }
+
+    timerRef.current = setTimeout(tick, speed);
+    return () => { if (timerRef.current) clearTimeout(timerRef.current); };
+  }, [text, speed]);
+
+  return (
+    <span>
+      {displayed}
+      {!done && (
+        <span
+          className="inline-block w-[2px] h-[1em] ml-0.5 align-middle rounded-sm"
+          style={{
+            background: "#3E0FA3",
+            animation: "blink-cursor 0.7s step-end infinite",
+          }}
+        />
+      )}
+    </span>
+  );
 }
 
 // ─── Thinking States ──────────────────────────────────────────────────────────
@@ -203,6 +251,7 @@ export default function AsistenPage() {
   const [attachedFile, setAttachedFile] = useState<File | null>(null);
   const [filePreview, setFilePreview] = useState<string | null>(null);
   const [isDragging, setIsDragging] = useState(false);
+  const [doneTypingIds, setDoneTypingIds] = useState<Set<string>>(new Set());
   const fileInputRef = useRef<HTMLInputElement>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -301,6 +350,7 @@ export default function AsistenPage() {
         actions: data.actions,
         suggestions: data.suggestions,
         timestamp: new Date(),
+        typing: true,
       }]);
     } catch (e: any) {
       toast({ title: "Gagal", description: e.message, variant: "destructive" });
@@ -309,6 +359,7 @@ export default function AsistenPage() {
         role: "assistant",
         content: `Sistem mengalami kendala: ${e.message}`,
         timestamp: new Date(),
+        typing: true,
       }]);
     } finally {
       setIsLoading(false);
@@ -444,21 +495,32 @@ export default function AsistenPage() {
                       </div>
                     )}
 
-                    {msg.role === "assistant"
-                      ? <RenderContent text={msg.content} />
-                      : <p className="text-[13.5px] leading-relaxed whitespace-pre-wrap">{msg.content}</p>
-                    }
+                    {msg.role === "assistant" ? (
+                      msg.typing && !doneTypingIds.has(msg.id) ? (
+                        <p className="text-[13.5px] leading-relaxed whitespace-pre-wrap font-[inherit]">
+                          <TypewriterText
+                            text={msg.content}
+                            speed={14}
+                            onDone={() => setDoneTypingIds(prev => new Set([...prev, msg.id]))}
+                          />
+                        </p>
+                      ) : (
+                        <RenderContent text={msg.content} />
+                      )
+                    ) : (
+                      <p className="text-[13.5px] leading-relaxed whitespace-pre-wrap">{msg.content}</p>
+                    )}
                   </div>
 
-                  {/* Action cards */}
-                  {msg.actions && msg.actions.length > 0 && (
+                  {/* Action cards — show after typing done */}
+                  {msg.actions && msg.actions.length > 0 && (!msg.typing || doneTypingIds.has(msg.id)) && (
                     <div className="space-y-1.5">
                       {msg.actions.map((a, i) => <ActionCard key={i} action={a} />)}
                     </div>
                   )}
 
-                  {/* Suggestion chips */}
-                  {msg.role === "assistant" && msg.suggestions && msg.suggestions.length > 0 && (
+                  {/* Suggestion chips — show after typing done */}
+                  {msg.role === "assistant" && msg.suggestions && msg.suggestions.length > 0 && (!msg.typing || doneTypingIds.has(msg.id)) && (
                     <div className="flex flex-wrap gap-1.5 pt-1">
                       {msg.suggestions.map((s, i) => (
                         <SuggestionChip key={i} text={s} onClick={() => sendMessage(s)} />
