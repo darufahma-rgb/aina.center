@@ -151,7 +151,11 @@ export function registerRoutes(app: Router) {
       const user = await storage.createUser(parsed.data);
       res.status(201).json(user);
     } catch (e: any) {
-      res.status(400).json({ message: e.message });
+      const msg: string = e.message ?? "";
+      if (msg.includes("unique") || msg.includes("duplicate") || msg.includes("already exists")) {
+        return res.status(400).json({ message: "Username atau email sudah digunakan." });
+      }
+      res.status(400).json({ message: "Gagal membuat akun." });
     }
   });
 
@@ -651,7 +655,11 @@ export function registerRoutes(app: Router) {
       const updated = await storage.updateAnggota(anggotaId, { userId: newUser.id }, req.session.userId!);
       res.status(201).json({ user: newUser, anggota: updated });
     } catch (e: any) {
-      res.status(400).json({ message: e.message });
+      const msg: string = e.message ?? "";
+      if (msg.includes("unique") || msg.includes("duplicate") || msg.includes("already exists")) {
+        return res.status(400).json({ message: "Username atau email sudah digunakan. Coba username lain." });
+      }
+      res.status(400).json({ message: "Gagal membuat akun. Pastikan data sudah benar dan coba lagi." });
     }
   });
 
