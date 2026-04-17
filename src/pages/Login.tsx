@@ -5,6 +5,37 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { Lock, User, Eye, EyeOff } from "lucide-react";
 
+function AinaLoginMark({ variant }: { variant: "mobile" | "desktop" }) {
+  const isMobile = variant === "mobile";
+
+  return (
+    <div
+      className={`rounded-3xl flex items-center justify-center shrink-0 ${isMobile ? "mb-8" : ""}`}
+      style={{
+        height: isMobile ? 160 : 36,
+        width: isMobile ? 160 : 36,
+        background: isMobile
+          ? "linear-gradient(135deg, rgba(124,58,237,0.95), rgba(62,15,163,0.95))"
+          : "rgba(255,255,255,0.12)",
+        backdropFilter: "blur(8px)",
+        border: "1px solid rgba(255,255,255,0.18)",
+        boxShadow: isMobile ? "0 24px 80px rgba(62,15,163,0.42)" : undefined,
+      }}
+    >
+      <span
+        className="font-black text-white"
+        style={{
+          fontSize: isMobile ? 76 : 18,
+          letterSpacing: "-0.08em",
+          lineHeight: 1,
+        }}
+      >
+        A
+      </span>
+    </div>
+  );
+}
+
 export default function Login() {
   const { user, login, isLoading } = useAuth();
   const [username, setUsername] = useState("");
@@ -63,12 +94,7 @@ export default function Login() {
           style={{ paddingTop: "env(safe-area-inset-top, 0px)" }}
         >
           {/* Logo */}
-          <img
-            src="/login-logo.png"
-            alt="AINA Centre"
-            className="object-contain mb-8"
-            style={{ height: 160, width: 160 }}
-          />
+          <AinaLoginMark variant="mobile" />
 
           {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-3 w-full">
@@ -190,12 +216,7 @@ export default function Login() {
           />
 
           <div className="relative z-10 flex items-center gap-3 p-10 login-logo-enter">
-            <div
-              className="h-9 w-9 rounded-xl flex items-center justify-center shrink-0"
-              style={{ background: "rgba(255,255,255,0.12)", backdropFilter: "blur(8px)", border: "1px solid rgba(255,255,255,0.18)" }}
-            >
-              <img src="/logo.png" alt="AINA" className="h-5 w-5 object-contain" />
-            </div>
+            <AinaLoginMark variant="desktop" />
             <div>
               <p className="font-semibold text-white text-sm tracking-tight">AINA Centre</p>
               <p className="text-[10px] font-medium tracking-[0.22em] uppercase text-white/45">Management</p>
