@@ -8,7 +8,7 @@ import {
   BrainCircuit, Paintbrush2, Landmark, UsersRound, CalendarCheck,
   ClipboardList, Archive, Server, Hammer, Rocket, Layers,
   Send, ExternalLink, Loader2, Bot, Search, BarChart3,
-  GitCommit, Bell,
+  GitCommit, Bell, Mic, MicOff,
   type LucideIcon,
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
@@ -723,7 +723,47 @@ function JarvisWidget() {
   const [input, setInput] = useState("");
   const [reply, setReply] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [isListening, setIsListening] = useState(false);
+  const [voiceSupported] = useState(() =>
+    typeof window !== "undefined" && ("SpeechRecognition" in window || "webkitSpeechRecognition" in window)
+  );
+  const recognitionRef = useRef<any>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
+
+  const startVoice = useCallback(() => {
+    if (!voiceSupported) return;
+    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    const recognition = new SpeechRecognition();
+    recognition.lang = "id-ID";
+    recognition.continuous = false;
+    recognition.interimResults = true;
+    recognitionRef.current = recognition;
+
+    recognition.onstart = () => setIsListening(true);
+    recognition.onresult = (e: any) => {
+      const transcript = Array.from(e.results as SpeechRecognitionResultList)
+        .map((r: SpeechRecognitionResult) => r[0].transcript)
+        .join("");
+      setInput(transcript);
+    };
+    recognition.onerror = () => setIsListening(false);
+    recognition.onend = () => {
+      setIsListening(false);
+      recognitionRef.current = null;
+      setTimeout(() => inputRef.current?.focus(), 100);
+    };
+    recognition.start();
+  }, [voiceSupported]);
+
+  const stopVoice = useCallback(() => {
+    recognitionRef.current?.stop();
+    setIsListening(false);
+  }, []);
+
+  const toggleVoice = useCallback(() => {
+    if (isListening) stopVoice();
+    else startVoice();
+  }, [isListening, startVoice, stopVoice]);
 
   const send = useCallback(async (msg: string) => {
     if (!msg.trim() || loading) return;
@@ -894,8 +934,9 @@ function JarvisWidget() {
         <div
           className="flex items-end gap-2.5 rounded-2xl px-4 py-3.5 transition-all"
           style={{
-            background: "#F9FAFB",
-            border: "1.5px solid #E5E7EB",
+            background: isListening ? "#F5F3FF" : "#F9FAFB",
+            border: isListening ? "1.5px solid #7C3AED" : "1.5px solid #E5E7EB",
+            transition: "border-color 0.2s, background 0.2s",
           }}
         >
           <textarea
@@ -903,7 +944,7 @@ function JarvisWidget() {
             value={input}
             onChange={e => setInput(e.target.value)}
             onKeyDown={handleKey}
-            placeholder="Tanya AINA sesuatu... (Enter untuk kirim)"
+            placeholder={isListening ? "Mendengarkan suara kamu..." : "Tanya AINA sesuatu... (Enter untuk kirim)"}
             rows={2}
             className="flex-1 bg-transparent resize-none text-[13px] outline-none leading-relaxed"
             style={{
@@ -913,6 +954,36 @@ function JarvisWidget() {
             }}
             disabled={loading}
           />
+
+          {/* ── Mic button ── */}
+          {voiceSupported && (
+            <button
+              onClick={toggleVoice}
+              disabled={loading}
+              title={isListening ? "Hentikan rekaman" : "Bicara ke AINA"}
+              className="h-8 w-8 rounded-xl flex items-center justify-center shrink-0 transition-all hover:scale-105 active:scale-90 disabled:opacity-30 relative"
+              style={{
+                background: isListening
+                  ? "linear-gradient(135deg, #7C3AED, #6D28D9)"
+                  : "linear-gradient(135deg, #E5E7EB, #D1D5DB)",
+                boxShadow: isListening ? "0 0 0 3px rgba(124,58,237,0.25)" : "none",
+                transition: "all 0.2s",
+              }}
+            >
+              {isListening && (
+                <span
+                  className="absolute inset-0 rounded-xl animate-ping"
+                  style={{ background: "rgba(124,58,237,0.3)" }}
+                />
+              )}
+              {isListening
+                ? <MicOff className="h-3.5 w-3.5 relative z-10" style={{ color: "#fff" }} />
+                : <Mic className="h-3.5 w-3.5" style={{ color: "#6B7280" }} />
+              }
+            </button>
+          )}
+
+          {/* ── Send button ── */}
           <button
             onClick={() => { send(input); setInput(""); }}
             disabled={!input.trim() || loading}
@@ -928,6 +999,7 @@ function JarvisWidget() {
 
         <p className="text-[10px] mt-2 text-center" style={{ color: "#D1D5DB" }}>
           Enter untuk kirim · Shift+Enter untuk baris baru
+          {voiceSupported && <span> · <span style={{ color: "#A78BFA" }}>🎙 Klik mic untuk berbicara</span></span>}
         </p>
       </div>
     </div>
