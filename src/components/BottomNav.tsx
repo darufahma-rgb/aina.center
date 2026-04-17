@@ -59,10 +59,32 @@ interface BottomNavProps {
   onProfileOpen?: () => void;
 }
 
+const MENU_ANIM_STYLE = `
+  @keyframes bnav-pop {
+    0%   { transform: scale(0.7) rotate(-30deg); opacity: 0; }
+    60%  { transform: scale(1.15) rotate(8deg);  opacity: 1; }
+    100% { transform: scale(1)    rotate(0deg);  opacity: 1; }
+  }
+  @keyframes bnav-sheet-in {
+    0%   { transform: translateY(22px); opacity: 0; }
+    100% { transform: translateY(0);    opacity: 1; }
+  }
+  @keyframes bnav-item-in {
+    0%   { transform: translateY(12px) scale(0.92); opacity: 0; }
+    100% { transform: translateY(0)    scale(1);    opacity: 1; }
+  }
+  @keyframes bnav-ring {
+    0%   { box-shadow: 0 0 0 0 rgba(91,33,182,0.55); }
+    70%  { box-shadow: 0 0 0 10px rgba(91,33,182,0);  }
+    100% { box-shadow: 0 0 0 0 rgba(91,33,182,0);    }
+  }
+`;
+
 export function BottomNav({ user, isAdmin, onLogout, onProfileOpen }: BottomNavProps) {
   const { pathname } = useLocation();
   const [open, setOpen] = useState(false);
   const [aiOpen, setAiOpen] = useState(false);
+  const [animKey, setAnimKey] = useState(0);
 
   useEffect(() => {
     const handler = (e: Event) => setAiOpen((e as CustomEvent<boolean>).detail);
@@ -71,6 +93,13 @@ export function BottomNav({ user, isAdmin, onLogout, onProfileOpen }: BottomNavP
   }, []);
 
   useEffect(() => { setOpen(false); }, [pathname]);
+
+  function toggleMenu() {
+    setOpen((v) => {
+      if (!v) setAnimKey((k) => k + 1);
+      return !v;
+    });
+  }
 
   function handleAI() {
     const next = !aiOpen;
@@ -90,6 +119,8 @@ export function BottomNav({ user, isAdmin, onLogout, onProfileOpen }: BottomNavP
 
   return (
     <>
+      <style>{MENU_ANIM_STYLE}</style>
+
       {/* ── Backdrop ── */}
       {open && (
         <div
@@ -142,7 +173,9 @@ export function BottomNav({ user, isAdmin, onLogout, onProfileOpen }: BottomNavP
             borderRight: "1px solid rgba(0,0,0,0.06)",
             opacity: open ? 1 : 0,
             pointerEvents: open ? "auto" : "none",
-            transition: "opacity 0.22s ease",
+            transform: open ? "translateY(0)" : "translateY(16px)",
+            transition: "opacity 0.28s ease, transform 0.35s cubic-bezier(0.32,0.72,0,1)",
+            animation: open ? `bnav-sheet-in 0.38s cubic-bezier(0.32,0.72,0,1) both` : "none",
           }}
         >
           {/* User header */}
@@ -174,8 +207,15 @@ export function BottomNav({ user, isAdmin, onLogout, onProfileOpen }: BottomNavP
 
           {/* Nav sections */}
           <div className="px-4 pt-3 pb-6 space-y-4">
-            {SECTIONS.map((section) => (
-              <div key={section.label}>
+            {SECTIONS.map((section, si) => (
+              <div
+                key={section.label}
+                style={{
+                  animation: open
+                    ? `bnav-item-in 0.32s cubic-bezier(0.34,1.2,0.64,1) ${80 + si * 55}ms both`
+                    : "none",
+                }}
+              >
                 <p className="text-[9px] font-bold uppercase tracking-[0.15em] text-gray-400 mb-2">
                   {section.label}
                 </p>
@@ -294,25 +334,45 @@ export function BottomNav({ user, isAdmin, onLogout, onProfileOpen }: BottomNavP
           {/* CENTER — prominent MENU button */}
           <div className="flex flex-col items-center justify-center flex-1 py-1 gap-[3px]">
             <button
-              onClick={() => setOpen((v) => !v)}
-              className="flex items-center justify-center rounded-full transition-all active:scale-90"
+              key={animKey}
+              onClick={toggleMenu}
+              className="flex items-center justify-center rounded-full"
               style={{
                 width: 38,
                 height: 38,
-                background: open
-                  ? ACCENT
-                  : `linear-gradient(135deg, #5B21B6 0%, ${ACCENT} 100%)`,
-                boxShadow: `0 3px 14px ${ACCENT}55`,
+                background: `linear-gradient(135deg, #5B21B6 0%, ${ACCENT} 100%)`,
+                animation: open
+                  ? `bnav-pop 0.38s cubic-bezier(0.34,1.56,0.64,1) both, bnav-ring 0.5s ease-out 0.1s both`
+                  : undefined,
+                transition: "transform 0.18s ease",
               }}
             >
-              {open
-                ? <X className="h-[17px] w-[17px] text-white" />
-                : <LayoutGrid className="h-[17px] w-[17px] text-white" />
-              }
+              {/* Icon crossfade */}
+              <span style={{ position: "relative", display: "flex", width: 17, height: 17 }}>
+                <LayoutGrid
+                  className="h-[17px] w-[17px] text-white absolute inset-0"
+                  style={{
+                    opacity: open ? 0 : 1,
+                    transform: open ? "scale(0.4) rotate(90deg)" : "scale(1) rotate(0deg)",
+                    transition: "opacity 0.22s ease, transform 0.28s cubic-bezier(0.4,0,0.2,1)",
+                  }}
+                />
+                <X
+                  className="h-[17px] w-[17px] text-white absolute inset-0"
+                  style={{
+                    opacity: open ? 1 : 0,
+                    transform: open ? "scale(1) rotate(0deg)" : "scale(0.4) rotate(-90deg)",
+                    transition: "opacity 0.22s ease, transform 0.28s cubic-bezier(0.4,0,0.2,1)",
+                  }}
+                />
+              </span>
             </button>
             <span
               className="text-[9px] font-extrabold tracking-widest uppercase"
-              style={{ color: ACCENT }}
+              style={{
+                color: ACCENT,
+                transition: "opacity 0.2s ease",
+              }}
             >
               {open ? "Tutup" : "Menu"}
             </span>
