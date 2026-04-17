@@ -1322,33 +1322,40 @@ export default function Dashboard() {
 
           {/* ── Stats summary ──────────────────────────────────────── */}
           <div className="section-card p-3 sm:p-4">
-            <div className="flex items-center justify-between mb-2.5 sm:mb-3">
-              <h3 className="text-[15px] font-bold text-[#1A1A1A]">Ringkasan</h3>
-              <MoreHorizontal className="h-4 w-4 text-[#ccc]" />
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="text-[15px] font-bold text-[#1A1A1A]">Ringkasan Fitur</h3>
+              <span className="text-[10px] font-semibold text-[#999] uppercase tracking-wide">Semua Modul</span>
             </div>
 
-            <div className="space-y-3">
-              <StatBar
-                label="Notulensi Final"
-                value={isLoading ? "—" : `${finalNotulensi}/${totalNotulensi}`}
-                pct={completionPct}
-                color="#3E0FA3"
-                icon={FileText}
-              />
-              <StatBar
-                label={`Agenda ${currentMonthName}`}
-                value={isLoading ? "—" : `${agendaCompletedThisCalMonth}/${agendaThisCalMonth}`}
-                pct={agendaCalMonthPct}
-                color="#1A1A1A"
-                icon={CalendarDays}
-              />
-              <StatBar
-                label="Fitur Aktif"
-                value={isLoading ? "—" : `${inProgressFitur}/${totalFitur}`}
-                pct={fiturPct}
-                color="#3E0FA3"
-                icon={Sparkles}
-              />
+            <div className="grid grid-cols-2 gap-2">
+              {[
+                { icon: FileText,    label: "Notulensi",    value: isLoading ? "—" : String(data?.totalNotulensi ?? 0),   url: "/notulensi",  color: "#3E0FA3", bg: "#EDE9FE" },
+                { icon: CalendarDays,label: "Agenda",       value: isLoading ? "—" : String(data?.upcomingAgenda ?? 0),   url: "/agenda",     color: "#1D4ED8", bg: "#DBEAFE" },
+                { icon: Users,       label: "Anggota",      value: isLoading ? "—" : String(data?.totalAnggota ?? 0),     url: "/anggota",    color: "#047857", bg: "#D1FAE5" },
+                { icon: Wallet,      label: "Keuangan",     value: isLoading ? "—" : (isAdmin ? formatRp(data?.saldoTersedia ?? 0) : "—"), url: "/keuangan",   color: "#B45309", bg: "#FEF3C7" },
+                { icon: Mail,        label: "Surat",        value: isLoading ? "—" : String(data?.totalSurat ?? 0),       url: "/surat",      color: "#0284C7", bg: "#E0F2FE" },
+                { icon: Package,     label: "Inventaris",   value: isLoading ? "—" : String(data?.totalInventaris ?? 0), url: "/inventaris", color: "#7C3AED", bg: "#F5F3FF" },
+                { icon: Bot,         label: "Asisten AINA", value: "AI",                                                  url: "/asisten",    color: "#6D28D9", bg: "#EDE9FE" },
+                { icon: Sparkles,    label: "Fitur",        value: isLoading ? "—" : `${inProgressFitur}/${totalFitur}`, url: "/fitur",      color: "#BE185D", bg: "#FCE7F3" },
+              ].map(({ icon: Icon, label, value, url, color, bg }) => (
+                <Link key={url} to={url}>
+                  <div
+                    className="rounded-xl p-2.5 flex items-center gap-2 transition-all hover:-translate-y-0.5 hover:shadow-sm cursor-pointer"
+                    style={{ background: bg, border: `1px solid ${color}18` }}
+                  >
+                    <div
+                      className="h-7 w-7 rounded-lg flex items-center justify-center shrink-0"
+                      style={{ background: `${color}22` }}
+                    >
+                      <Icon className="h-3.5 w-3.5" style={{ color }} />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <p className="text-[11px] font-semibold truncate" style={{ color: "#374151" }}>{label}</p>
+                      <p className="text-[12px] font-black leading-tight truncate" style={{ color }}>{value}</p>
+                    </div>
+                  </div>
+                </Link>
+              ))}
             </div>
           </div>
 
