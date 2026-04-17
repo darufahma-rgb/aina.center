@@ -957,6 +957,12 @@ export default function Dashboard() {
 
   const totalAnggota = data?.totalAnggota ?? 0;
 
+  // ── Fitur ──
+  const totalFitur = data?.totalFitur ?? 0;
+  const completedFitur = data?.completedFitur ?? 0;
+  const inProgressFitur = data?.inProgressFitur ?? 0;
+  const fiturPct = totalFitur > 0 ? Math.round((completedFitur / totalFitur) * 100) : 0;
+
   const displayName = user?.displayName ?? user?.username ?? "—";
   const today = new Date().toLocaleDateString("id-ID", { weekday: "long", day: "numeric", month: "long" });
 
@@ -1267,7 +1273,7 @@ export default function Dashboard() {
               />
               <StatBar
                 label="Fitur Aktif"
-                value={loadingFitur ? "—" : `${activeAreas}/${totalAreas}`}
+                value={isLoading ? "—" : `${inProgressFitur}/${totalFitur}`}
                 pct={fiturPct}
                 color="#3E0FA3"
                 icon={Sparkles}
