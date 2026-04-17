@@ -68,7 +68,7 @@ export const ADMIN_SECTION = {
 // ─── Sidebar width ────────────────────────────────────────────────────────────
 
 const SIDEBAR_W      = 176;
-const SIDEBAR_MARGIN = 10;
+const SIDEBAR_MARGIN = 8;
 const ACCENT         = "#3E0FA3";
 const HERO_BG        = "linear-gradient(135deg, #0F0A1E 0%, #1A0845 35%, #2D0B7A 70%, #1E0654 100%)";
 
@@ -388,7 +388,7 @@ export function PortalLayout({ children }: PortalLayoutProps) {
 
       {/* ── Main content — white card ────────────────────────────────── */}
       <div
-        className="flex-1 flex flex-col transition-none lg:ml-[190px] lg:mr-2 lg:mt-2 lg:mb-2"
+        className="flex-1 flex flex-col transition-none lg:ml-[186px] lg:mr-2 lg:mt-2 lg:mb-2"
         style={{ minHeight: "100dvh" }}
       >
         {/* White card wrapper */}
