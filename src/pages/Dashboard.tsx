@@ -607,7 +607,7 @@ function JarvisWidget() {
 
   return (
     <div
-      className="rounded-2xl sm:rounded-3xl mb-3 sm:mb-5 overflow-hidden"
+      className="rounded-2xl sm:rounded-3xl mb-2 sm:mb-3 overflow-hidden"
       style={{
         background: "#ffffff",
         border: "1px solid rgba(99,102,241,0.14)",
@@ -620,9 +620,9 @@ function JarvisWidget() {
         style={{ background: "linear-gradient(90deg, #4F46E5 0%, #7C3AED 50%, #6366F1 100%)" }}
       />
 
-      <div className="p-3 sm:p-5">
+      <div className="p-3 sm:p-4">
         {/* ── Header row ── */}
-        <div className="flex items-center justify-between mb-3 sm:mb-5">
+        <div className="flex items-center justify-between mb-2 sm:mb-3">
           <div className="flex items-center gap-2.5 sm:gap-3">
             {/* Icon */}
             <div
@@ -669,7 +669,7 @@ function JarvisWidget() {
         </div>
 
         {/* ── Divider ── */}
-        <div className="mb-3 sm:mb-4" style={{ height: "1px", background: "linear-gradient(90deg, rgba(99,102,241,0.15), rgba(99,102,241,0.03))" }} />
+        <div className="mb-2 sm:mb-3" style={{ height: "1px", background: "linear-gradient(90deg, rgba(99,102,241,0.15), rgba(99,102,241,0.03))" }} />
 
         {/* ── Response / empty state ── */}
         {/* Quick prompts — always visible as compact scrollable strip */}
@@ -762,11 +762,11 @@ function JarvisWidget() {
             onChange={e => setInput(e.target.value)}
             onKeyDown={handleKey}
             placeholder="Tanya AINA sesuatu... (Enter untuk kirim)"
-            rows={3}
+            rows={2}
             className="flex-1 bg-transparent resize-none text-[13px] outline-none leading-relaxed"
             style={{
-              maxHeight: "140px",
-              minHeight: "64px",
+              maxHeight: "120px",
+              minHeight: "38px",
               color: "#1A1A1A",
             }}
             disabled={loading}
@@ -848,7 +848,7 @@ export default function Dashboard() {
 
       {/* ── Greeting hero ─────────────────────────────────────────────── */}
       <div
-        className="mb-3 sm:mb-5 rounded-2xl sm:rounded-3xl relative overflow-hidden"
+        className="mb-2 sm:mb-3 rounded-2xl sm:rounded-3xl relative overflow-hidden"
         style={{
           background: "linear-gradient(135deg, #0F0A1E 0%, #1A0845 35%, #2D0B7A 70%, #1E0654 100%)",
           boxShadow: "0 20px 60px rgba(62,15,163,0.35), 0 1px 0 rgba(255,255,255,0.08) inset",
@@ -871,9 +871,9 @@ export default function Dashboard() {
         {/* Top accent line */}
         <div className="absolute top-0 left-0 right-0 h-px" style={{ background: "linear-gradient(90deg, transparent, rgba(167,139,250,0.6), transparent)" }} />
 
-        <div className="relative z-10 px-4 pb-3.5 pt-4 sm:px-5 sm:pb-4 sm:pt-5">
+        <div className="relative z-10 px-4 pb-3 pt-3.5 sm:px-5 sm:pb-3.5 sm:pt-4">
           {/* Row 1: greeting + PDF button */}
-          <div className="mb-3 flex items-start justify-between gap-3 sm:mb-4">
+          <div className="mb-2 flex items-start justify-between gap-3 sm:mb-3">
             <div className="min-w-0 flex-1 pr-1">
               {/* Date label */}
               <div className="flex items-center gap-1.5 mb-1.5 sm:mb-2">
@@ -908,7 +908,7 @@ export default function Dashboard() {
           </div>
 
           {/* Divider */}
-          <div className="mb-2.5 sm:mb-3.5" style={{ height: "1px", background: "linear-gradient(90deg, rgba(139,92,246,0.32), rgba(139,92,246,0.08), transparent)" }} />
+          <div className="mb-2 sm:mb-2.5" style={{ height: "1px", background: "linear-gradient(90deg, rgba(139,92,246,0.32), rgba(139,92,246,0.08), transparent)" }} />
 
           {/* Row 2: World clock + Stats in one line */}
           <div className="pb-0.5">
@@ -961,7 +961,7 @@ export default function Dashboard() {
 
       {/* ── 6 stat pills ─────────────────────────────────────────────── */}
       {!isLoading && (
-        <div className="grid grid-cols-3 lg:grid-cols-6 gap-2 sm:gap-3 mb-4 sm:mb-6">
+        <div className="grid grid-cols-3 lg:grid-cols-6 gap-2 sm:gap-3 mb-2 sm:mb-3">
           {[
             { icon: FileText,   label: "Notulensi",  value: data?.totalNotulensi ?? 0,  url: "/notulensi" },
             { icon: CalendarDays, label: "Agenda",   value: data?.upcomingAgenda ?? 0,  url: "/agenda" },
@@ -972,7 +972,7 @@ export default function Dashboard() {
           ].map(({ icon: Icon, label, value, url }) => (
             <Link key={url} to={url}>
               <div
-                className="rounded-2xl p-2 sm:p-3.5 hover:-translate-y-0.5 transition-all cursor-pointer text-center"
+                className="rounded-2xl p-2 sm:p-2.5 hover:-translate-y-0.5 transition-all cursor-pointer text-center"
                 style={{
                   background: "#ffffff",
                   border: "1px solid rgba(103,65,217,0.16)",
@@ -994,10 +994,10 @@ export default function Dashboard() {
       <JarvisWidget />
 
       {/* ── Main grid ────────────────────────────────────────────────── */}
-      <div className="flex flex-col xl:flex-row gap-3 sm:gap-5">
+      <div className="flex flex-col xl:flex-row gap-2 sm:gap-3">
 
         {/* ── Left column ────────────────────────────────────────────── */}
-        <div className="flex-1 min-w-0 space-y-3 sm:space-y-5">
+        <div className="flex-1 min-w-0 space-y-2 sm:space-y-3">
 
           {/* ── Progress cards row ─────────────────────────────────── */}
           <div className="grid grid-cols-3 gap-2 sm:gap-3">
@@ -1028,8 +1028,8 @@ export default function Dashboard() {
           </div>
 
           {/* ── Agenda Bulan Ini ─────────────────────────────────── */}
-          <div className="section-card p-3 sm:p-5">
-            <div className="flex items-center justify-between mb-3 sm:mb-4">
+          <div className="section-card p-3 sm:p-4">
+            <div className="flex items-center justify-between mb-2.5 sm:mb-3">
               <div>
                 <h3 className="text-[15px] font-bold text-[#1A1A1A]">
                   Agenda {currentMonthName}
@@ -1068,16 +1068,16 @@ export default function Dashboard() {
                 </div>
               </>
             ) : (
-              <div className="py-10 text-center">
-                <CalendarDays className="h-8 w-8 text-[#ddd] mx-auto mb-2" />
+              <div className="py-5 text-center">
+                <CalendarDays className="h-7 w-7 text-[#ddd] mx-auto mb-1.5" />
                 <p className="text-[13px] text-[#bbb]">Belum ada agenda bulan ini</p>
               </div>
             )}
           </div>
 
           {/* ── Notulensi terbaru ─────────────────────────────────── */}
-          <div className="section-card p-3 sm:p-5">
-            <div className="flex items-center justify-between mb-3 sm:mb-4">
+          <div className="section-card p-3 sm:p-4">
+            <div className="flex items-center justify-between mb-2.5 sm:mb-3">
               <div>
                 <h3 className="text-[15px] font-bold text-[#1A1A1A]">Notulensi Terbaru</h3>
                 {!isLoading && totalNotulensi > 0 && (
@@ -1105,8 +1105,8 @@ export default function Dashboard() {
                 {[1, 2, 3].map(i => <div key={i} className="h-14 rounded-2xl bg-black/[0.04] animate-pulse" />)}
               </div>
             ) : notulensi.length === 0 ? (
-              <div className="py-10 text-center">
-                <FileText className="h-8 w-8 text-[#ddd] mx-auto mb-2" />
+              <div className="py-5 text-center">
+                <FileText className="h-7 w-7 text-[#ddd] mx-auto mb-1.5" />
                 <p className="text-[13px] text-[#bbb]">Belum ada notulensi</p>
               </div>
             ) : (
@@ -1126,11 +1126,11 @@ export default function Dashboard() {
         </div>
 
         {/* ── Right column ───────────────────────────────────────────── */}
-        <div className="xl:w-72 space-y-3 sm:space-y-5 shrink-0">
+        <div className="xl:w-72 space-y-2 sm:space-y-3 shrink-0">
 
           {/* ── Stats summary ──────────────────────────────────────── */}
-          <div className="section-card p-3 sm:p-5">
-            <div className="flex items-center justify-between mb-3 sm:mb-4">
+          <div className="section-card p-3 sm:p-4">
+            <div className="flex items-center justify-between mb-2.5 sm:mb-3">
               <h3 className="text-[15px] font-bold text-[#1A1A1A]">Ringkasan</h3>
               <MoreHorizontal className="h-4 w-4 text-[#ccc]" />
             </div>
@@ -1162,8 +1162,8 @@ export default function Dashboard() {
 
           {/* ── Jadwal Terdekat ────────────────────────────────────── */}
           {agendaList.length > 0 && (
-            <div className="section-card p-3 sm:p-5">
-              <h3 className="text-[15px] font-bold text-[#1A1A1A] mb-4">Jadwal Terdekat</h3>
+            <div className="section-card p-3 sm:p-4">
+              <h3 className="text-[15px] font-bold text-[#1A1A1A] mb-3">Jadwal Terdekat</h3>
               <div className="space-y-3">
                 {agendaList.slice(0, 3).map((a) => (
                   <Link to="/agenda" key={a.id}>
