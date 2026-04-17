@@ -388,7 +388,7 @@ export function PortalLayout({ children }: PortalLayoutProps) {
 
       {/* ── Main content — white card ────────────────────────────────── */}
       <div
-        className="flex-1 flex flex-col transition-none lg:ml-[224px] lg:mr-3 lg:mt-3 lg:mb-3"
+        className="flex-1 flex flex-col transition-none lg:ml-[214px] lg:mr-2 lg:mt-2 lg:mb-2"
         style={{ minHeight: "100dvh" }}
       >
         {/* White card wrapper */}
@@ -511,7 +511,7 @@ export function PortalLayout({ children }: PortalLayoutProps) {
           </header>
 
           {/* ── Page content ──────────────────────────────────────── */}
-          <main className="mobile-compact-main flex-1 p-2.5 sm:p-5 pb-[84px] lg:pb-10 overflow-y-auto overflow-x-hidden min-w-0 safe-area-pb">
+          <main className="mobile-compact-main flex-1 p-2.5 sm:p-5 lg:p-4 pb-[84px] lg:pb-8 overflow-y-auto overflow-x-hidden min-w-0 safe-area-pb">
             {children}
           </main>
         </div>
