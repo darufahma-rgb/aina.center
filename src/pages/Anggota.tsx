@@ -169,6 +169,7 @@ export default function AnggotaPage() {
   ];
 
   const activeCount = members.filter(m => m.status === "active").length;
+  const selectedProfileMember = selectedProfile ? members.find(m => m.id === selectedProfile.id) ?? selectedProfile : null;
 
   function handleExportCSV() {
     const headers = ["Nama", "Role/Jabatan", "Divisi", "Email", "Status", "Level Akses"];
@@ -434,7 +435,7 @@ export default function AnggotaPage() {
         </div>
       )}
 
-      <AnggotaProfile anggota={selectedProfile} onClose={() => setSelectedProfile(null)} />
+      <AnggotaProfile anggota={selectedProfileMember} onClose={() => setSelectedProfile(null)} />
 
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent className="max-w-lg">

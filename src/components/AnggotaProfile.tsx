@@ -11,6 +11,10 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import {
+  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
+  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import {
   Mail, ShieldCheck, Shield, Link2, Link2Off, Plus, Trash2,
   CheckCircle2, Circle, Clock, AlertCircle, Loader2,
   CalendarDays, User2, UserPlus, KeyRound, Eye, EyeOff, LogIn,
@@ -171,6 +175,7 @@ export function AnggotaProfile({ anggota: member, onClose }: AnggotaProfileProps
   const { toast } = useToast();
   const [addingTugas, setAddingTugas] = useState(false);
   const [accountMode, setAccountMode] = useState<AccountMode>(null);
+  const [deleteAccountOpen, setDeleteAccountOpen] = useState(false);
 
   // Create account form state
   const [newUsername, setNewUsername] = useState("");
@@ -252,6 +257,21 @@ export function AnggotaProfile({ anggota: member, onClose }: AnggotaProfileProps
     onError: (e: any) => toast({ title: "Gagal", description: e.message, variant: "destructive" }),
   });
 
+  const deleteAccountMutation = useMutation({
+    mutationFn: () => apiRequest("DELETE", `/api/anggota/${member?.id}/account`),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/anggota"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/users"] });
+      setAccountMode(null);
+      setDeleteAccountOpen(false);
+      toast({ title: "Akun anggota dihapus" });
+    },
+    onError: (e: any) => {
+      setDeleteAccountOpen(false);
+      toast({ title: "Gagal hapus akun", description: e.message, variant: "destructive" });
+    },
+  });
+
   if (!member) return null;
 
   const linkedUser = users.find(u => u.id === member.userId);
@@ -326,6 +346,9 @@ export function AnggotaProfile({ anggota: member, onClose }: AnggotaProfileProps
                       </Button>
                       <Button size="sm" variant="ghost" className="h-6 text-[10px] px-2 gap-1 text-muted-foreground" onClick={() => { setAccountMode("link"); setSelectedUserId(""); }}>
                         <Link2Off className="h-3 w-3" /> Ganti
+                      </Button>
+                      <Button size="sm" variant="ghost" className="h-6 text-[10px] px-2 gap-1 text-destructive hover:text-destructive" onClick={() => setDeleteAccountOpen(true)}>
+                        <Trash2 className="h-3 w-3" /> Hapus
                       </Button>
                     </>
                   ) : (
@@ -467,6 +490,26 @@ export function AnggotaProfile({ anggota: member, onClose }: AnggotaProfileProps
             )}
           </div>
         </div>
+
+        <AlertDialog open={deleteAccountOpen} onOpenChange={setDeleteAccountOpen}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Hapus akun portal anggota?</AlertDialogTitle>
+              <AlertDialogDescription>
+                Akun @{linkedUser?.username} akan dinonaktifkan dan dilepas dari {member.name}. Setelah itu admin bisa membuat akun baru untuk anggota ini.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Batal</AlertDialogCancel>
+              <AlertDialogAction
+                onClick={() => deleteAccountMutation.mutate()}
+                className="bg-destructive hover:bg-destructive/90"
+              >
+                {deleteAccountMutation.isPending ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : "Hapus Akun"}
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
 
         {/* ── Tugas section ── */}
         <div className="flex-1 overflow-y-auto px-5 py-4 space-y-3">

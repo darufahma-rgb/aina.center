@@ -706,6 +706,31 @@ export function registerRoutes(app: Router) {
     }
   });
 
+  app.delete("/api/anggota/:id/account", requireAdmin, async (req, res) => {
+    const anggotaId = parseInt(req.params.id);
+    const member = await storage.getAnggota(anggotaId);
+    if (!member) return res.status(404).json({ message: "Anggota tidak ditemukan" });
+    if (!member.userId) return res.status(400).json({ message: "Anggota belum memiliki akun" });
+    if (member.userId === req.session.userId) {
+      return res.status(403).json({ message: "Tidak bisa menghapus akun yang sedang Anda gunakan" });
+    }
+
+    const linkedUser = await storage.getUserById(member.userId);
+    if (!linkedUser) {
+      const updated = await storage.updateAnggota(anggotaId, { userId: null }, req.session.userId!);
+      return res.json({ message: "Link akun lama dicopot", anggota: updated });
+    }
+
+    const stamp = `${Date.now()}-${member.userId}`;
+    await storage.updateUser(member.userId, {
+      username: `${linkedUser.username}_deleted_${stamp}`,
+      email: `deleted-${stamp}@aina.local`,
+      isActive: false,
+    });
+    const updated = await storage.updateAnggota(anggotaId, { userId: null }, req.session.userId!);
+    res.json({ message: "Akun anggota dihapus", anggota: updated });
+  });
+
   // Reset password for a user linked to anggota
   app.patch("/api/users/:id/reset-password", requireAdmin, async (req, res) => {
     const { newPassword } = req.body;
