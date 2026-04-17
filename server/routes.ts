@@ -262,6 +262,19 @@ export function registerRoutes(app: Router) {
     res.json(await storage.listFiturTerbaru());
   });
 
+  app.delete("/api/fitur/auto/:featureId", requireAdmin, async (req, res) => {
+    const featureId = req.params.featureId?.trim();
+    if (!featureId) return res.status(400).json({ message: "featureId diperlukan" });
+    const parsed = z.object({
+      featureTitle: z.string().optional(),
+      featureCategory: z.string().optional(),
+    }).safeParse(req.body ?? {});
+    if (!parsed.success) return res.status(400).json({ message: parsed.error.message });
+    const ok = await storage.hideAutoFitur({ featureId, ...parsed.data }, req.session.userId!);
+    if (!ok) return res.status(500).json({ message: "Gagal menghapus fitur otomatis" });
+    res.json({ message: "Deleted" });
+  });
+
   app.get("/api/fitur/:id", requireAuth, async (req, res) => {
     const f = await storage.getFiturTerbaru(parseInt(req.params.id));
     if (!f) return res.status(404).json({ message: "Not found" });
@@ -1414,6 +1427,7 @@ Format JSON:
         console.error("Feature extraction AI error:", aiErr);
       }
 
+      const hiddenAutoFiturIds = new Set(await storage.listHiddenAutoFiturIds());
       const features = groups.map((g) => ({
         id:          g.category.toLowerCase().replace(/[^a-z0-9]/g, "-"),
         title:       aiMap[g.category]?.title       ?? g.category,
@@ -1424,7 +1438,7 @@ Format JSON:
         commitCount: g.commitCount,
         lastUpdated: g.lastUpdated,
         commits:     g.commits,
-      }));
+      })).filter((f) => !hiddenAutoFiturIds.has(f.id));
 
       res.json({ features });
     } catch (err: any) {

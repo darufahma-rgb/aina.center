@@ -52,7 +52,7 @@ The Replit workflow runs `npm start`, which starts `tsx server/index.ts` on port
 2. **Notulensi** — Meeting notes with participants, decisions, action items
 3. **Agenda** — Calendar/schedule management
 4. **Keuangan & Sponsor** — Financial transactions (income & expenses) with full field details, plus sponsor tracking with pledged vs received progress bars
-5. **FiturTerbaru** — Product feature tracking
+5. **FiturTerbaru** — Product feature tracking; admin can delete both manually curated feature cards and auto-generated update cards. Hidden auto-generated cards are persisted in `investor_content` under `hidden_auto_fitur`.
 6. **Anggota** — Team member management
 7. **Relasi** — External relationships/partnerships
 8. **Surat** — Document/letter management

@@ -109,7 +109,15 @@ function FeatureSkeleton() {
   );
 }
 
-function FiturOverview() {
+function FiturOverview({
+  isAdmin,
+  onDeleteAutoFeature,
+  deletingAutoFeatureId,
+}: {
+  isAdmin: boolean;
+  onDeleteAutoFeature: (feature: ExtractedFeature) => void;
+  deletingAutoFeatureId: string | null;
+}) {
   const navigate = useNavigate();
 
   const { data: rawCommits, isLoading: loadingCommits } = useQuery<GitHubCommit[]>({
@@ -398,6 +406,17 @@ function FiturOverview() {
                   <Wand2 className="h-3 w-3" />
                   {isEOpen ? "Tutup Analisis" : "Analisis AI"}
                 </button>
+                {isAdmin && (
+                  <button
+                    onClick={() => onDeleteAutoFeature(f)}
+                    disabled={deletingAutoFeatureId === f.id}
+                    className="flex items-center gap-1.5 text-[11px] font-semibold px-3 py-1.5 rounded-xl border transition-all hover:bg-destructive/10 disabled:opacity-60"
+                    style={{ borderColor: "#FCA5A5", color: "#DC2626" }}
+                  >
+                    {deletingAutoFeatureId === f.id ? <Loader2 className="h-3 w-3 animate-spin" /> : <Trash2 className="h-3 w-3" />}
+                    Hapus
+                  </button>
+                )}
               </div>
             </div>
           );
@@ -1002,6 +1021,7 @@ export default function FiturTerbaruPage() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editing, setEditing] = useState<FiturTerbaru | null>(null);
   const [deleteId, setDeleteId] = useState<number | null>(null);
+  const [deleteAutoFeature, setDeleteAutoFeature] = useState<ExtractedFeature | null>(null);
 
   const { data: features = [], isLoading } = useQuery<FiturTerbaru[]>({ queryKey: ["/api/fitur"] });
 
@@ -1018,6 +1038,19 @@ export default function FiturTerbaruPage() {
   const deleteMutation = useMutation({
     mutationFn: (id: number) => apiRequest("DELETE", `/api/fitur/${id}`),
     onSuccess: () => { queryClient.invalidateQueries({ queryKey: ["/api/fitur"] }); setDeleteId(null); toast({ title: "Fitur dihapus" }); },
+    onError: (e: any) => toast({ title: "Gagal", description: e.message, variant: "destructive" }),
+  });
+
+  const deleteAutoMutation = useMutation({
+    mutationFn: (feature: ExtractedFeature) => apiRequest("DELETE", `/api/fitur/auto/${encodeURIComponent(feature.id)}`, {
+      featureTitle: feature.title,
+      featureCategory: feature.category,
+    }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["extracted-features"] });
+      setDeleteAutoFeature(null);
+      toast({ title: "Fitur dihapus" });
+    },
     onError: (e: any) => toast({ title: "Gagal", description: e.message, variant: "destructive" }),
   });
 
@@ -1065,7 +1098,11 @@ export default function FiturTerbaruPage() {
       {activeTab === "fitur" && (
         <div className="space-y-8">
           {/* Always show auto overview */}
-          <FiturOverview />
+          <FiturOverview
+            isAdmin={isAdmin}
+            onDeleteAutoFeature={setDeleteAutoFeature}
+            deletingAutoFeatureId={deleteAutoMutation.isPending ? deleteAutoFeature?.id ?? null : null}
+          />
 
           {/* Manual features (if any) */}
           {!isLoading && features.length > 0 && (
@@ -1153,6 +1190,25 @@ export default function FiturTerbaruPage() {
             <AlertDialogCancel>Batal</AlertDialogCancel>
             <AlertDialogAction
               onClick={() => deleteId && deleteMutation.mutate(deleteId)}
+              className="bg-destructive hover:bg-destructive/90"
+            >
+              Hapus
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+      <AlertDialog open={deleteAutoFeature !== null} onOpenChange={(v) => !v && setDeleteAutoFeature(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Hapus Fitur?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Fitur otomatis ini akan disembunyikan dari daftar pembaruan untuk semua pengguna.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Batal</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => deleteAutoFeature && deleteAutoMutation.mutate(deleteAutoFeature)}
               className="bg-destructive hover:bg-destructive/90"
             >
               Hapus

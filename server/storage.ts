@@ -43,6 +43,8 @@ export interface IStorage {
   createFiturTerbaru(data: InsertFiturTerbaru, userId: number): Promise<FiturTerbaru>;
   updateFiturTerbaru(id: number, data: Partial<InsertFiturTerbaru>, userId: number): Promise<FiturTerbaru | undefined>;
   deleteFiturTerbaru(id: number, userId: number): Promise<boolean>;
+  listHiddenAutoFiturIds(): Promise<string[]>;
+  hideAutoFitur(data: { featureId: string; featureTitle?: string; featureCategory?: string }, userId: number): Promise<boolean>;
 
   // Keuangan
   listKeuangan(): Promise<Keuangan[]>;
@@ -131,6 +133,24 @@ function toSafeUser(u: User): SafeUser {
 }
 
 const now = () => new Date();
+const HIDDEN_AUTO_FITUR_KEY = "hidden_auto_fitur";
+
+function parseHiddenAutoFitur(content?: string | null): { featureId: string; featureTitle?: string; featureCategory?: string }[] {
+  if (!content) return [];
+  try {
+    const parsed = JSON.parse(content);
+    if (!Array.isArray(parsed)) return [];
+    return parsed
+      .map((item) => {
+        if (typeof item === "string") return { featureId: item };
+        if (item && typeof item.featureId === "string") return item;
+        return null;
+      })
+      .filter(Boolean) as { featureId: string; featureTitle?: string; featureCategory?: string }[];
+  } catch {
+    return [];
+  }
+}
 
 // ─── Implementation ────────────────────────────────────────────────────────────
 
@@ -230,6 +250,32 @@ export class DatabaseStorage implements IStorage {
     const [f] = await db.update(fiturTerbaru).set({ deletedAt: now(), updatedBy: userId }).where(eq(fiturTerbaru.id, id)).returning();
     if (f) await this.createAuditLog("fitur_terbaru", id, "delete", old, null, userId);
     return !!f;
+  }
+
+  async listHiddenAutoFiturIds() {
+    const [row] = await db.select().from(investorContent).where(eq(investorContent.key, HIDDEN_AUTO_FITUR_KEY)).limit(1);
+    return parseHiddenAutoFitur(row?.content).map((item) => item.featureId);
+  }
+
+  async hideAutoFitur(data: { featureId: string; featureTitle?: string; featureCategory?: string }, userId: number) {
+    const [old] = await db.select().from(investorContent).where(eq(investorContent.key, HIDDEN_AUTO_FITUR_KEY)).limit(1);
+    const hidden = parseHiddenAutoFitur(old?.content);
+    if (!hidden.some((item) => item.featureId === data.featureId)) {
+      hidden.push(data);
+    }
+    const payload = {
+      title: "Hidden Auto Fitur",
+      content: JSON.stringify(hidden),
+      isVisible: false,
+      order: 0,
+      updatedBy: userId,
+      updatedAt: now(),
+    };
+    const [row] = old
+      ? await db.update(investorContent).set(payload).where(eq(investorContent.key, HIDDEN_AUTO_FITUR_KEY)).returning()
+      : await db.insert(investorContent).values({ key: HIDDEN_AUTO_FITUR_KEY, ...payload, createdBy: userId }).returning();
+    if (row) await this.createAuditLog("hidden_auto_fitur", row.id, "delete", old, row, userId);
+    return !!row;
   }
 
   // ── Keuangan ──
