@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import {
   Wallet, TrendingUp, TrendingDown, Plus, Edit, Trash2,
   Handshake, BarChart3, ArrowUpRight, ArrowDownRight,
   ExternalLink, Target, CheckCircle2, BookmarkPlus, Zap, X,
+  Upload, Image as ImageIcon, Loader2,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -46,6 +47,81 @@ const SPONSOR_STATUS_LABELS: Record<string, string> = {
   prospect: "Prospek", confirmed: "Dikonfirmasi", active: "Aktif",
   completed: "Selesai", withdrawn: "Batal",
 };
+
+// ─── Proof Image Upload ───────────────────────────────────────────────────────
+
+function isImageUrl(url: string) {
+  return /\.(png|jpg|jpeg|gif|webp)(\?.*)?$/i.test(url) || url.includes("/uploads/proof-");
+}
+
+function ProofImageUpload({ value, onChange }: { value: string; onChange: (v: string) => void }) {
+  const fileRef = useRef<HTMLInputElement>(null);
+  const [uploading, setUploading] = useState(false);
+
+  const handleFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploading(true);
+    try {
+      const form = new FormData();
+      form.append("proof", file);
+      const res = await fetch("/api/keuangan/upload-proof", {
+        method: "POST",
+        credentials: "include",
+        body: form,
+      });
+      if (!res.ok) throw new Error("Upload gagal");
+      const data = await res.json();
+      onChange(data.url);
+    } catch {
+      alert("Upload gambar gagal. Pastikan file PNG/JPG ≤10MB.");
+    } finally {
+      setUploading(false);
+      if (fileRef.current) fileRef.current.value = "";
+    }
+  };
+
+  return (
+    <div className="space-y-2">
+      <div className="flex gap-2">
+        <Input
+          value={value}
+          onChange={e => onChange(e.target.value)}
+          placeholder="https://drive.google.com/... atau upload gambar"
+          className="flex-1"
+        />
+        <Button
+          type="button"
+          variant="outline"
+          size="icon"
+          className="shrink-0"
+          disabled={uploading}
+          onClick={() => fileRef.current?.click()}
+          title="Upload PNG/JPG"
+        >
+          {uploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />}
+        </Button>
+        <input
+          ref={fileRef}
+          type="file"
+          accept="image/png,image/jpeg"
+          className="hidden"
+          onChange={handleFile}
+        />
+      </div>
+      {value && isImageUrl(value) && (
+        <div className="relative w-full max-h-32 overflow-hidden rounded-lg border bg-muted/30 flex items-center justify-center">
+          <img
+            src={value}
+            alt="Bukti pembayaran"
+            className="max-h-32 object-contain"
+            onError={e => { (e.target as HTMLImageElement).style.display = "none"; }}
+          />
+        </div>
+      )}
+    </div>
+  );
+}
 
 // ─── Template Types & Hook ─────────────────────────────────────────────────────
 
@@ -350,8 +426,8 @@ function IncomeForm({ initial, onClose, onSave, isPending, onSaveTemplate }: {
           <Input value={paymentMethod} onChange={e => setPaymentMethod(e.target.value)} placeholder="Transfer, Tunai, dsb" data-testid="input-income-payment-method" />
         </div>
         <div className="space-y-1.5 col-span-2">
-          <Label>Link Bukti Pembayaran</Label>
-          <Input value={proofUrl} onChange={e => setProofUrl(e.target.value)} placeholder="https://drive.google.com/..." data-testid="input-income-proof" />
+          <Label>Bukti Pembayaran</Label>
+          <ProofImageUpload value={proofUrl} onChange={setProofUrl} />
         </div>
         <div className="space-y-1.5 col-span-2">
           <Label>Catatan</Label>
@@ -426,9 +502,9 @@ function ExpenseForm({ initial, onClose, onSave, isPending, onSaveTemplate }: {
           <Label>Metode Bayar</Label>
           <Input value={paymentMethod} onChange={e => setPaymentMethod(e.target.value)} placeholder="Transfer, Tunai, dsb" data-testid="input-expense-payment-method" />
         </div>
-        <div className="space-y-1.5">
-          <Label>Link Bukti</Label>
-          <Input value={proofUrl} onChange={e => setProofUrl(e.target.value)} placeholder="https://..." data-testid="input-expense-proof" />
+        <div className="space-y-1.5 col-span-2">
+          <Label>Bukti Pembayaran</Label>
+          <ProofImageUpload value={proofUrl} onChange={setProofUrl} />
         </div>
         <div className="space-y-1.5 col-span-2">
           <Label>Catatan</Label>
@@ -548,9 +624,21 @@ function TransactionRow({ item, isAdmin, onEdit, onDelete }: {
           <div className="flex items-center gap-3 mt-1">
             {item.paymentMethod && <span className="text-[10px] text-muted-foreground bg-muted px-1.5 py-0.5 rounded">{item.paymentMethod}</span>}
             {item.proofUrl && (
-              <a href={item.proofUrl} target="_blank" rel="noopener noreferrer" className="text-[10px] text-primary flex items-center gap-0.5 hover:underline">
-                <ExternalLink className="h-2.5 w-2.5" /> Bukti
-              </a>
+              isImageUrl(item.proofUrl) ? (
+                <a href={item.proofUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 hover:opacity-80 transition-opacity">
+                  <img
+                    src={item.proofUrl}
+                    alt="Bukti"
+                    className="h-8 w-12 object-cover rounded border"
+                    onError={e => { (e.target as HTMLImageElement).parentElement!.innerHTML = `<a href="${item.proofUrl}" target="_blank" rel="noopener noreferrer" class="text-[10px] text-primary flex items-center gap-0.5 hover:underline"><svg class="h-2.5 w-2.5" />Bukti</a>`; }}
+                  />
+                  <span className="text-[10px] text-primary">Lihat</span>
+                </a>
+              ) : (
+                <a href={item.proofUrl} target="_blank" rel="noopener noreferrer" className="text-[10px] text-primary flex items-center gap-0.5 hover:underline">
+                  <ExternalLink className="h-2.5 w-2.5" /> Bukti
+                </a>
+              )
             )}
           </div>
           {item.notes && <p className="text-[10px] text-muted-foreground mt-0.5 italic">{item.notes}</p>}

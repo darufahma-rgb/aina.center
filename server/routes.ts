@@ -68,6 +68,33 @@ const avatarUpload = multer({
   },
 });
 
+async function uploadProofToSupabase(filePath: string, filename: string, mimeType: string): Promise<string | null> {
+  const supabase = getSupabaseClient();
+  if (!supabase) return null;
+  const fileBuffer = fs.readFileSync(filePath);
+  const { data, error } = await supabase.storage
+    .from("keuangan-proofs")
+    .upload(filename, fileBuffer, { contentType: mimeType, upsert: true });
+  if (error) { console.error("Supabase proof upload error:", error.message); return null; }
+  const { data: { publicUrl } } = supabase.storage.from("keuangan-proofs").getPublicUrl(filename);
+  return publicUrl;
+}
+
+const proofUpload = multer({
+  storage: multer.diskStorage({
+    destination: (_req, _file, cb) => cb(null, uploadsDir),
+    filename: (_req, file, cb) => {
+      const ext = path.extname(file.originalname).toLowerCase() || ".jpg";
+      cb(null, `proof-${Date.now()}-${Math.random().toString(36).slice(2)}${ext}`);
+    },
+  }),
+  limits: { fileSize: 10 * 1024 * 1024 },
+  fileFilter: (_req, file, cb) => {
+    const allowed = ["image/jpeg", "image/png"];
+    cb(null, allowed.includes(file.mimetype));
+  },
+});
+
 export function registerRoutes(app: Router) {
 
   // ── Auth ────────────────────────────────────────────────────────────────────
@@ -289,6 +316,22 @@ export function registerRoutes(app: Router) {
     const ok = await storage.deleteKeuangan(parseInt(req.params.id), req.session.userId!);
     if (!ok) return res.status(404).json({ message: "Not found" });
     res.json({ message: "Deleted" });
+  });
+
+  app.post("/api/keuangan/upload-proof", requireAdmin, proofUpload.single("proof"), async (req, res) => {
+    try {
+      if (!req.file) return res.status(400).json({ message: "No file uploaded" });
+      let proofUrl = `/uploads/${req.file.filename}`;
+      const supabaseUrl = await uploadProofToSupabase(req.file.path, req.file.filename, req.file.mimetype);
+      if (supabaseUrl) {
+        proofUrl = supabaseUrl;
+        fs.unlink(req.file.path, () => {});
+      }
+      res.json({ url: proofUrl });
+    } catch (err: any) {
+      console.error("Proof upload error:", err);
+      res.status(500).json({ message: "Upload gagal" });
+    }
   });
 
   // ── Sponsor ─────────────────────────────────────────────────────────────────

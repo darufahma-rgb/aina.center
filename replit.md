@@ -5,9 +5,10 @@ A secure internal management portal for the AINA organization. Built as a fullst
 ## Key Features
 - **Asisten AINA (JARVIS-level)**: AI command engine at `/asisten`; 10 tools: `create_agenda`, `create_notulensi`, `update_agenda_status`, `create_keuangan`, `add_relasi`, `save_surat_template`, `search_portal`, `get_full_briefing`, `generate_document_report`, `add_anggota`; GPT-4o Vision analyzes uploaded surat template images to detect fields automatically; animated thinking dots + status cycling; suggestion chips after each AI response; "Briefing Harian" one-click portal status; gpt-4o-mini for text, gpt-4o for vision
 - **Anggota**: Member management with photo support; "Import dari AINA Web" button syncs team from ainalabs.pro/about (14 members); anggota table now has nullable `email` and `photo_url` columns; members displayed grouped by division
-- **Dashboard**: Progress cards show finalNotulensi/totalNotulensi and agendaCompletedThisCalMonth/agendaThisCalMonth; data from current calendar month
+- **Dashboard**: Progress cards show finalNotulensi/totalNotulensi and agendaCompletedThisCalMonth/agendaThisCalMonth; data from current calendar month; third card replaced with **GitHubChangesCard** — fetches latest 20 commits from GitHub, shows unread badge per-user (via `commit_reads` table), badge disappears after user opens the popover; popover lists commits with unread dot indicators
 - **Agenda Berita AIGYPT**: Fetches live news from AIGYPT Supabase (`masisir_news` table); requires `AIGYPT_SUPABASE_URL` + `AIGYPT_SUPABASE_ANON_KEY` env vars
 - **Surat Template**: Visual click-to-place field editor on PNG images; canvas overlay print preview; `surat_templates` DB table
+- **Keuangan Proof**: Bukti pembayaran now supports PNG/JPG file upload via `POST /api/keuangan/upload-proof`; uploads to Supabase Storage (`keuangan-proofs` bucket) or local `/uploads`; image thumbnail shown inline in transaction list; URL input still supported for Google Drive links
 - **api/index.js**: Must be rebuilt (`npm run build:api`) after any backend changes for Vercel deployment
 
 ## Design System

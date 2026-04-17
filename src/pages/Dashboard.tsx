@@ -8,6 +8,7 @@ import {
   BrainCircuit, Paintbrush2, Landmark, UsersRound, CalendarCheck,
   ClipboardList, Archive, Server, Hammer, Rocket, Layers,
   Send, ExternalLink, Loader2, Bot, Search, BarChart3,
+  GitCommit, Bell,
   type LucideIcon,
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
@@ -17,6 +18,7 @@ import { Link } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import type { Notulensi, Agenda } from "../../shared/schema";
 import jsPDF from "jspdf";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -186,6 +188,146 @@ function ProgressRing({ pct, size = 56, stroke = 5, color = "#3E0FA3" }: { pct: 
         style={{ transition: "stroke-dashoffset 0.6s ease" }}
       />
     </svg>
+  );
+}
+
+// ─── GitHub Changes Card ────────────────────────────────────────────────────────
+
+const DASHBOARD_GITHUB_REPO = "darciatemantaraglobal-gif/aina.web";
+
+function GitHubChangesCard() {
+  const [open, setOpen] = useState(false);
+  const [readHashes, setReadHashes] = useState<Set<string>>(new Set());
+  const [fetchedRead, setFetchedRead] = useState(false);
+
+  const { data: commits = [] } = useQuery<any[]>({
+    queryKey: ["github-commits-dashboard", 20],
+    queryFn: async () => {
+      const r = await fetch(
+        `https://api.github.com/repos/${DASHBOARD_GITHUB_REPO}/commits?per_page=20`,
+        { headers: { Accept: "application/vnd.github.v3+json" } }
+      );
+      if (!r.ok) return [];
+      return r.json();
+    },
+    staleTime: 10 * 60 * 1000,
+  });
+
+  useEffect(() => {
+    if (commits.length === 0 || fetchedRead) return;
+    const hashes = commits.map((c: any) => c.sha).join(",");
+    fetch(`/api/commit-reads?hashes=${hashes}`, { credentials: "include" })
+      .then(r => r.json())
+      .then(data => {
+        setReadHashes(new Set(data.readHashes ?? []));
+        setFetchedRead(true);
+      })
+      .catch(() => {});
+  }, [commits.length, fetchedRead]);
+
+  const unreadCount = commits.filter((c: any) => !readHashes.has(c.sha)).length;
+
+  const markRead = async (sha: string) => {
+    if (readHashes.has(sha)) return;
+    setReadHashes(prev => new Set([...prev, sha]));
+    try {
+      await fetch("/api/commit-reads", {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ commitHash: sha, repo: DASHBOARD_GITHUB_REPO }),
+      });
+    } catch {}
+  };
+
+  const handleOpenChange = (isOpen: boolean) => {
+    setOpen(isOpen);
+    if (isOpen) {
+      commits.slice(0, 20).forEach((c: any) => markRead(c.sha));
+    }
+  };
+
+  return (
+    <Popover open={open} onOpenChange={handleOpenChange}>
+      <PopoverTrigger asChild>
+        <div
+          className="flex-1 rounded-2xl p-2.5 sm:p-4 flex flex-col gap-2 sm:gap-3 transition-all duration-150 hover:-translate-y-0.5 cursor-pointer h-full relative"
+          style={{ background: "#ffffff", border: "1px solid rgba(103,65,217,0.16)", boxShadow: "0 2px 8px rgba(62,15,163,0.07)" }}
+        >
+          {unreadCount > 0 && (
+            <span className="absolute top-2 right-2 h-5 min-w-[20px] px-1 rounded-full bg-[#3E0FA3] text-white text-[9px] font-bold flex items-center justify-center z-10">
+              {unreadCount}
+            </span>
+          )}
+          <div className="min-w-0">
+            <p className="text-[8px] sm:text-[10px] font-bold uppercase tracking-wider text-[#999] leading-tight line-clamp-2">Pembaruan</p>
+            <p className="text-[11px] sm:text-[14px] font-bold text-[#1A1A1A] mt-0.5 truncate">GitHub</p>
+          </div>
+          <div className="flex items-center justify-between gap-1">
+            <div className="h-8 w-8 sm:h-10 sm:w-10 rounded-xl flex items-center justify-center shrink-0" style={{ background: "#F5F3FF" }}>
+              <GitCommit className="h-4 w-4 sm:h-5 sm:w-5 text-[#3E0FA3]" />
+            </div>
+            <div className="text-right min-w-0">
+              <p className="text-lg sm:text-2xl font-black text-[#1A1A1A]">
+                {commits.length === 0 ? "—" : unreadCount}
+              </p>
+              <p className="text-[9px] text-[#999] leading-tight">belum dibaca</p>
+            </div>
+          </div>
+        </div>
+      </PopoverTrigger>
+      <PopoverContent align="end" className="w-80 p-0 overflow-hidden" side="bottom">
+        <div className="p-3 border-b bg-white sticky top-0">
+          <div className="flex items-center gap-2">
+            <Bell className="h-4 w-4 text-[#3E0FA3]" />
+            <p className="text-[13px] font-bold text-[#1A1A1A]">Pembaruan GitHub</p>
+          </div>
+          <p className="text-[11px] text-[#999] mt-0.5">
+            {unreadCount > 0 ? `${unreadCount} perubahan belum dibaca` : "Semua perubahan sudah dibaca ✓"}
+          </p>
+        </div>
+        <div className="max-h-72 overflow-y-auto divide-y">
+          {commits.length === 0 ? (
+            <div className="p-4 text-center text-[12px] text-[#999]">Tidak ada data commit</div>
+          ) : (
+            commits.map((commit: any) => {
+              const isUnread = !readHashes.has(commit.sha);
+              const dateStr = commit.commit?.author?.date ?? commit.commit?.committer?.date ?? "";
+              const dateLabel = dateStr
+                ? new Date(dateStr).toLocaleDateString("id-ID", { day: "numeric", month: "short" })
+                : "—";
+              return (
+                <div
+                  key={commit.sha}
+                  className={cn("p-3 text-left", isUnread ? "bg-purple-50/60" : "")}
+                >
+                  <div className="flex items-start gap-2">
+                    {isUnread && (
+                      <div className="h-1.5 w-1.5 rounded-full bg-[#3E0FA3] shrink-0 mt-1.5" />
+                    )}
+                    <div className={cn("flex-1 min-w-0", !isUnread && "pl-3.5")}>
+                      <p className={cn("text-[12px] line-clamp-2", isUnread ? "font-semibold text-[#1A1A1A]" : "text-[#666]")}>
+                        {commit.commit?.message?.split("\n")[0] ?? "—"}
+                      </p>
+                      <p className="text-[10px] text-[#999] mt-0.5">{dateLabel} · {commit.sha.slice(0, 7)}</p>
+                    </div>
+                  </div>
+                </div>
+              );
+            })
+          )}
+        </div>
+        <div className="p-2 border-t bg-white">
+          <Link
+            to="/fitur"
+            className="flex items-center justify-center gap-1 text-[11px] text-[#3E0FA3] font-semibold hover:underline"
+            onClick={() => setOpen(false)}
+          >
+            Lihat detail di Fitur <ArrowRight className="h-3 w-3" />
+          </Link>
+        </div>
+      </PopoverContent>
+    </Popover>
   );
 }
 
@@ -813,26 +955,6 @@ export default function Dashboard() {
   const agendaCalMonthPct = agendaThisCalMonth > 0 ? Math.round((agendaCompletedThisCalMonth / agendaThisCalMonth) * 100) : 0;
   const currentMonthName = new Date().toLocaleDateString("id-ID", { month: "long" });
 
-  // ── Fitur (GitHub-based, from shared React Query cache) ──
-  const { data: rawCommits = [], isLoading: loadingCommits } = useQuery<any[]>({
-    queryKey: ["/api/github/commits"],
-    staleTime: 10 * 60 * 1000,
-  });
-  const firstSha = (rawCommits as any[])[0]?.sha ?? "";
-  const { data: githubFeatures = [], isLoading: loadingGithubFeatures } = useQuery<ExtractedFeature[]>({
-    queryKey: ["extract-features", firstSha],
-    queryFn: async () => {
-      const res = await apiRequest("POST", "/api/github/extract-features", { commits: rawCommits.slice(0, 50) });
-      return res.json();
-    },
-    enabled: rawCommits.length > 0,
-    staleTime: 30 * 60 * 1000,
-  });
-  const totalAreas = (githubFeatures as ExtractedFeature[]).length;
-  const activeAreas = (githubFeatures as ExtractedFeature[]).filter(f => f.status === "baru" || f.status === "ditingkatkan").length;
-  const fiturPct = totalAreas > 0 ? Math.round((activeAreas / totalAreas) * 100) : 0;
-  const loadingFitur = loadingCommits || loadingGithubFeatures;
-
   const totalAnggota = data?.totalAnggota ?? 0;
 
   const displayName = user?.displayName ?? user?.username ?? "—";
@@ -1017,14 +1139,7 @@ export default function Dashboard() {
               color="#1A1A1A"
               link="/agenda"
             />
-            <ProgressCard
-              sublabel="Fitur Aktif"
-              label="Dikembangkan"
-              pct={loadingFitur ? 0 : fiturPct}
-              value={loadingFitur ? "—" : `${activeAreas}/${totalAreas}`}
-              color="#3E0FA3"
-              link="/fitur"
-            />
+            <GitHubChangesCard />
           </div>
 
           {/* ── Agenda Bulan Ini ─────────────────────────────────── */}
